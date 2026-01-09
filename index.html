@@ -373,11 +373,12 @@
             .mobile-add-grid-section .add-grid-control { margin-bottom: 0; }
             .mobile-add-grid-section .total-info { font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 10px;}
 
+            /* 关键修改：由于删除了预览按钮，只剩下4个按钮，直接用2x2网格，不需要让最后一个按钮跨行 */
             .mobile-function-buttons {
                 display: grid;
                 grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px;
             }
-            .mobile-function-buttons .button:last-child { grid-column: span 2; }
+            /* .mobile-function-buttons .button:last-child { grid-column: span 2; }  <-- 删除了这行 */
 
             .mobile-color-section {
                 margin: 0 15px 15px;
