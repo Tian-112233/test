@@ -956,8 +956,15 @@
         ctx.fillText(name?`姓名: ${name}`:'Merry Christmas!', padding, padding + 25);
         
         ctx.fillStyle='#D42426'; ctx.font='14px serif'; ctx.textAlign='right'; 
-        const now = new Date();
-        ctx.fillText(`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`, width-padding, padding + 25);
+        
+        // --- 关键修改：获取保加利亚时间 (Europe/Sofia) 并格式化为 YYYY/M/D ---
+        const d = new Date();
+        const y = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', year: 'numeric' });
+        const m = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', month: 'numeric' });
+        const da = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', day: 'numeric' });
+        const bgDateStr = `${y}/${m}/${da}`;
+        
+        ctx.fillText(bgDateStr, width-padding, padding + 25);
         
         // 装饰线
         ctx.beginPath(); ctx.moveTo(padding, padding+40); ctx.lineTo(width-padding, padding+40); 
