@@ -4,357 +4,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>持续声控生日蛋糕</title>
+    <title>声控旗帜</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .flag-container {
+            position: relative;
+            width: 80vw;
+            max-width: 600px;
+            height: 400px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: radial-gradient(circle at center, #fff1eb, #ace0f9); /* 更梦幻的背景 */
-            font-family: 'Microsoft YaHei', cursive, sans-serif;
-            overflow: hidden;
+            margin-bottom: 20px;
+            border: 2px solid #444;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            background: #111;
         }
 
-        /* 主容器 */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        .flag {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%); 
+            transition: filter 0.1s linear, opacity 0.5s ease;
+            opacity: 0;
         }
 
-        /* 状态提示文字 */
-        .status-message {
-            margin-bottom: 30px;
-            font-size: 1.5em;
-            color: #555;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-            height: 1.5em; /* 固定高度防止跳动 */
-        }
-
-        /* 蛋糕整体结构，用于解决缝隙问题 */
-        .cake-structure {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* 蛋糕托盘 */
-        .cake-stand {
-            width: 550px; /* 加宽 */
-            height: 60px;
-            background: linear-gradient(to right, #d4af37, #fddb92, #d4af37); /* 金色质感 */
-            border-radius: 50% / 100%;
-            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1; /* 在蛋糕下面 */
-            margin-top: -25px; /* 向上重叠，消除缝隙 */
-        }
-
-        /* 蛋糕主体 */
-        .cake {
-            width: 500px; /* 加宽蛋糕 */
-            height: 200px;
-            background: linear-gradient(to bottom, #ffdde1, #ee9ca7); /* 粉色蛋糕体 */
-            border-radius: 50% / 100px 100px 0 0;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 -10px 20px rgba(0, 0, 0, 0.1);
+        .flag.active {
+            opacity: 1;
             z-index: 2;
         }
 
-        /* 蛋糕顶部的奶油淋面 */
-        .cake::before {
-            content: '';
-            position: absolute;
-            top: -10px; left: -5px; right: -5px;
-            height: 120px;
-            background: linear-gradient(to bottom, #fff, #f8f8f8 60%, transparent); /* 白色奶油 */
-            border-radius: 50% / 60px 60px 20px 20px;
-            box-shadow: inset 0 5px 10px rgba(255,255,255,0.8);
-            z-index: 3;
-        }
-
-        /* 蜡烛容器 */
-        .candles-container {
-            position: absolute;
-            top: -70px; /* 调整蜡烛位置 */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%; /* 限制蜡烛分布范围 */
-            height: 80px;
-            display: flex;
-            justify-content: space-around; /* 均匀分布 */
-            align-items: flex-end;
+        /* 状态显示区 */
+        .status-container {
+            text-align: center;
+            margin-bottom: 20px;
             z-index: 10;
-            pointer-events: none;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        /* --- 全新设计的生日蜡烛 --- */
-        .candle {
-            position: relative;
-            width: 12px; /* 更细 */
-            height: 70px; /* 更高 */
-            /* 经典的红白斜纹 */
-            background: repeating-linear-gradient(
-                45deg,
-                #ff6b6b, /* 红色 */
-                #ff6b6b 5px,
-                #fff 5px, /* 白色 */
-                #fff 10px
-            );
-            border-radius: 2px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            /* 初始状态：隐藏在蛋糕里 */
-            opacity: 0;
-            transform: translateY(30px) scale(0.8);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弹性出现的动画 */
-        }
-
-        /* 蜡烛出现的状态 */
-        .candle.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* 烛芯 */
-        .candle::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 6px;
-            background-color: #333; /* 深色烛芯 */
-        }
-
-        /* 火焰 */
-        .flame {
-            position: absolute;
-            top: -22px;
-            left: 50%;
-            transform: translateX(-50%) scale(0); /* 初始无火焰 */
-            width: 12px;
-            height: 20px;
-            background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff9900 60%, transparent 80%);
-            border-radius: 50% 50% 20% 20%;
-            box-shadow: 0 0 10px #ff9900, 0 0 20px #ffff00;
-            filter: blur(0.5px);
-            animation: flicker 0.3s infinite alternate;
-            transition: transform 0.3s ease-out 0.4s; /* 火焰延迟出现 */
-        }
-
-        .candle.show .flame {
-            transform: translateX(-50%) scale(1); /* 蜡烛出现后火焰出现 */
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.9; transform: translateX(-50%) scale(1) rotate(-2deg); }
-            100% { opacity: 1; transform: translateX(-50%) scale(1.1) rotate(2deg); }
-        }
-
-        /* 初始启动按钮 */
-        #startButton {
-            margin-top: 40px;
-            padding: 12px 30px;
-            font-size: 1.2em;
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-            transition: all 0.3s;
-        }
-        #startButton:hover { background-color: #ff4757; transform: translateY(-2px); }
-        #startButton.hidden { display: none; }
-
-        /* 监听指示器 */
-        .listening-indicator {
-            display: none;
-            margin-top: 20px;
-            color: #ff6b6b;
+        .country-name {
+            font-size: 1.5rem;
             font-weight: bold;
+            color: #888;
+            margin-bottom: 5px;
         }
-        .listening-indicator.active { display: block; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 50% { opacity: 0.5; } }
 
+        .progress-text {
+            font-size: 3rem;
+            color: #fff;
+            font-family: monospace; 
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        /* 100% 时的特效 - 更加显眼 */
+        .full-power {
+            color: #ff3333 !important; /* 满能量变成红色 */
+            text-shadow: 0 0 20px #ff0000;
+            animation: shake 0.5s infinite;
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .subtitle-box {
+            font-size: 1.1rem;
+            color: #0f0;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 20px;
+            border-radius: 4px;
+            min-height: 28px;
+            border: 1px solid #444;
+            max-width: 80%;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        #visualizer {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 120px;
+            z-index: 1; opacity: 0.3; pointer-events: none;
+        }
+
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
+        }
+        button { padding: 15px 40px; font-size: 1.5rem; cursor: pointer; border-radius: 50px; border:none; background: #fff; color:#000; font-weight:bold;}
+        button:hover { background: #eee; transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="status-message" id="statusMessage">准备好了吗？</div>
-
-        <div class="cake-structure">
-            <div class="cake">
-                <div class="candles-container" id="candlesContainer"></div>
-            </div>
-            <div class="cake-stand"></div>
-        </div>
-
-        <button id="startButton">点击这里激活麦克风</button>
-        <div class="listening-indicator" id="listeningIndicator">正在聆听中... (请说“我X岁了”)</div>
+    <div id="overlay">
+        <h1>声控旗帜</h1>
+        <p style="color:#aaa;">请使用 Chrome/Edge 浏览器</p>
+        <p style="color:#888; font-size:0.9rem">提示：如果不持续大声呼唤，颜色会很快消失</p>
+        <button id="startBtn">开始挑战</button>
     </div>
 
-    <script>
-        const statusMessage = document.getElementById('statusMessage');
-        const candlesContainer = document.getElementById('candlesContainer');
-        const startButton = document.getElementById('startButton');
-        const listeningIndicator = document.getElementById('listeningIndicator');
+    <div class="flag-container">
+        <div id="china" class="flag active" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg');"></div>
+        <div id="bulgaria" class="flag" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg');"></div>
+    </div>
 
-        let recognition;
-        let isListening = false;
-        let isBusy = false; // 新增：忙碌状态锁，防止在显示蜡烛时处理新语音
-        let clearTimer = null;
+    <div class="status-container">
+        <div class="country-name" id="countryName">当前：中国</div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
 
-        // 初始化 Web Speech API
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = true; // 关键改动：持续监听
-            recognition.lang = 'zh-CN';
-            recognition.interimResults = false; // 不需要临时结果
+    <div class="subtitle-box" id="subtitle">请持续呼喊：中国 / 保加利亚</div>
 
-            recognition.onstart = () => {
-                isListening = true;
-                startButton.classList.add('hidden'); // 隐藏启动按钮
-                listeningIndicator.classList.add('active');
-                statusMessage.textContent = '请说出你的年龄...';
-            };
+    <canvas id="visualizer"></canvas>
 
-            recognition.onresult = (event) => {
-                // 如果正在忙着显示蜡烛，则忽略新的语音
-                if (isBusy) {
-                    console.log('正如火如荼地展示中，忽略此次输入');
-                    return;
-                }
+<script>
+    // --- 【关键修改】难度参数调整 ---
+    
+    // 1. 衰减速度：从 0.08 提升到 0.15 (不说话时掉得更快)
+    const DECAY_RATE = 0.15;         
+    
+    const MAX_SHOWN_SCORE = 100;
+    // 2. 缓冲区减少：从 130 降到 110 (即使充满了，只要稍停一下马上就会跌破100)
+    const MAX_INTERNAL_SCORE = 110;  
+    
+    // 3. 增量削弱
+    // 基础分从 15 降到 8 (小声说话几乎没用)
+    const BASE_BOOST = 8;           
+    // 音量系数从 60 降到 35 (只有大声喊才能涨得动)
+    const VOLUME_BOOST_FACTOR = 35;  
+    
+    
+    // --- 变量 ---
+    let currentFlag = 'china';
+    let saturation = 0;
+    let audioContext, analyser, dataArray;
+    let recognition;
+    let isRunning = false;
+    let currentVolume = 0; 
+    let lastTriggerTime = 0;
 
-                // 获取最新的识别结果（因为是持续监听，结果是一个数组）
-                const latestResult = event.results[event.results.length - 1];
-                if (latestResult.isFinal) {
-                    const transcript = latestResult[0].transcript;
-                    console.log('收到语音:', transcript);
-                    processSpeech(transcript);
-                }
-            };
+    // --- DOM ---
+    const flagChina = document.getElementById('china');
+    const flagBulgaria = document.getElementById('bulgaria');
+    const countryNameEl = document.getElementById('countryName');
+    const progressTextEl = document.getElementById('progressText');
+    const subtitleText = document.getElementById('subtitle');
+    const startBtn = document.getElementById('startBtn');
+    const overlay = document.getElementById('overlay');
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
 
-            // 如果异常断开，尝试自动重连（为了实现“持续”体验）
-            recognition.onend = () => {
-                if (isListening) {
-                    console.log('识别意外中断，尝试重启...');
-                    recognition.start();
-                } else {
-                    listeningIndicator.classList.remove('active');
-                }
-            };
+    startBtn.addEventListener('click', () => {
+        initAudio();
+        initSpeech();
+        overlay.style.display = 'none';
+        isRunning = true;
+        renderLoop();
+    });
 
-            recognition.onerror = (event) => {
-                console.error('语音识别错误:', event.error);
-                // 如果是没听清或者网络小问题，不打断流程，让用户继续说
-                if (event.error === 'no-speech' || event.error === 'network') {
-                   statusMessage.textContent = '刚才没听清，请再说一次...';
-                } else {
-                   statusMessage.textContent = '发生错误，请刷新页面重试。';
-                   isListening = false;
-                   recognition.stop();
-                }
-            };
+    async function initAudio() {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.6; // 让波形不那么抖动，看起来更稳
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(analyser);
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+        } catch (e) {
+            alert("无法启动麦克风: " + e);
+        }
+    }
 
+    function initSpeech() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            subtitleText.innerText = "❌ 浏览器不支持语音识别";
+            return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'zh-CN';
+
+        recognition.onstart = () => { subtitleText.innerText = "监听中..."; };
+        recognition.onend = () => { if (isRunning) recognition.start(); };
+
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            subtitleText.innerText = "👂: " + transcript.slice(-10);
+
+            if (transcript.includes('保加利亚')) {
+                triggerAction('bulgaria');
+            } else if (transcript.includes('中国')) {
+                triggerAction('china');
+            }
+        };
+        recognition.start();
+    }
+
+    function triggerAction(country) {
+        const now = Date.now();
+        if (now - lastTriggerTime < 400) return; 
+        lastTriggerTime = now;
+
+        if (currentFlag !== country) {
+            switchFlag(country);
+            saturation = 10; // 切换国家只给 10% 的起步分
         } else {
-            statusMessage.textContent = '抱歉，你的浏览器不支持此功能，请使用 Chrome。';
-            startButton.disabled = true;
-        }
-
-        // 因为浏览器安全限制，首次必须用户手动点击才能开启麦克风
-        startButton.addEventListener('click', () => {
-            if (recognition && !isListening) {
-                recognition.start();
-            }
-        });
-
-        function processSpeech(transcript) {
-            const regex = /(\d+)\s*(岁|年|年级|了)/;
-            const match = transcript.match(regex);
-            let age = null;
-
-            if (match && match[1]) {
-                age = parseInt(match[1]);
-            } else {
-                const chineseNumbers = {
-                    '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5,
-                    '六': 6, '七': 7, '八': 8, '九': 9, '十': 10
-                };
-                for (const key in chineseNumbers) {
-                    if (transcript.includes(key)) { // 简化匹配逻辑
-                        age = chineseNumbers[key];
-                        break;
-                    }
-                }
-            }
-
-            // 限制年龄在 1 到 10 岁
-            if (age !== null && age > 0 && age <= 10) {
-                showCandlesSequence(age);
-            } else if (transcript.length > 1 && !isBusy) {
-                 // 只有在不忙的时候才提示没听懂，避免刷屏
-                statusMessage.textContent = '没听懂是几岁呢？(试试1-10岁)';
-            }
-        }
-
-        function showCandlesSequence(age) {
-            isBusy = true; // 上锁
-            statusMessage.textContent = `哇！祝你 ${age} 岁生日快乐！`;
-            generateCandles(age);
-
-            // 清除之前的定时器（如果有）
-            if (clearTimer) clearTimeout(clearTimer);
-
-            // 2秒后清空蜡烛并解锁
-            clearTimer = setTimeout(() => {
-                clearCandles();
-                statusMessage.textContent = '下一个小朋友几岁了？';
-                isBusy = false; // 解锁
-            }, 2500); // 稍微多给0.5秒让动画播完
-        }
-
-        function generateCandles(count) {
-            candlesContainer.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const candleDiv = document.createElement('div');
-                candleDiv.classList.add('candle');
-                
-                // 添加火焰
-                const flameDiv = document.createElement('div');
-                flameDiv.classList.add('flame');
-                candleDiv.appendChild(flameDiv);
-
-                candlesContainer.appendChild(candleDiv);
-
-                // 使用 setTimeout 错开每根蜡烛出现的时间，增加动感
-                setTimeout(() => {
-                    candleDiv.classList.add('show');
-                }, i * 100); // 每根间隔100ms出现
-            }
-        }
-
-        function clearCandles() {
-             // 获取所有显示的蜡烛
-            const candles = candlesContainer.querySelectorAll('.candle.show');
-            candles.forEach((candle, index) => {
-                // 反向动画：先移除 show class
-                setTimeout(() => {
-                    candle.classList.remove('show');
-                }, index * 50); // 快速依次消失
-            });
+            // 计算加分
+            let volumeBonus = (currentVolume / 255) * VOLUME_BOOST_FACTOR;
+            let totalBoost = BASE_BOOST + volumeBonus;
             
-            // 等动画彻底结束后清空 DOM
+            // 没有保底机制了，声音小就是加得少
+            saturation += totalBoost;
+            
+            // 字幕反馈
+            subtitleText.style.color = '#fff';
+            subtitleText.style.borderColor = '#fff';
             setTimeout(() => {
-                 candlesContainer.innerHTML = '';
-            }, candles.length * 50 + 600);
+                subtitleText.style.color = '#0f0';
+                subtitleText.style.borderColor = '#444';
+            }, 300);
         }
-    </script>
+    }
+
+    function switchFlag(country) {
+        currentFlag = country;
+        saturation = 0; 
+        
+        if (country === 'china') {
+            flagChina.classList.add('active');
+            flagBulgaria.classList.remove('active');
+            countryNameEl.innerText = "当前：中国";
+        } else {
+            flagChina.classList.remove('active');
+            flagBulgaria.classList.add('active');
+            countryNameEl.innerText = "当前：保加利亚";
+        }
+    }
+
+    function renderLoop() {
+        requestAnimationFrame(renderLoop);
+        
+        if (analyser) {
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            currentVolume = sum / dataArray.length;
+        }
+
+        saturation -= DECAY_RATE;
+        
+        if (saturation > MAX_INTERNAL_SCORE) saturation = MAX_INTERNAL_SCORE;
+        if (saturation < 0) saturation = 0;
+
+        let displaySaturation = Math.min(saturation, MAX_SHOWN_SCORE);
+        
+        updateUI(displaySaturation);
+        drawVisualizer();
+    }
+
+    function updateUI(val) {
+        const currentElement = currentFlag === 'china' ? flagChina : flagBulgaria;
+        currentElement.style.filter = `grayscale(${100 - val}%)`;
+
+        let intVal = Math.floor(val);
+        progressTextEl.innerText = `${intVal}%`;
+
+        // 100% 时加了红色震动特效，增加紧张感
+        if (intVal >= 100) {
+            progressTextEl.classList.add('full-power');
+            progressTextEl.innerText = "⚡ 100% ⚡";
+        } else {
+            progressTextEl.classList.remove('full-power');
+        }
+    }
+
+    function drawVisualizer() {
+        if (!dataArray) return;
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        const barW = (w / dataArray.length) * 2.5;
+        let x = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+            let barH = dataArray[i] / 2.5;
+            ctx.fillRect(x, h - barH, barW, barH);
+            x += barW + 1;
+        }
+    }
+    
+    canvas.width = window.innerWidth;
+    canvas.height = 120;
+
+</script>
 </body>
 </html>
