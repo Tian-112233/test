@@ -268,7 +268,15 @@
         .button-secondary { background-color: #c0392b; } 
         .button-clear-all { background-color: #d35400; } 
         .button-success { background-color: var(--color-accent-green); }   
-        .button-warning { background-color: var(--color-accent-gold); color: #8b4513; text-shadow: none; }   
+        .button-warning { background-color: var(--color-accent-gold); color: #8b4513; text-shadow: none; }
+        /* 新增：一键保存按钮样式 */
+        .button-download-all { 
+            background: linear-gradient(135deg, #1e90ff, #00bfff); 
+            border: 2px solid #fff; 
+            margin-bottom: 15px; 
+            padding: 12px;
+            font-size: 1rem;
+        }
         
         .add-grid-control { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; align-items: center; }
         .add-grid-control input { width: 50px; text-align: center; padding: 6px; border-radius: 4px; border: 1px solid var(--color-border-main); font-size: 1rem; color: var(--color-accent-green); font-weight: bold; }
@@ -476,9 +484,13 @@
         <button class="button button-success" id="btnConfirmExport" style="width:50%; margin:10px auto;">生成 | Генерирай</button>
         
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
+            <button id="btnSaveAll" class="button button-download-all" style="display:none; width:80%; margin:0 auto 15px auto;">
+                ⬇️ 一键保存所有图片 (Save All)
+                <span>浏览器可能会请求下载多个文件的权限</span>
+            </button>
+
             <p style="font-size:0.9rem; color:#666; margin-bottom:10px; font-weight:bold;">
-                长按或右键图片即可保存<br>
-                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">Натиснете продължително или десен бутон върху снимката за запазване</span>
+                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">如果"一键保存"没有反应，请允许弹窗或长按下方图片保存</span>
             </p>
             <div id="exportImagesContainer" class="export-images-list"></div>
         </div>
@@ -504,6 +516,9 @@
     const BASE_SIZE = 300;
     const BASE_LINE_WIDTH = 12;
     const LINE_RATIO = BASE_LINE_WIDTH / BASE_SIZE; 
+    
+    // 存储生成的图片数据URL
+    let exportDataURLs = [];
 
     // --- 全局雪花图片 URL (避免重复生成) ---
     let snowflakeImgUrl = null;
@@ -826,6 +841,8 @@
         document.getElementById('btnExport').onclick=ex; document.getElementById('btnExportMobile').onclick=ex;
         
         document.getElementById('btnConfirmExport').onclick=doExport;
+        // 绑定一键保存事件
+        document.getElementById('btnSaveAll').onclick=saveAllExports;
     }
 
     // 画星星的辅助函数
@@ -867,11 +884,39 @@
         }
         ctx.restore();
     }
+    
+    // --- 新增：一键保存所有生成的图片 ---
+    function saveAllExports() {
+        if (!exportDataURLs || exportDataURLs.length === 0) {
+            alert("没有可保存的图片");
+            return;
+        }
+        
+        const nameRaw = document.getElementById('exportName').value;
+        const name = nameRaw ? nameRaw.trim() : 'Hanzi';
+        
+        // 循环触发下载，使用setTimeout错开时间，防止浏览器拦截
+        exportDataURLs.forEach((url, index) => {
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${name}_Page_${index + 1}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, index * 800); // 每张图间隔800毫秒
+        });
+    }
 
-    // --- 分页导出逻辑 (修改版：强制每页9个格子) ---
+    // --- 分页导出逻辑 (修改版：强制每页9个格子 + 收集DataURL) ---
     function doExport() {
         const container = document.getElementById('exportImagesContainer');
         container.innerHTML = ''; // 清空旧图片
+        exportDataURLs = []; // 清空数据缓存
+        
+        // 显示保存按钮
+        const btnSave = document.getElementById('btnSaveAll');
+        if(btnSave) btnSave.style.display = 'block';
         
         const name = document.getElementById('exportName').value;
         const visualTotal = calculateVisualTotal(); // 实际有字或者需要展示的总数
@@ -988,9 +1033,13 @@
                 }
             }
             
-            // 生成图片并添加到DOM
+            // 生成图片DataURL
+            const dataURL = cvs.toDataURL('image/jpeg', 0.85);
+            exportDataURLs.push(dataURL); // 存入数组供一键下载使用
+            
+            // 添加到DOM用于预览
             const img = document.createElement('img');
-            img.src = cvs.toDataURL('image/jpeg', 0.85); // 使用JPEG进一步减小体积，质量0.85足够
+            img.src = dataURL;
             container.appendChild(img);
         }
 
