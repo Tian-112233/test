@@ -209,11 +209,13 @@
         .dot-tl { top: 8%; left: 8%; } .dot-tr { top: 8%; right: 8%; }
         .dot-bl { bottom: 8%; left: 8%; } .dot-br { bottom: 8%; right: 8%; }
 
-        /* 画布 */
+        /* 画布 - 关键修改：强制禁止触摸动作，防止滚动 */
         .grid-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; cursor: crosshair;
             touch-action: none !important;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* 序号 */
@@ -664,22 +666,27 @@
         redrawMobileCanvas(); updateUI();
     }
 
+    // --- 核心修复：增强版桌面事件处理 (解决大屏竖向书写问题) ---
     function setupCanvasEvents(canvas, gridIdx) {
         let isDown=false;
         let points=[]; const ctx=canvas.getContext('2d');
         const getPos=(e)=>{
             const r=canvas.getBoundingClientRect();
-            const t=e.touches?e.touches[0]:e;
-            return {x:(t.clientX-r.left)*(canvas.width/r.width), y:(t.clientY-r.top)*(canvas.height/r.height)};
+            // 兼容 MouseEvent 和 TouchEvent
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {x:(clientX-r.left)*(canvas.width/r.width), y:(clientY-r.top)*(canvas.height/r.height)};
         };
         const start=(e)=>{ 
-            e.preventDefault();
+            // 关键：强制阻止默认行为(滚动)
+            if(e.cancelable) e.preventDefault();
             if(gridIdx!==currentGridIdx)switchGrid(gridIdx); 
             isDown=true; points=[getPos(e)]; 
         };
         const move=(e)=>{
             if(!isDown)return; 
-            e.preventDefault();
+            // 关键：移动时也强制阻止，防止浏览器接管
+            if(e.cancelable) e.preventDefault();
             const p=getPos(e); points.push(p);
             const cIdx=gridColorState[gridIdx]||0;
             ctx.beginPath();
@@ -699,10 +706,14 @@
                 redrawGrid(gridIdx); renderMobilePreview(); updateUI();
             }
         };
-        canvas.addEventListener('mousedown', start);
-        canvas.addEventListener('mousemove', move); canvas.addEventListener('mouseup', end); canvas.addEventListener('mouseleave', end);
         
-        // 确保 touchstart 也 preventDefault，防止某些浏览器在点击瞬间触发滚动
+        // 鼠标事件
+        canvas.addEventListener('mousedown', start);
+        canvas.addEventListener('mousemove', move); 
+        canvas.addEventListener('mouseup', end); 
+        canvas.addEventListener('mouseleave', end);
+        
+        // --- 关键：为桌面版也添加触摸事件 (修复iPad/触摸屏笔记本) ---
         canvas.addEventListener('touchstart', start, {passive: false});
         canvas.addEventListener('touchmove', move, {passive: false}); 
         canvas.addEventListener('touchend', end);
@@ -721,13 +732,13 @@
             return {x:(t.clientX-r.left)*(BASE_SIZE/r.width), y:(t.clientY-r.top)*(BASE_SIZE/r.height)};
         };
         const start=(e)=>{ 
-            e.preventDefault(); 
+            // 关键：手机端也加强防抖
+            if(e.cancelable) e.preventDefault(); 
             isDown=true; points=[getPos(e)]; 
         };
         const move=(e)=>{
             if(!isDown)return; 
-            e.preventDefault();
-            // 关键：防止滚动
+            if(e.cancelable) e.preventDefault();
             const p=getPos(e); points.push(p);
             const cIdx=gridColorState[currentGridIdx]||0;
             ctx.beginPath();
@@ -857,7 +868,7 @@
         ctx.restore();
     }
 
-    // --- 分页导出逻辑 (修改版：每页9个格子) ---
+    // --- 分页导出逻辑 (修改版：强制每页9个格子) ---
     function doExport() {
         const container = document.getElementById('exportImagesContainer');
         container.innerHTML = ''; // 清空旧图片
@@ -891,12 +902,8 @@
         for(let p = 0; p < totalPages; p++) {
             const startGrid = p * ITEMS_PER_PAGE;
             
-            // 动态高度方案：如果是最后一页，有多少行画多少行
-            const endGrid = Math.min((p + 1) * ITEMS_PER_PAGE, visualTotal);
-            const countOnPage = endGrid - startGrid;
-            // 向上取整补齐3的倍数
-            const gridsToDraw = Math.ceil(countOnPage / 3) * 3;
-            const rows = gridsToDraw / 3; 
+            // 核心逻辑：无论是否有内容，强制绘制满一页的 3x3 布局 (rows=3)
+            const rows = 3; 
 
             // 创建 Canvas
             const cvs = document.createElement('canvas');
@@ -940,11 +947,11 @@
             ctx.beginPath(); ctx.moveTo(padding, padding + 40); ctx.lineTo(width - padding, padding + 40); 
             ctx.strokeStyle = '#F8B229'; ctx.lineWidth = 2; ctx.stroke();
 
-            // 5. 绘制格子
-            for(let i = startGrid; i < startGrid + gridsToDraw; i++) {
-                const localIndex = i - startGrid;
-                const r = Math.floor(localIndex / cols);
-                const c = localIndex % cols;
+            // 5. 绘制格子 (强制循环9次)
+            for(let i = 0; i < 9; i++) {
+                const globalIndex = startGrid + i;
+                const r = Math.floor(i / cols); // 行 (0,1,2)
+                const c = i % cols;             // 列 (0,1,2)
                 const x = padding + c * (gridSize + gap);
                 const y = padding + hH + r * (gridSize + gap);
 
@@ -967,9 +974,9 @@
                 drawStar(ctx, x+10, y+gridSize-10, 5, 2, 1);
                 drawStar(ctx, x+gridSize-10, y+gridSize-10, 5, 2, 1);
 
-                // 只有在有效范围内(i < totalGrids)才绘制笔画
-                if(i < totalGrids) {
-                    const strokes = strokesData[i] || [];
+                // 只有在数据存在的范围内才绘制笔画和序号
+                if(globalIndex < totalGrids) {
+                    const strokes = strokesData[globalIndex] || [];
                     const sc = gridSize / BASE_SIZE;
                     strokes.forEach(s => {
                         const sp = s.points.map(p => ({ x: p.x * sc + x, y: p.y * sc + y }));
@@ -977,7 +984,7 @@
                     });
                     // 序号
                     ctx.fillStyle = '#D42426'; ctx.font = '10px serif'; ctx.textAlign = 'right'; 
-                    ctx.fillText(i + 1, x + gridSize - 3, y + gridSize - 3);
+                    ctx.fillText(globalIndex + 1, x + gridSize - 3, y + gridSize - 3);
                 }
             }
             
