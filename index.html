@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maria's Speech - With Audio</title>
+    <title>Maria's Speech - Audio Handbook</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -23,9 +23,6 @@
             position: sticky;
             top: 20px;
             z-index: 1000;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
         }
         
         .main-btn {
@@ -77,14 +74,14 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             background-color: #e0f2f1;
             color: #009688;
             border-radius: 50%;
-            margin-left: 10px;
+            margin-left: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             vertical-align: middle;
             border: 1px solid #b2dfdb;
             transition: all 0.2s;
@@ -95,8 +92,19 @@
             color: white;
             transform: scale(1.1);
         }
-        .play-icon:active {
-            transform: scale(0.95);
+        /* 词汇表里的播放按钮微调 */
+        .vocab-play {
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            margin-left: 5px;
+            background-color: #ffebee;
+            color: #d32f2f;
+            border-color: #ffcdd2;
+        }
+        .vocab-play:hover {
+            background-color: #d32f2f;
+            color: white;
         }
 
         .bg-text {
@@ -143,7 +151,7 @@
         th { background-color: #ffebee; color: #b71c1c; font-weight: bold; text-align: left; }
         tr:nth-child(even) { background-color: #fafafa; }
         
-        .v-word { font-size: 18px; font-weight: bold; color: #333; display: block; }
+        .v-word { font-size: 18px; font-weight: bold; color: #333; display: flex; align-items: center; }
         .v-pinyin { font-size: 13px; color: #888; display: block; margin-top: 4px; font-family: Arial; }
 
         .footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px; }
@@ -427,247 +435,391 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><span class="v-word">朋友</span><span class="v-pinyin">péng you</span></td>
+                        <td>
+                            <span class="v-word">朋友 <span class="play-icon vocab-play" onclick="playAudio('v01')">🔊</span></span>
+                            <span class="v-pinyin">péng you</span>
+                        </td>
                         <td>Friend</td>
                         <td>Приятел</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">评委</span><span class="v-pinyin">píng wěi</span></td>
+                        <td>
+                            <span class="v-word">评委 <span class="play-icon vocab-play" onclick="playAudio('v02')">🔊</span></span>
+                            <span class="v-pinyin">píng wěi</span>
+                        </td>
                         <td>Judge (in a contest)</td>
                         <td>Съдия / Жури</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">护士</span><span class="v-pinyin">hù shi</span></td>
+                        <td>
+                            <span class="v-word">护士 <span class="play-icon vocab-play" onclick="playAudio('v03')">🔊</span></span>
+                            <span class="v-pinyin">hù shi</span>
+                        </td>
                         <td>Nurse</td>
                         <td>Медицинска сестра</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">消防员</span><span class="v-pinyin">xiāo fáng yuán</span></td>
+                        <td>
+                            <span class="v-word">消防员 <span class="play-icon vocab-play" onclick="playAudio('v04')">🔊</span></span>
+                            <span class="v-pinyin">xiāo fáng yuán</span>
+                        </td>
                         <td>Firefighter</td>
                         <td>Пожарникар</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">代表团</span><span class="v-pinyin">dài biǎo tuán</span></td>
+                        <td>
+                            <span class="v-word">代表团 <span class="play-icon vocab-play" onclick="playAudio('v05')">🔊</span></span>
+                            <span class="v-pinyin">dài biǎo tuán</span>
+                        </td>
                         <td>Delegation</td>
                         <td>Делегация</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">选手</span><span class="v-pinyin">xuǎn shǒu</span></td>
+                        <td>
+                            <span class="v-word">选手 <span class="play-icon vocab-play" onclick="playAudio('v06')">🔊</span></span>
+                            <span class="v-pinyin">xuǎn shǒu</span>
+                        </td>
                         <td>Contestant / Player</td>
                         <td>Участник / Състезател</td>
                     </tr>
                     
                     <tr>
-                        <td><span class="v-word">首都</span><span class="v-pinyin">shǒu dū</span></td>
+                        <td>
+                            <span class="v-word">首都 <span class="play-icon vocab-play" onclick="playAudio('v07')">🔊</span></span>
+                            <span class="v-pinyin">shǒu dū</span>
+                        </td>
                         <td>Capital city</td>
                         <td>Столица</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">古城</span><span class="v-pinyin">gǔ chéng</span></td>
+                        <td>
+                            <span class="v-word">古城 <span class="play-icon vocab-play" onclick="playAudio('v08')">🔊</span></span>
+                            <span class="v-pinyin">gǔ chéng</span>
+                        </td>
                         <td>Ancient city</td>
                         <td>Древен град</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">公园</span><span class="v-pinyin">gōng yuán</span></td>
+                        <td>
+                            <span class="v-word">公园 <span class="play-icon vocab-play" onclick="playAudio('v09')">🔊</span></span>
+                            <span class="v-pinyin">gōng yuán</span>
+                        </td>
                         <td>Park</td>
                         <td>Парк</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">海边</span><span class="v-pinyin">hǎi biān</span></td>
+                        <td>
+                            <span class="v-word">海边 <span class="play-icon vocab-play" onclick="playAudio('v10')">🔊</span></span>
+                            <span class="v-pinyin">hǎi biān</span>
+                        </td>
                         <td>Seaside / Beach</td>
                         <td>Морски бряг</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">森林</span><span class="v-pinyin">sēn lín</span></td>
+                        <td>
+                            <span class="v-word">森林 <span class="play-icon vocab-play" onclick="playAudio('v11')">🔊</span></span>
+                            <span class="v-pinyin">sēn lín</span>
+                        </td>
                         <td>Forest</td>
                         <td>Гора</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">冰场</span><span class="v-pinyin">bīng chǎng</span></td>
+                        <td>
+                            <span class="v-word">冰场 <span class="play-icon vocab-play" onclick="playAudio('v12')">🔊</span></span>
+                            <span class="v-pinyin">bīng chǎng</span>
+                        </td>
                         <td>Ice rink</td>
                         <td>Ледена пързалка</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">桥梁</span><span class="v-pinyin">qiáo liáng</span></td>
+                        <td>
+                            <span class="v-word">桥梁 <span class="play-icon vocab-play" onclick="playAudio('v13')">🔊</span></span>
+                            <span class="v-pinyin">qiáo liáng</span>
+                        </td>
                         <td>Bridge</td>
                         <td>Мост</td>
                     </tr>
 
                     <tr>
-                        <td><span class="v-word">艺术体操</span><span class="v-pinyin">yì shù tǐ cāo</span></td>
+                        <td>
+                            <span class="v-word">艺术体操 <span class="play-icon vocab-play" onclick="playAudio('v14')">🔊</span></span>
+                            <span class="v-pinyin">yì shù tǐ cāo</span>
+                        </td>
                         <td>Rhythmic gymnastics</td>
                         <td>Художествена гимнастика</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">练习</span><span class="v-pinyin">liàn xí</span></td>
+                        <td>
+                            <span class="v-word">练习 <span class="play-icon vocab-play" onclick="playAudio('v15')">🔊</span></span>
+                            <span class="v-pinyin">liàn xí</span>
+                        </td>
                         <td>To practice</td>
                         <td>Упражнявам се / Тренирам</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">比赛</span><span class="v-pinyin">bǐ sài</span></td>
+                        <td>
+                            <span class="v-word">比赛 <span class="play-icon vocab-play" onclick="playAudio('v16')">🔊</span></span>
+                            <span class="v-pinyin">bǐ sài</span>
+                        </td>
                         <td>Competition</td>
                         <td>Състезание</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">骑自行车</span><span class="v-pinyin">qí zì xíng chē</span></td>
+                        <td>
+                            <span class="v-word">骑自行车 <span class="play-icon vocab-play" onclick="playAudio('v17')">🔊</span></span>
+                            <span class="v-pinyin">qí zì xíng chē</span>
+                        </td>
                         <td>Ride a bicycle</td>
                         <td>Карам колело</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">漫步</span><span class="v-pinyin">màn bù</span></td>
+                        <td>
+                            <span class="v-word">漫步 <span class="play-icon vocab-play" onclick="playAudio('v18')">🔊</span></span>
+                            <span class="v-pinyin">màn bù</span>
+                        </td>
                         <td>Stroll / Walk</td>
                         <td>Разхождам се</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">野餐</span><span class="v-pinyin">yě cān</span></td>
+                        <td>
+                            <span class="v-word">野餐 <span class="play-icon vocab-play" onclick="playAudio('v19')">🔊</span></span>
+                            <span class="v-pinyin">yě cān</span>
+                        </td>
                         <td>Picnic</td>
                         <td>Пикник</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">滑雪橇</span><span class="v-pinyin">huá xuě qiāo</span></td>
+                        <td>
+                            <span class="v-word">滑雪橇 <span class="play-icon vocab-play" onclick="playAudio('v20')">🔊</span></span>
+                            <span class="v-pinyin">huá xuě qiāo</span>
+                        </td>
                         <td>Sledding</td>
                         <td>Пързаляне с шейна</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">探索</span><span class="v-pinyin">tàn suǒ</span></td>
+                        <td>
+                            <span class="v-word">探索 <span class="play-icon vocab-play" onclick="playAudio('v21')">🔊</span></span>
+                            <span class="v-pinyin">tàn suǒ</span>
+                        </td>
                         <td>Explore</td>
                         <td>Изследвам</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">下定决心</span><span class="v-pinyin">xià dìng jué xīn</span></td>
+                        <td>
+                            <span class="v-word">下定决心 <span class="play-icon vocab-play" onclick="playAudio('v22')">🔊</span></span>
+                            <span class="v-pinyin">xià dìng jué xīn</span>
+                        </td>
                         <td>Make up one's mind</td>
                         <td>Вземам твърдо решение</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">坚持</span><span class="v-pinyin">jiān chí</span></td>
+                        <td>
+                            <span class="v-word">坚持 <span class="play-icon vocab-play" onclick="playAudio('v23')">🔊</span></span>
+                            <span class="v-pinyin">jiān chí</span>
+                        </td>
                         <td>Persist / Persevere</td>
                         <td>Упорствам / Не се отказвам</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">开启</span><span class="v-pinyin">kāi qǐ</span></td>
+                        <td>
+                            <span class="v-word">开启 <span class="play-icon vocab-play" onclick="playAudio('v24')">🔊</span></span>
+                            <span class="v-pinyin">kāi qǐ</span>
+                        </td>
                         <td>Open / Start</td>
                         <td>Отварям / Започвам</td>
                     </tr>
 
                     <tr>
-                        <td><span class="v-word">奖杯</span><span class="v-pinyin">jiǎng bēi</span></td>
+                        <td>
+                            <span class="v-word">奖杯 <span class="play-icon vocab-play" onclick="playAudio('v25')">🔊</span></span>
+                            <span class="v-pinyin">jiǎng bēi</span>
+                        </td>
                         <td>Trophy</td>
                         <td>Купа / Трофей</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">银牌</span><span class="v-pinyin">yín pái</span></td>
+                        <td>
+                            <span class="v-word">银牌 <span class="play-icon vocab-play" onclick="playAudio('v26')">🔊</span></span>
+                            <span class="v-pinyin">yín pái</span>
+                        </td>
                         <td>Silver medal</td>
                         <td>Сребърен медал</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">日出</span><span class="v-pinyin">rì chū</span></td>
+                        <td>
+                            <span class="v-word">日出 <span class="play-icon vocab-play" onclick="playAudio('v27')">🔊</span></span>
+                            <span class="v-pinyin">rì chū</span>
+                        </td>
                         <td>Sunrise</td>
                         <td>Изгрев</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">民俗节</span><span class="v-pinyin">mín sú jié</span></td>
+                        <td>
+                            <span class="v-word">民俗节 <span class="play-icon vocab-play" onclick="playAudio('v28')">🔊</span></span>
+                            <span class="v-pinyin">mín sú jié</span>
+                        </td>
                         <td>Folklore Festival</td>
                         <td>Фолклорен фестивал</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">服饰</span><span class="v-pinyin">fú shì</span></td>
+                        <td>
+                            <span class="v-word">服饰 <span class="play-icon vocab-play" onclick="playAudio('v29')">🔊</span></span>
+                            <span class="v-pinyin">fú shì</span>
+                        </td>
                         <td>Costume / Clothing</td>
                         <td>Облекло / Носия</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">汉字</span><span class="v-pinyin">Hàn zì</span></td>
+                        <td>
+                            <span class="v-word">汉字 <span class="play-icon vocab-play" onclick="playAudio('v30')">🔊</span></span>
+                            <span class="v-pinyin">Hàn zì</span>
+                        </td>
                         <td>Chinese characters</td>
                         <td>Китайски йероглифи</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">书法</span><span class="v-pinyin">shū fǎ</span></td>
+                        <td>
+                            <span class="v-word">书法 <span class="play-icon vocab-play" onclick="playAudio('v31')">🔊</span></span>
+                            <span class="v-pinyin">shū fǎ</span>
+                        </td>
                         <td>Calligraphy</td>
                         <td>Калиграфия</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">钥匙</span><span class="v-pinyin">yào shi</span></td>
+                        <td>
+                            <span class="v-word">钥匙 <span class="play-icon vocab-play" onclick="playAudio('v32')">🔊</span></span>
+                            <span class="v-pinyin">yào shi</span>
+                        </td>
                         <td>Key</td>
                         <td>Ключ</td>
                     </tr>
 
                     <tr>
-                        <td><span class="v-word">耐心</span><span class="v-pinyin">nài xīn</span></td>
+                        <td>
+                            <span class="v-word">耐心 <span class="play-icon vocab-play" onclick="playAudio('v33')">🔊</span></span>
+                            <span class="v-pinyin">nài xīn</span>
+                        </td>
                         <td>Patience</td>
                         <td>Търпение</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">熟练</span><span class="v-pinyin">shú liàn</span></td>
+                        <td>
+                            <span class="v-word">熟练 <span class="play-icon vocab-play" onclick="playAudio('v34')">🔊</span></span>
+                            <span class="v-pinyin">shú liàn</span>
+                        </td>
                         <td>Skilled</td>
                         <td>Опитен / Умел</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">自信</span><span class="v-pinyin">zì xìn</span></td>
+                        <td>
+                            <span class="v-word">自信 <span class="play-icon vocab-play" onclick="playAudio('v35')">🔊</span></span>
+                            <span class="v-pinyin">zì xìn</span>
+                        </td>
                         <td>Confident</td>
                         <td>Уверен</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">生机勃勃</span><span class="v-pinyin">shēng jī bó bó</span></td>
+                        <td>
+                            <span class="v-word">生机勃勃 <span class="play-icon vocab-play" onclick="playAudio('v36')">🔊</span></span>
+                            <span class="v-pinyin">shēng jī bó bó</span>
+                        </td>
                         <td>Full of vitality</td>
                         <td>Пълен с живот</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">阳光明媚</span><span class="v-pinyin">yáng guāng míng mèi</span></td>
+                        <td>
+                            <span class="v-word">阳光明媚 <span class="play-icon vocab-play" onclick="playAudio('v37')">🔊</span></span>
+                            <span class="v-pinyin">yáng guāng míng mèi</span>
+                        </td>
                         <td>Sunny and bright</td>
                         <td>Слънчев</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">鲜艳</span><span class="v-pinyin">xiān yàn</span></td>
+                        <td>
+                            <span class="v-word">鲜艳 <span class="play-icon vocab-play" onclick="playAudio('v38')">🔊</span></span>
+                            <span class="v-pinyin">xiān yàn</span>
+                        </td>
                         <td>Bright-colored</td>
                         <td>Ярък / Пъстър</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">复杂</span><span class="v-pinyin">fù zá</span></td>
+                        <td>
+                            <span class="v-word">复杂 <span class="play-icon vocab-play" onclick="playAudio('v39')">🔊</span></span>
+                            <span class="v-pinyin">fù zá</span>
+                        </td>
                         <td>Complex</td>
                         <td>Сложен</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">整齐</span><span class="v-pinyin">zhěng qí</span></td>
+                        <td>
+                            <span class="v-word">整齐 <span class="play-icon vocab-play" onclick="playAudio('v40')">🔊</span></span>
+                            <span class="v-pinyin">zhěng qí</span>
+                        </td>
                         <td>Neat / Tidy</td>
                         <td>Подреден</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">严谨</span><span class="v-pinyin">yán jǐn</span></td>
+                        <td>
+                            <span class="v-word">严谨 <span class="play-icon vocab-play" onclick="playAudio('v41')">🔊</span></span>
+                            <span class="v-pinyin">yán jǐn</span>
+                        </td>
                         <td>Rigorous / Strict</td>
                         <td>Строг / Прецизен</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">遥远</span><span class="v-pinyin">yáo yuǎn</span></td>
+                        <td>
+                            <span class="v-word">遥远 <span class="play-icon vocab-play" onclick="playAudio('v42')">🔊</span></span>
+                            <span class="v-pinyin">yáo yuǎn</span>
+                        </td>
                         <td>Distant</td>
                         <td>Далечен</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">灵感</span><span class="v-pinyin">líng gǎn</span></td>
+                        <td>
+                            <span class="v-word">灵感 <span class="play-icon vocab-play" onclick="playAudio('v43')">🔊</span></span>
+                            <span class="v-pinyin">líng gǎn</span>
+                        </td>
                         <td>Inspiration</td>
                         <td>Вдъхновение</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">缘分</span><span class="v-pinyin">yuán fèn</span></td>
+                        <td>
+                            <span class="v-word">缘分 <span class="play-icon vocab-play" onclick="playAudio('v44')">🔊</span></span>
+                            <span class="v-pinyin">yuán fèn</span>
+                        </td>
                         <td>Fate / Destiny</td>
                         <td>Съдба / Връзка</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">尊师重道</span><span class="v-pinyin">zūn shī zhòng dào</span></td>
+                        <td>
+                            <span class="v-word">尊师重道 <span class="play-icon vocab-play" onclick="playAudio('v45')">🔊</span></span>
+                            <span class="v-pinyin">zūn shī zhòng dào</span>
+                        </td>
                         <td>Respect teachers</td>
                         <td>Уважение към учителите</td>
                     </tr>
                     
                     <tr>
-                        <td><span class="v-word">时候</span><span class="v-pinyin">shí hou</span></td>
+                        <td>
+                            <span class="v-word">时候 <span class="play-icon vocab-play" onclick="playAudio('v46')">🔊</span></span>
+                            <span class="v-pinyin">shí hou</span>
+                        </td>
                         <td>Time / When...</td>
                         <td>Време / Когато...</td>
                     </tr>
                     <tr>
-                        <td><span class="v-word">挪不开视线</span><span class="v-pinyin">nuó bù kāi shì xiàn</span></td>
+                        <td>
+                            <span class="v-word">挪不开视线 <span class="play-icon vocab-play" onclick="playAudio('v47')">🔊</span></span>
+                            <span class="v-pinyin">nuó bù kāi shì xiàn</span>
+                        </td>
                         <td>Can't look away</td>
                         <td>Не мога да откъсна поглед</td>
                     </tr>
                      <tr>
-                        <td><span class="v-word">并肩前行</span><span class="v-pinyin">bìng jiān qián xíng</span></td>
+                        <td>
+                            <span class="v-word">并肩前行 <span class="play-icon vocab-play" onclick="playAudio('v48')">🔊</span></span>
+                            <span class="v-pinyin">bìng jiān qián xíng</span>
+                        </td>
                         <td>Move forward together</td>
                         <td>Вървят рамо до рамо</td>
                     </tr>
@@ -684,7 +836,8 @@
         let currentAudio = null;
 
         function playAudio(id) {
-            const fileName = 'audio/' + id + '.mp3';
+            // 这里修改了后缀名为 .m4a
+            const fileName = 'audio/' + id + '.m4a';
 
             // 如果当前有音频在播放，先停止
             if (currentAudio) {
@@ -696,7 +849,7 @@
             
             // 播放音频，并处理可能的错误
             currentAudio.play().catch(error => {
-                alert("未找到音频文件: " + fileName + "\n请确保文件已上传到 audio 文件夹中。");
+                alert("未找到音频文件: " + fileName + "\n请确保文件已上传到 audio 文件夹中，且后缀名为 .m4a");
                 console.log(error);
             });
         }
@@ -706,10 +859,6 @@
             const btn = document.querySelector(".main-btn");
             const originalText = btn.innerText;
             
-            // 暂时隐藏播放按钮以进行截图（如果想在截图中保留按钮，可以删除下面这行）
-            // const playIcons = document.querySelectorAll('.play-icon');
-            // playIcons.forEach(icon => icon.style.display = 'none');
-
             btn.innerText = "⏳ 正在生成... (Processing...)";
             window.scrollTo(0,0);
 
@@ -725,9 +874,6 @@
                 link.href = canvas.toDataURL("image/png");
                 link.click();
                 btn.innerText = originalText;
-                
-                // 恢复播放按钮显示
-                // playIcons.forEach(icon => icon.style.display = 'inline-flex');
             }).catch(err => {
                 console.error(err);
                 alert("导出失败，请尝试手动截图。");
