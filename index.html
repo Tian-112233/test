@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 年日历 - 智能防抖完美版</title>
+    <title>2026 年日历 - 完美单圈版</title>
     <style>
         @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@500;700;900&display=swap');
         
@@ -172,7 +172,7 @@
             <div class="bar"></div><div class="bar"></div>
             <div class="bar"></div><div class="bar"></div>
         </div>
-        <span id="status-txt">点击开启智能声控</span>
+        <span id="status-txt">点击开启声控</span>
     </div>
 
     <label class="upload-corner">
@@ -197,8 +197,8 @@
         let recognition = null;
         let isVoiceOn = false; 
         
-        // 关键变量：画圈计时器
-        let drawTimer = null; 
+        // 防抖计时器
+        let debounceTimer = null; 
 
         window.onload = () => {
             initCalendar();
@@ -241,16 +241,21 @@
                 recognition = new SpeechRecognition();
                 recognition.lang = 'zh-CN';
                 recognition.continuous = true; 
-                recognition.interimResults = true; // 开启实时响应
+                recognition.interimResults = true; 
 
                 recognition.onend = () => {
                     if(isVoiceOn) try { recognition.start(); } catch(e){}
                 };
 
                 recognition.onresult = (e) => {
-                    const result = e.results[e.results.length - 1];
+                    // 1. 获取当前句子的 唯一索引 (ResultIndex)
+                    const idx = e.resultIndex; 
+                    const result = e.results[idx];
                     const transcript = result[0].transcript;
-                    parseCommand(transcript);
+                    
+                    // 2. 将索引传给解析器，作为“身份证”
+                    parseCommand(transcript, idx);
+                    
                     txt.innerText = transcript.length > 8 ? "..." + transcript.slice(-8) : transcript;
                 };
             }
@@ -263,8 +268,8 @@
             } catch(e) { console.error(e); }
         }
 
-        function parseCommand(str) {
-            console.log("CMD:", str);
+        function parseCommand(str, cmdId) {
+            console.log("CMD:", str, "ID:", cmdId);
             const map = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12};
             let m = -1, d = -1;
 
@@ -307,23 +312,19 @@
                 }
             }
 
-            // 执行逻辑：翻页立刻执行，画圈延迟执行
+            // 执行逻辑
             if(m >= 1 && m <= 12) {
-                // 如果月份不对，立刻翻页
                 if (m !== currentMonth) {
                     autoFlipTo(m);
                 }
                 
-                // 画圈逻辑 (防抖核心)
                 if(d >= 1 && d <= 31) {
-                    // 1. 清除上一次准备画圈的动作
-                    if(drawTimer) clearTimeout(drawTimer);
-                    
-                    // 2. 重新设置倒计时 (600毫秒)
-                    // 只有当你停止说话超过0.6秒，才会真的画下去
-                    drawTimer = setTimeout(() => {
-                        circleDate(m, d);
-                    }, 600);
+                    // 依然保留一点点防抖，让视觉更平滑（避免每毫秒都在画）
+                    if(debounceTimer) clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        // 传入 cmdId，确保同一句话只留一个圈
+                        circleDate(m, d, cmdId);
+                    }, 400); 
                 }
             }
         }
@@ -359,7 +360,8 @@
             for(let i=0; i<start; i++) h+='<td></td>';
             for(let i=1; i<=days; i++){
                 if((start+i-1)%7===0 && i!==1) h+='</tr><tr>';
-                h+=`<td id="d-${m}-${i}" onclick="circleDate(${m},${i})">${i}</td>`;
+                // 手动点击没有cmdId，传 'manual'
+                h+=`<td id="d-${m}-${i}" onclick="circleDate(${m},${i}, 'manual')">${i}</td>`;
             }
             h+='</tr></tbody></table>';
             return h;
@@ -368,7 +370,6 @@
         async function autoFlipTo(target) {
             if(target === currentMonth || isAnimating) return;
             if(target < 1 || target > 12) return;
-            
             isAnimating = true;
             playTone('flip');
 
@@ -387,23 +388,29 @@
             isAnimating = false;
         }
 
-        function circleDate(m, d) {
-            // 如果翻页动画还在进行中，延迟一下再试，保证圈画在正确页面
+        // --- 核心修复：绘制与擦除 ---
+        function circleDate(m, d, cmdId) {
+            // 翻页保护
             if(isAnimating || m !== currentMonth) {
-                if (m === currentMonth) {
-                   setTimeout(() => circleDate(m, d), 200);
-                } else {
-                   autoFlipTo(m).then(() => setTimeout(() => circleDate(m, d), 500));
-                }
+                if (m === currentMonth) setTimeout(() => circleDate(m, d, cmdId), 200);
+                else autoFlipTo(m).then(() => setTimeout(() => circleDate(m, d, cmdId), 500));
                 return;
             }
 
-            playTone('pen');
             const svg = document.getElementById(`ink-${m}`);
+            
+            // 1. 【关键步骤】检查并移除同一个指令ID产生过的旧圈
+            if (cmdId && cmdId !== 'manual') {
+                const existing = svg.querySelectorAll(`[data-voice-id="${cmdId}"]`);
+                existing.forEach(el => el.remove());
+            }
+
             const cell = document.getElementById(`d-${m}-${d}`);
             const wrap = document.getElementById(`wrap-${m}`);
             if(!cell) return;
             
+            playTone('pen'); // 播放音效
+
             const cR = cell.getBoundingClientRect();
             const wR = wrap.getBoundingClientRect();
             
@@ -419,8 +426,15 @@
             p += `Q ${cx-rx+noise()} ${cy+ry} ${cx-rx+noise()} ${cy} `;
             p += `Q ${cx-rx} ${cy-ry+noise()} ${cx} ${cy-ry+noise()} `;
             p += `Q ${cx+rx+noise()} ${cy-ry} ${cx+rx-1} ${cy-2} `;
+            
             path.setAttribute("d", p);
             path.setAttribute("class", "ink-circle");
+            
+            // 2. 【关键步骤】打上身份证号
+            if (cmdId) {
+                path.setAttribute("data-voice-id", cmdId);
+            }
+            
             svg.appendChild(path);
         }
 
