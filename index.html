@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>声控地图 (强力调试版)</title>
+    <title>声控地图 (强制发光修复版)</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #0b1124; overflow: hidden; font-family: "Microsoft YaHei", sans-serif; }
         #map-container { width: 100%; height: 100%; }
         
-        /* 调试面板：让你看到程序到底在干什么 */
-        #debug-panel {
+        /* 调试面板：让你看清程序在干什么 */
+        #debug-box {
             position: absolute; top: 10px; left: 10px; z-index: 999;
-            background: rgba(255, 0, 0, 0.2); border: 1px solid red; color: #ffaaaa;
-            padding: 10px; font-size: 12px; pointer-events: none;
-            max-width: 300px;
+            background: rgba(0, 0, 0, 0.8); border: 1px solid #00d0ff; color: #00d0ff;
+            padding: 15px; font-size: 14px; pointer-events: none;
+            border-radius: 8px; max-width: 300px;
         }
+        .log-item { margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .log-highlight { color: #ffcc00; font-weight: bold; }
 
-        /* 状态提示 (屏幕中间) */
+        /* 状态提示 */
         #status-bar { 
-            position: absolute; top: 50px; left: 50%; transform: translateX(-50%); 
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%); 
             z-index: 100; pointer-events: none; 
-            color: #fff; font-size: 18px; text-shadow: 0 0 5px #000;
+            color: #aaa; background: rgba(0,0,0,0.6); padding: 5px 20px; border-radius: 20px;
         }
 
         /* 按钮 */
@@ -29,20 +31,19 @@
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
             z-index: 200; padding: 15px 50px; 
             background: #007bff; color: white; border: none; border-radius: 30px; 
-            font-size: 18px; cursor: pointer; 
+            font-size: 18px; cursor: pointer; box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <div id="debug-panel">
-        <div>系统状态: 等待启动...</div>
-        <div id="log-listen">听到: -</div>
-        <div id="log-match">匹配: -</div>
-        <div id="log-action">动作: -</div>
+    <div id="debug-box">
+        <div class="log-item">系统状态: <span id="log-status" style="color:white">等待加载...</span></div>
+        <div class="log-item">听到语音: <span id="log-voice" style="color:white">-</span></div>
+        <div class="log-item">匹配地图: <span id="log-match" class="log-highlight">-</span></div>
     </div>
 
-    <div id="status-bar">点击下方按钮开始</div>
+    <div id="status-bar">点击按钮 -> 允许麦克风 -> 说话</div>
     <div id="map-container"></div>
     <button id="start-btn">点击开启声控</button>
 
@@ -50,32 +51,34 @@
         const myChart = echarts.init(document.getElementById('map-container'));
         let recognition;
         let lightTimer = null;
-        
-        // --- 1. 核心字典：确保这里的 Key (英文) 和地图数据里的 name 一模一样 ---
-        const countryNameMap = {
-            'China': '中国', 'Taiwan': '中国台湾',
-            'United States': '美国', 'Russia': '俄罗斯', 'Japan': '日本',
-            'United Kingdom': '英国', 'France': '法国', 'Germany': '德国',
-            'Canada': '加拿大', 'Australia': '澳大利亚', 'India': '印度',
-            'Brazil': '巴西', 'Argentina': '阿根廷', 'South Korea': '韩国', 
-            'North Korea': '朝鲜', 'Italy': '意大利', 'Spain': '西班牙', 
-            'Netherlands': '荷兰', 'Belgium': '比利时', 'Switzerland': '瑞士', 
-            'Sweden': '瑞典', 'Ukraine': '乌克兰', 'Turkey': '土耳其',
-            'Iran': '伊朗', 'Saudi Arabia': '沙特阿拉伯', 'Egypt': '埃及', 
-            'Pakistan': '巴基斯坦', 'Indonesia': '印度尼西亚', 'Vietnam': '越南', 
-            'Thailand': '泰国', 'Singapore': '新加坡', 'Mexico': '墨西哥',
-            'Bulgaria': '保加利亚', 'Greece': '希腊', 'Mongolia': '蒙古', 
-            'New Zealand': '新西兰', 'Chile': '智利', 'Peru': '秘鲁', 
-            'Philippines': '菲律宾', 'Poland': '波兰', 'South Africa': '南非'
+        let allMapNames = []; // 存储地图里所有的真实英文名
+
+        // 1. 中英文对照表 (用于语音翻译)
+        const cnToEnMap = {
+            '中国': 'China', '美国': 'United States', '俄罗斯': 'Russia', '日本': 'Japan',
+            '英国': 'United Kingdom', '法国': 'France', '德国': 'Germany', '加拿大': 'Canada',
+            '澳大利亚': 'Australia', '印度': 'India', '巴西': 'Brazil', '韩国': 'Korea',
+            '意大利': 'Italy', '西班牙': 'Spain', '荷兰': 'Netherlands', '瑞士': 'Switzerland',
+            '瑞典': 'Sweden', '乌克兰': 'Ukraine', '土耳其': 'Turkey', '伊朗': 'Iran',
+            '沙特': 'Saudi Arabia', '埃及': 'Egypt', '巴基斯坦': 'Pakistan', '印尼': 'Indonesia',
+            '越南': 'Vietnam', '泰国': 'Thailand', '新加坡': 'Singapore', '墨西哥': 'Mexico',
+            '保加利亚': 'Bulgaria', '蒙古': 'Mongolia', '新西兰': 'New Zealand',
+            '菲律宾': 'Philippines', '波兰': 'Poland', '南非': 'South Africa'
         };
 
-        // --- 2. 加载地图 ---
-        log("正在下载地图数据...");
+        // 2. 加载地图
+        document.getElementById('log-status').innerText = "正在下载地图...";
         fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
             .then(res => res.json())
             .then(worldJson => {
-                log("地图数据下载成功，正在处理...");
                 
+                // === 关键步骤：把地图里所有的国家名字存起来 ===
+                // 这样我们就知道地图里到底有哪些名字，不会瞎猜了
+                worldJson.features.forEach(f => {
+                    allMapNames.push(f.properties.name);
+                });
+                console.log("地图名称库已加载:", allMapNames);
+
                 // 移位算法 (中国视角)
                 worldJson.features.forEach(feature => {
                     const geometry = feature.geometry;
@@ -91,25 +94,25 @@
                 });
 
                 echarts.registerMap('world', worldJson);
+                document.getElementById('log-status').innerText = "地图加载完毕";
                 initMap();
                 initSpeech();
-                log("系统就绪，请点击按钮");
             });
 
-        // --- 3. 地图配置 (强制高亮样式) ---
+        // 3. 地图配置 (超强发光样式)
         function initMap() {
             const option = {
                 backgroundColor: '#0b1124',
-                tooltip: { show: false },
+                tooltip: { show: false }, // 关闭提示框，防止干扰
                 series: [{
-                    name: 'WorldMap', // 给系列起个名字，方便调用
+                    name: 'World',
                     type: 'map',
                     map: 'world',
                     roam: true,
                     zoom: 1.1,
                     center: [150, 30],
                     
-                    // 默认样式
+                    // 平时样式
                     label: { show: false },
                     itemStyle: {
                         areaColor: '#1a2640',
@@ -117,31 +120,40 @@
                         borderWidth: 1
                     },
 
-                    // 【核心】选中后的发光样式
-                    selectedMode: 'multiple',
+                    // 【核心】选中发光样式
+                    selectedMode: 'multiple', // 允许多选
                     select: {
-                        // 名字显示出来
                         label: { show: true, color: '#fff', fontSize: 18, fontWeight: 'bold' },
-                        // 板块变亮
                         itemStyle: {
-                            areaColor: '#ffcc00', // 亮黄色
+                            areaColor: '#ffcc00', // 纯金黄
                             borderColor: '#fff',
                             borderWidth: 2,
-                            shadowColor: 'rgba(255, 204, 0, 1)', // 强光
-                            shadowBlur: 50 // 光晕
+                            shadowColor: 'rgba(255, 215, 0, 1)', // 强光晕
+                            shadowBlur: 50 // 光晕半径
                         }
                     },
-                    nameMap: countryNameMap // 注入中文名字
+                    // 这里的 nameMap 仅用于显示中文标签，不影响内部逻辑
+                    nameMap: {
+                        'China': '中国', 'United States': '美国', 'Russia': '俄罗斯', 
+                        'Bulgaria': '保加利亚', 'Japan': '日本', 'Taiwan': '中国台湾'
+                        // ... 其他可以在这里加，也可以只靠上面的语音翻译
+                    }
                 }]
             };
             myChart.setOption(option);
+
+            // 点击事件 (用于测试地图本身是否能亮)
+            myChart.on('click', function(params) {
+                console.log("点击了:", params.name);
+                document.getElementById('log-status').innerText = `点击测试: ${params.name}`;
+            });
         }
 
-        // --- 4. 语音处理 ---
+        // 4. 语音识别
         function initSpeech() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("不支持语音，请用 Chrome");
+                alert("请使用 Chrome 或 Edge 浏览器");
                 return;
             }
 
@@ -152,90 +164,93 @@
 
             recognition.onresult = (event) => {
                 const text = event.results[0][0].transcript;
-                // 更新调试面板
-                document.getElementById('log-listen').innerText = `听到: ${text}`;
-                document.getElementById('status-bar').innerText = `识别中...`;
-                
-                processVoice(text);
+                document.getElementById('log-voice').innerText = text;
+                handleLogic(text);
             };
 
             recognition.onend = () => {
                 try { recognition.start(); } catch(e) {}
-                document.getElementById('status-bar').innerText = `正在聆听...`;
             };
 
             document.getElementById('start-btn').onclick = function() {
                 try {
                     recognition.start();
                     this.style.display = 'none';
-                    log("语音服务已启动");
-                } catch(e) { console.log(e); }
+                    document.getElementById('log-status').innerText = "正在聆听...";
+                } catch(e) {}
             };
         }
 
-        // --- 5. 核心：匹配逻辑 ---
-        function processVoice(text) {
-            if (lightTimer) { clearTimeout(lightTimer); lightTimer = null; }
+        // 5. 核心逻辑 (修复不亮的问题)
+        function handleLogic(text) {
+            if (lightTimer) clearTimeout(lightTimer);
 
-            // 先把灯关了
+            // 先全部熄灭
             myChart.dispatchAction({ type: 'unselect', seriesIndex: 0 });
 
-            let matchedKey = null;
-            let matchedCN = null;
+            let targetEnName = null;
 
-            // 暴力轮询匹配
-            for (let engKey in countryNameMap) {
-                let cnName = countryNameMap[engKey];
-                if (text.includes(cnName)) {
-                    matchedKey = engKey;
-                    matchedCN = cnName;
+            // 第一步：从语音里提取中文国家名
+            // 比如 "我来自美国" -> 提取出 "美国" -> 翻译成 "United States"
+            for (let cnKey in cnToEnMap) {
+                if (text.includes(cnKey)) {
+                    targetEnName = cnToEnMap[cnKey];
                     break;
                 }
             }
 
-            if (matchedKey) {
-                // 更新调试面板
-                document.getElementById('log-match').innerText = `匹配: ${matchedCN} -> ${matchedKey}`;
-                document.getElementById('log-action').innerText = `动作: 发光指令已发送`;
+            // 特殊补丁：如果没查到，但是用户说了 "台湾"，手动指向 China (视地图数据而定)
+            // 大部分 world.json 里台湾可能包含在 China 里，或者叫 Taiwan
+            if (text.includes("台湾")) targetEnName = "Taiwan";
+
+            // 第二步：如果在字典里找到了英文名，去地图里验证一下有没有这个板块
+            if (targetEnName) {
+                // 模糊查找：地图数据里的名字可能是 "United States of America"，我们找的是 "United States"
+                // 所以我们遍历地图所有名字，只要包含我们的关键词，就认为匹配成功
+                let realMapName = allMapNames.find(n => n && n.includes(targetEnName));
                 
-                // 执行发光
-                highlight(matchedKey);
+                // 如果是 China，必须精确匹配，防止匹配到 "South China Sea" 等
+                if (targetEnName === 'China') realMapName = 'China';
 
-                // 如果是中国，附赠台湾
-                if (matchedCN === '中国') {
-                    highlight('Taiwan');
+                if (realMapName) {
+                    document.getElementById('log-match').innerText = `${realMapName} (已发光)`;
+                    
+                    // 执行点亮
+                    highlight(realMapName);
+                    
+                    // 中国特例：同时点亮台湾
+                    if (targetEnName === 'China') {
+                        let taiwanName = allMapNames.find(n => n && n.includes('Taiwan'));
+                        if (taiwanName) highlight(taiwanName);
+                    }
+
+                    // 2秒后熄灭
+                    lightTimer = setTimeout(() => {
+                        myChart.dispatchAction({ type: 'unselect', seriesIndex: 0 });
+                        document.getElementById('log-match').innerText = "-";
+                    }, 2000);
+
+                } else {
+                    document.getElementById('log-match').innerText = `找到 "${targetEnName}" 但地图里没有这个板块`;
                 }
-
-                // 2秒后熄灭
-                lightTimer = setTimeout(() => {
-                    myChart.dispatchAction({ type: 'unselect', seriesIndex: 0 });
-                    document.getElementById('log-action').innerText = `动作: 自动熄灭`;
-                }, 2000);
-
             } else {
-                document.getElementById('log-match').innerText = `匹配: 失败`;
-                document.getElementById('log-action').innerText = `动作: 无`;
+                document.getElementById('log-match').innerText = "未识别到国家名";
             }
         }
 
         function highlight(name) {
-            // 这里使用了最稳妥的方式：直接根据 name 选中
-            // 注意：这里的 name 必须是地图 JSON 里的英文名，不是 nameMap 后的中文名
+            // 这里的 name 必须是地图数据的真实英文名
             myChart.dispatchAction({
                 type: 'select',
-                seriesIndex: 0, 
-                name: name 
+                seriesIndex: 0,
+                name: name
             });
-            // 额外加一层高亮保险
+            // 双重保险：同时触发 emphasis
             myChart.dispatchAction({
                 type: 'highlight',
-                seriesIndex: 0, 
-                name: name 
+                seriesIndex: 0,
+                name: name
             });
-        }
-
-        function log(msg) {
-            document.querySelector('#debug-panel div:first-child').innerText = `状态: ${msg}`;
         }
 
         window.onresize = () => myChart.resize();
