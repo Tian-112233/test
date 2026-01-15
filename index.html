@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>声控中国版世界地图 (太平洋视角)</title>
+    <title>声控中国版世界地图 (最终修复版)</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         body, html {
@@ -11,7 +11,7 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #0b1124; /* 深空蓝背景 */
+            background-color: #0b1124; /* 深蓝背景 */
             overflow: hidden;
             font-family: "Microsoft YaHei", sans-serif;
         }
@@ -21,8 +21,8 @@
             height: 100%;
         }
 
-        /* 状态指示器 (仅显示简单的文字状态，不发光) */
-        #status-panel {
+        /* 状态显示栏 */
+        #status-bar {
             position: absolute;
             top: 20px;
             left: 50%;
@@ -32,238 +32,252 @@
             pointer-events: none;
         }
 
-        #main-status {
-            color: #fff;
-            font-size: 20px;
-            letter-spacing: 2px;
-            background: rgba(0,0,0,0.6);
+        #voice-msg {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00d0ff;
+            color: #00d0ff;
             padding: 10px 30px;
-            border-radius: 4px;
-            border: 1px solid #334b75;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 208, 255, 0.3);
+            transition: all 0.3s;
         }
 
-        /* 启动按钮 */
+        /* 按钮样式 */
         #start-btn {
             position: absolute;
-            bottom: 50px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 200;
-            padding: 15px 40px;
-            background: #007bff;
+            padding: 15px 50px;
+            background: linear-gradient(135deg, #0066ff, #00ccff);
             color: white;
             border: none;
             border-radius: 30px;
             font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+            box-shadow: 0 5px 20px rgba(0, 150, 255, 0.5);
+            transition: transform 0.1s;
         }
-        
-        #start-btn:hover { background: #0056b3; }
-        
-        /* 错误提示 */
-        #error-msg {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255,0,0,0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 999;
-        }
+
+        #start-btn:active { transform: translateX(-50%) scale(0.95); }
+
     </style>
 </head>
 <body>
 
-    <div id="status-panel">
-        <div id="main-status">等待指令...</div>
+    <div id="status-bar">
+        <div id="voice-msg">点击下方按钮 -> 允许麦克风 -> 说话</div>
     </div>
     
-    <div id="error-msg"></div>
     <div id="map-container"></div>
-    <button id="start-btn">点击启用声控 (支持 Edge/Chrome)</button>
+    <button id="start-btn">点击开启声控</button>
 
     <script>
         const myChart = echarts.init(document.getElementById('map-container'));
         let recognition;
 
-        // --- 核心步骤1：地图数据处理 (打造中国视角) ---
-        // 我们下载标准地图，然后手动修改经度，把美洲移到右边
-        myChart.showLoading({ text: '正在重构地图板块...', color: '#fff' });
+        // 1. 加载并重构地图数据 (太平洋视角)
+        myChart.showLoading({ text: '正在构建中国版世界地图...', color: '#00d0ff', textColor: '#fff' });
 
         fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
             .then(res => res.json())
             .then(worldJson => {
                 
-                // === 关键算法：将地图切割线从太平洋移到大西洋 ===
-                // 标准地图经度是 -180 到 180。
-                // 我们把所有小于 -30 (大西洋位置) 的经度都加上 360。
-                // 这样美洲 (-100) 就会变成 260 (在中国的右边)，实现太平洋视角。
+                // === 地图移位算法：将西经区域搬运到东边，形成中国视角 ===
                 worldJson.features.forEach(feature => {
                     const geometry = feature.geometry;
-                    const modifyCoord = (coord) => {
-                        // 如果经度小于 -30 (大概在大西洋)，把它搬到右边去
-                        if (coord[0] < -30) {
-                            coord[0] += 360;
-                        }
+                    const shiftCoord = (coord) => {
+                        // 如果经度小于 -30 (大西洋)，加 360 度，移到最右边
+                        if (coord[0] < -30) coord[0] += 360;
                         return coord;
                     };
-
+                    // 遍历所有坐标点进行修改
                     if (geometry.type === "Polygon") {
-                        geometry.coordinates.forEach(ring => ring.forEach(modifyCoord));
+                        geometry.coordinates.forEach(ring => ring.forEach(shiftCoord));
                     } else if (geometry.type === "MultiPolygon") {
-                        geometry.coordinates.forEach(polygon => polygon.forEach(ring => ring.forEach(modifyCoord)));
+                        geometry.coordinates.forEach(poly => poly.forEach(ring => ring.forEach(shiftCoord)));
                     }
                 });
-                // ============================================
+                // ========================================================
 
-                myChart.hideLoading();
                 echarts.registerMap('world', worldJson);
+                myChart.hideLoading();
                 initMap();
                 initSpeech();
-            })
-            .catch(err => {
-                alert("地图加载失败，请检查网络");
             });
 
-        // --- 核心步骤2：配置 ECharts ---
+        // 2. 初始化地图配置
         function initMap() {
             const option = {
                 backgroundColor: '#0b1124',
-                geo: {
-                    map: 'world',
-                    roam: true, // 允许缩放
-                    zoom: 1.1,
-                    // 因为我们把美洲移到了右边(260)，中国在110，中心点大概在 150 左右
-                    center: [150, 30], 
-                    label: { show: false },
-                    itemStyle: {
-                        areaColor: '#1a2640', // 板块基础颜色 (深色)
-                        borderColor: '#2a3b5e', // 边界线颜色
-                        borderWidth: 1
-                    },
-                    // 这里定义“发光”的样式
-                    select: {
-                        label: { show: false }, // 选中时不显示文字，保持干净
-                        itemStyle: {
-                            areaColor: '#ffcc00', // 【核心】地图变成金黄色
-                            shadowColor: '#ffcc00', // 【核心】外发光颜色
-                            shadowBlur: 30,         // 【核心】光晕大小
-                            opacity: 1
-                        }
-                    },
-                    emphasis: {
-                        label: { show: false },
-                        itemStyle: {
-                            areaColor: '#ffcc00'
-                        }
-                    },
-                    // 政治正确性映射与中文支持
-                    nameMap: {
-                        'China': '中国',
-                        'Bulgaria': '保加利亚',
-                        'United States': '美国',
-                        'Russia': '俄罗斯',
-                        // 强制修正，无论数据源如何，将 Taiwan 映射名为“中国台湾”
-                        // 下面的逻辑会确保说“中国”时，它也亮
-                        'Taiwan': '中国台湾' 
-                    }
+                // 提示框
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}' 
                 },
-                series: []
+                series: [
+                    {
+                        type: 'map',
+                        map: 'world',
+                        roam: true,
+                        zoom: 1.1,
+                        center: [150, 30], // 调整中心点到太平洋
+                        
+                        // --- 关键修改：默认显示名字 ---
+                        label: {
+                            show: true,           // 显示名字
+                            color: '#999',        // 默认名字颜色
+                            fontSize: 10
+                        },
+
+                        // --- 关键修改：普通状态样式 ---
+                        itemStyle: {
+                            areaColor: '#1a2640', // 深蓝板块
+                            borderColor: '#455a84',
+                            borderWidth: 1
+                        },
+
+                        // --- 关键修改：选中/发光样式 (最强高亮) ---
+                        selectedMode: 'multiple', // 允许选中多个
+                        select: {
+                            label: { 
+                                show: true, 
+                                color: '#000',     // 选中后文字变黑
+                                fontWeight: 'bold',
+                                fontSize: 16       // 选中后字变大
+                            },
+                            itemStyle: {
+                                areaColor: '#ffcc00', // 亮金黄色
+                                borderColor: '#fff',
+                                borderWidth: 2,
+                                shadowColor: 'rgba(255, 204, 0, 1)', // 强烈的金色光晕
+                                shadowBlur: 30
+                            }
+                        },
+
+                        // --- 必须配置：中文名称映射 ---
+                        // 只有在这里配置了，你下面的代码才能通过 "中国" 找到地图板块
+                        nameMap: {
+                            'China': '中国',
+                            'Bulgaria': '保加利亚',
+                            'United States': '美国',
+                            'Russia': '俄罗斯',
+                            'Japan': '日本',
+                            'Australia': '澳大利亚',
+                            'Canada': '加拿大',
+                            'United Kingdom': '英国',
+                            'France': '法国',
+                            'Germany': '德国',
+                            'India': '印度',
+                            'Brazil': '巴西',
+                            'Taiwan': '中国台湾' // 强制映射
+                        },
+                        data: [] // 数据暂空，通过事件触发
+                    }
+                ]
             };
             myChart.setOption(option);
         }
 
-        // --- 核心步骤3：语音识别逻辑 ---
+        // 3. 语音识别逻辑
         function initSpeech() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
+
             if (!SpeechRecognition) {
-                document.getElementById('error-msg').style.display = 'block';
-                document.getElementById('error-msg').innerText = "错误：您的浏览器不支持 Web Speech API。请使用 Chrome 或 Edge 桌面版。";
-                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('voice-msg').innerText = "错误：您的浏览器不支持语音 (请用 Chrome/Edge)";
                 return;
             }
 
             recognition = new SpeechRecognition();
             recognition.lang = 'zh-CN';
-            recognition.continuous = false; // 采用自动重启策略，比 continuous=true 更稳定
+            recognition.continuous = false; 
             recognition.interimResults = false;
 
-            recognition.onresult = function(event) {
-                const text = event.results[0][0].transcript;
-                document.getElementById('main-status').innerText = `收到指令: "${text}"`;
-                handleMapAction(text);
+            const msgBox = document.getElementById('voice-msg');
+            const btn = document.getElementById('start-btn');
+
+            recognition.onstart = function() {
+                msgBox.innerText = "🎤 正在聆听... 请说：我来自中国";
+                msgBox.style.color = "#fff";
+                msgBox.style.borderColor = "#fff";
+                btn.style.display = 'none'; // 隐藏按钮
             };
 
             recognition.onend = function() {
-                // 自动重启监听，实现“只点一次”
-                // 注意：如果页面在后台，浏览器可能会暂停它，切回来会自动恢复
-                try {
-                    recognition.start();
-                } catch(e) {
-                    console.log("监听重启中...");
-                }
-            };
-            
-            recognition.onerror = function(event) {
-                console.log("识别错误:", event.error);
-                // 忽略特定错误，防止循环弹窗
-                if (event.error === 'not-allowed') {
-                     document.getElementById('main-status').innerText = "请允许麦克风权限";
-                }
+                // 自动重启监听
+                try { recognition.start(); } catch(e) {}
             };
 
-            // 绑定按钮
-            document.getElementById('start-btn').onclick = function() {
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                console.log("识别结果:", text);
+                
+                // 处理指令
+                handleCommand(text);
+            };
+
+            // 按钮点击
+            btn.onclick = function() {
                 try {
                     recognition.start();
-                    this.style.display = 'none'; // 隐藏按钮
-                    document.getElementById('main-status').innerText = "正在聆听... 请说：我来自中国";
                 } catch(e) {
-                    alert("无法启动麦克风，请检查浏览器权限设置");
+                    console.log("已启动");
                 }
             };
         }
 
-        // --- 核心步骤4：指令处理与发光逻辑 ---
-        function handleMapAction(text) {
-            // 1. 先熄灭所有灯光
-            myChart.dispatchAction({ type: 'geoUnSelect' });
+        // 4. 处理发光指令
+        function handleCommand(text) {
+            const msgBox = document.getElementById('voice-msg');
+            
+            // 先清空所有高亮
+            myChart.dispatchAction({ type: 'unselect', seriesIndex: 0 }); // 清除 select 状态
+            myChart.dispatchAction({ type: 'downplay', seriesIndex: 0 }); // 清除 emphasis 状态
 
-            // 2. 逻辑判断
+            // 逻辑判断
             if (text.includes("中国")) {
-                // 无论是大陆还是台湾，只要说中国，一起发光
-                lightUpRegion("中国");
-                lightUpRegion("中国台湾"); 
-                document.getElementById('main-status').innerText = "欢迎来自 中国 的朋友！";
+                highlightCountry("中国");
+                highlightCountry("中国台湾"); // 确保台湾一起亮
+                msgBox.innerText = "👋 欢迎来自 中国 的朋友！";
+                msgBox.style.color = "#ffcc00"; // 文字变金
+                msgBox.style.borderColor = "#ffcc00";
             } 
             else if (text.includes("保加利亚")) {
-                lightUpRegion("保加利亚");
-                document.getElementById('main-status').innerText = "欢迎来自 保加利亚 的朋友！";
+                highlightCountry("保加利亚");
+                msgBox.innerText = "👋 欢迎来自 保加利亚 的朋友！";
+                msgBox.style.color = "#ffcc00";
+                msgBox.style.borderColor = "#ffcc00";
             }
-            // 你可以在这里加更多国家
             else {
-                // 未匹配到
-                setTimeout(() => {
-                    document.getElementById('main-status').innerText = "正在聆听...";
-                }, 2000);
+                msgBox.innerText = `🤔 听到了: "${text}" (未匹配国家)`;
+                msgBox.style.color = "#00d0ff";
+                msgBox.style.borderColor = "#00d0ff";
             }
         }
 
-        function lightUpRegion(name) {
-            // 触发 ECharts 的 select 状态，调用我们在 option 里定义的金色发光样式
+        // 5. 执行高亮动作
+        function highlightCountry(name) {
+            // ECharts 触发选中的核心代码
+            // 注意：这里使用的是 'select' 动作，配合上面的 selectedMode: 'multiple'
             myChart.dispatchAction({
-                type: 'geoSelect',
+                type: 'select',
+                seriesIndex: 0,
+                name: name
+            });
+            
+            // 为了保险，同时触发高亮 emphasis
+            myChart.dispatchAction({
+                type: 'highlight',
+                seriesIndex: 0,
                 name: name
             });
         }
-        
-        // 窗口大小适配
-        window.addEventListener('resize', () => myChart.resize());
+
+        // 窗口自适应
+        window.onresize = function() { myChart.resize(); };
 
     </script>
 </body>
