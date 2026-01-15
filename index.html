@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>声控世界地图</title>
+    <title>声控中国地图 - 自动纠错版</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         body, html {
@@ -11,258 +11,284 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #021019; /* 深海蓝背景 */
+            background-color: #021019;
             overflow: hidden;
             font-family: 'Microsoft YaHei', sans-serif;
         }
 
-        #main {
+        #map-container {
             width: 100%;
             height: 100%;
         }
 
-        /* 语音状态指示器 */
-        #voice-status {
+        /* 状态提示栏 */
+        #status-bar {
             position: absolute;
             top: 30px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        #voice-text {
             color: #00d0ff;
-            background: rgba(0, 20, 40, 0.8);
-            padding: 10px 30px;
-            border-radius: 30px;
-            border: 1px solid #00d0ff;
-            font-size: 18px;
-            pointer-events: none; /* 让鼠标事件穿透 */
+            background: rgba(0, 20, 40, 0.9);
+            padding: 15px 40px;
+            border-radius: 40px;
+            border: 2px solid #00d0ff;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0, 208, 255, 0.4);
+            margin-bottom: 10px;
             transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0, 208, 255, 0.3);
+        }
+
+        #sub-text {
+            color: #aaa;
+            font-size: 14px;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 10px;
+            border-radius: 10px;
         }
 
         /* 控制按钮 */
-        #control-btn {
+        #start-btn {
             position: absolute;
-            bottom: 50px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
-            padding: 12px 40px;
-            font-size: 18px;
+            padding: 15px 50px;
+            font-size: 20px;
             background: linear-gradient(90deg, #00d0ff, #0080ff);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 128, 255, 0.5);
-        }
-        
-        #control-btn:hover {
-            opacity: 0.9;
-            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 128, 255, 0.6);
+            outline: none;
         }
 
-        /* 录音时的动画效果 */
-        .listening {
-            animation: pulse 1.5s infinite;
-            background: rgba(255, 50, 50, 0.2) !important;
+        #start-btn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* 录音中的呼吸灯效果 */
+        .listening-mode {
+            animation: breathe 2s infinite;
             border-color: #ff3333 !important;
             color: #ff3333 !important;
+            box-shadow: 0 0 20px rgba(255, 50, 50, 0.4) !important;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 50, 50, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 50, 50, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 50, 50, 0); }
+        @keyframes breathe {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <div id="voice-status">等待指令...</div>
-    <div id="main"></div>
-    <button id="control-btn">点击开始说话</button>
+    <div id="status-bar">
+        <div id="voice-text">点击下方按钮开启声控</div>
+        <div id="sub-text">支持 Edge 和 Chrome 浏览器</div>
+    </div>
+    
+    <div id="map-container"></div>
+    <button id="start-btn">开启麦克风权限</button>
 
     <script>
-        // 1. 初始化 ECharts 实例
-        var myChart = echarts.init(document.getElementById('main'));
-        var recognition; // 语音识别对象
-
+        // --- 1. 地图初始化部分 ---
+        const myChart = echarts.init(document.getElementById('map-container'));
+        
         // 显示加载动画
-        myChart.showLoading();
+        myChart.showLoading({
+            text: '正在加载地图数据...',
+            color: '#00d0ff',
+            textColor: '#fff',
+            maskColor: 'rgba(2, 16, 25, 0.8)'
+        });
 
-        // 2. 获取地图数据
-        // 注意：为了演示，这里使用了公共 CDN 的 World JSON。
-        // 在正式生产环境中，为了绝对严谨的政治合规（如九段线），建议下载阿里云 DataV 的 world.json 本地引用
+        // 加载世界地图 JSON
         fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
             .then(response => response.json())
             .then(worldJson => {
                 myChart.hideLoading();
-                
-                // 注册地图
                 echarts.registerMap('world', worldJson);
 
-                // 3. 配置项
-                var option = {
+                const option = {
                     backgroundColor: '#021019',
-                    title: {
-                        text: '声控世界地图',
-                        left: 'center',
-                        top: 20,
-                        textStyle: { color: '#fff' }
-                    },
-                    // 提示框
+                    // 悬浮提示
                     tooltip: {
                         trigger: 'item',
-                        formatter: '{b}'
+                        formatter: function(params) {
+                            // 修正提示框显示，如果是中国台湾，显示为中国
+                            if (params.name === '中国台湾') return '中国 (China)';
+                            return params.name;
+                        }
                     },
                     geo: {
                         map: 'world',
-                        roam: true, // 开启缩放和平移
+                        roam: true, // 允许缩放和平移
                         zoom: 1.2,
-                        // 核心：设置中心点，调整为中国/太平洋视角 (经度 115)
-                        center: [115, 30], 
-                        label: {
-                            show: false
-                        },
-                        // 地图区域的多边形 图形样式
+                        center: [115, 30], // 锁定中国视角
+                        label: { show: false },
                         itemStyle: {
-                            areaColor: '#323c48', // 普通状态颜色
-                            borderColor: '#111'
+                            areaColor: '#323c48', // 默认颜色
+                            borderColor: '#111',
+                            borderWidth: 0.5
                         },
-                        // 选中/高亮时的样式（发光效果）
+                        // 高亮/选中样式
                         select: {
+                            label: { show: true, color: '#fff', fontSize: 16 },
                             itemStyle: {
-                                areaColor: '#f4e925', // 选中后的金色
-                                shadowBlur: 20,
-                                shadowColor: 'rgba(255, 215, 0, 0.8)'
-                            },
-                            label: { show: true, color: '#000' }
+                                areaColor: '#f4e925', // 发光的金色
+                                shadowBlur: 30, // 光晕大小
+                                shadowColor: 'rgba(255, 230, 0, 1)' // 光晕颜色
+                            }
                         },
                         emphasis: {
+                            disabled: false, // 允许鼠标悬停高亮
+                            label: { show: true, color: '#fff' },
                             itemStyle: {
-                                areaColor: '#f4e925',
-                                shadowBlur: 20,
-                                shadowColor: 'rgba(255, 215, 0, 0.8)'
-                            },
-                            label: { show: true, color: '#000' }
+                                areaColor: '#f4e925'
+                            }
                         },
-                        // 关键：名称映射，确保数据匹配，并修正可能的地图错误
+                        // 关键：NameMap 映射
                         nameMap: {
                             'China': '中国',
                             'Bulgaria': '保加利亚',
-                            // 政治正确性修正：如果原 JSON 把台湾单独列出，这里尝试将其归并（视 JSON 结构而定）
-                            // 即使 JSON 把 Taiwan 视为独立块，我们也将其显示名称改为中国，
-                            // 并在逻辑中处理高亮
-                            'Taiwan': '中国台湾' 
+                            'Taiwan': '中国台湾' // 将数据源中的 Taiwan 映射为内部名称
                         }
                     },
-                    series: [] 
+                    series: []
                 };
-
                 myChart.setOption(option);
-                
-                // 绑定点击事件用于测试（非语音）
-                myChart.on('click', function (params) {
-                    console.log("点击了: " + params.name);
-                });
             });
 
-        // 4. 语音识别逻辑 (Web Speech API)
-        function initSpeech() {
-            // 兼容性处理
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (!SpeechRecognition) {
-                alert("您的浏览器不支持语音识别，请使用最新版 Chrome 或 Edge 浏览器。");
-                return;
-            }
+        // --- 2. 语音识别部分 ---
+        
+        // 兼容 Edge 和 Chrome 的写法
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isListening = false;
 
+        const statusText = document.getElementById('voice-text');
+        const startBtn = document.getElementById('start-btn');
+
+        if (SpeechRecognition) {
             recognition = new SpeechRecognition();
-            recognition.lang = 'zh-CN'; // 识别中文
-            recognition.continuous = false; // 每次只识别一句
+            recognition.lang = 'zh-CN';
+            recognition.continuous = false; // 设为 false 提高单句识别准确率，我们用 onend 自动重启
             recognition.interimResults = false;
 
-            const statusDiv = document.getElementById('voice-status');
-            const btn = document.getElementById('control-btn');
-
+            // 当识别开始
             recognition.onstart = function() {
-                statusDiv.innerText = "正在聆听...";
-                statusDiv.classList.add('listening');
-                btn.innerText = "聆听中...";
+                isListening = true;
+                statusText.innerText = "我在听... (请说：我来自中国)";
+                statusText.classList.add('listening-mode');
+                startBtn.style.display = 'none'; // 隐藏按钮，实现“只点一次”的感觉
             };
 
+            // 当识别结束（无论是否成功）
             recognition.onend = function() {
-                statusDiv.classList.remove('listening');
-                btn.innerText = "点击开始说话";
-                // 如果你想让它一直听，可以在这里调用 recognition.start()
+                isListening = false;
+                statusText.classList.remove('listening-mode');
+                
+                // 自动重启机制：只要页面没关，就重新开始听
+                // 注意：如果是在本地文件 file:// 运行，这里可能会被浏览器拦截
+                setTimeout(() => {
+                    try {
+                        recognition.start();
+                    } catch(e) {
+                        console.log("重启监听失败，等待用户点击");
+                        startBtn.style.display = 'block';
+                        startBtn.innerText = "连接断开，点击重试";
+                    }
+                }, 500); 
             };
 
+            // 当识别到结果
             recognition.onresult = function(event) {
                 const transcript = event.results[0][0].transcript;
-                statusDiv.innerText = `识别到: "${transcript}"`;
-                console.log("语音内容:", transcript);
-                
-                // 处理指令
-                handleCommand(transcript);
+                console.log("用户说了:", transcript);
+                processCommand(transcript);
             };
 
-            // 绑定按钮点击
-            btn.onclick = function() {
+            // 按钮点击启动
+            startBtn.onclick = function() {
                 try {
                     recognition.start();
-                } catch (e) {
-                    // 防止重复启动报错
+                } catch(e) {
                     console.log("已启动");
                 }
             };
+
+        } else {
+            statusText.innerText = "您的浏览器不支持语音功能";
+            startBtn.style.display = 'none';
+            alert("错误：请使用 Chrome 或 Edge 浏览器桌面版。");
         }
 
-        // 5. 核心：处理语音指令并点亮地图
-        function handleCommand(text) {
-            // 清除之前的选中状态
+        // --- 3. 核心逻辑处理 (修复了欢迎语 Bug) ---
+        
+        function processCommand(text) {
+            // 清除之前的高亮
             myChart.dispatchAction({ type: 'geoUnSelect' });
 
-            // 逻辑判断
-            // 匹配 "我来自中国" 或 "中国" 等关键词
+            // 逻辑 A: 用户说中国
             if (text.indexOf("中国") !== -1) {
-                highlightMap("中国");
-                // 额外逻辑：如果地图数据将台湾分离，手动点亮台湾区域（名字需匹配 nameMap）
-                // 尝试点亮常见的台湾命名变体，确保版图完整
-                highlightMap("中国台湾"); 
-            } 
+                // 1. 视觉效果：同时点亮大陆和台湾
+                highlightRegion('中国');
+                highlightRegion('中国台湾'); // 即使数据源把台湾分开了，我们也点亮它
+                
+                // 2. 状态文字：强制显示为中国 (修复了之前显示台湾的问题)
+                updateStatusText("欢迎来自 中国 的朋友！"); 
+            }
+            // 逻辑 B: 用户说保加利亚
             else if (text.indexOf("保加利亚") !== -1) {
-                highlightMap("保加利亚");
-            } 
+                highlightRegion('保加利亚');
+                updateStatusText("欢迎来自 保加利亚 的朋友！");
+            }
+            // 逻辑 C: 无法识别
             else {
-                document.getElementById('voice-status').innerText = `无法识别国家: "${text}"`;
+                // 临时显示一下识别到的内容，然后让它迅速恢复监听状态
+                statusText.innerText = `识别内容: "${text}" (无效指令)`;
             }
         }
 
-        // 封装高亮函数
-        function highlightMap(countryName) {
-            // ECharts 触发选中
+        // 辅助函数：仅负责地图高亮，不负责改文字
+        function highlightRegion(mapName) {
             myChart.dispatchAction({
                 type: 'geoSelect',
-                name: countryName
+                name: mapName
             });
-            // 触发高亮（鼠标悬浮效果）
-            myChart.dispatchAction({
-                type: 'highlight',
-                name: countryName
-            });
-            
-            document.getElementById('voice-status').innerText = `欢迎来自 ${countryName} 的朋友！`;
         }
 
-        // 启动语音功能
-        initSpeech();
+        // 辅助函数：更新界面文字
+        function updateStatusText(msg) {
+            statusText.innerText = msg;
+            // 保持高亮状态的文字颜色
+            statusText.style.borderColor = "#f4e925";
+            statusText.style.color = "#f4e925";
+            
+            // 3秒后恢复默认颜色（可选）
+            setTimeout(() => {
+                statusText.style.borderColor = "#00d0ff";
+                statusText.style.color = "#00d0ff";
+            }, 3000);
+        }
 
-        // 窗口大小改变时重绘地图
-        window.addEventListener('resize', function() {
+        // 窗口自适应
+        window.onresize = function() {
             myChart.resize();
-        });
+        };
 
     </script>
 </body>
 </html>
-
