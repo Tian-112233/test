@@ -23,79 +23,76 @@
             align-items: center; justify-content: center;
             font-family: 'Noto Serif SC', serif;
             overflow: hidden; user-select: none;
-            /* 禁用默认点击高亮 */
             -webkit-tap-highlight-color: transparent;
         }
 
         /* --- 语音开关 --- */
         .voice-switch {
             position: fixed; top: 20px; left: 20px; z-index: 999;
-            pointer-events: auto;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 8px 18px; border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
+            color: #fff; cursor: pointer;
             display: flex; align-items: center; gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             font-size: 14px;
         }
-        .voice-switch:hover { background: rgba(0,0,0,0.8); }
         .voice-switch.active {
             background: rgba(184, 28, 34, 0.9);
             border-color: #ff6666;
-            box-shadow: 0 0 15px rgba(184, 28, 34, 0.5);
+            box-shadow: 0 0 15px rgba(184, 28, 34, 0.6);
         }
         .wave-bars { display: flex; gap: 3px; height: 12px; align-items: center; }
-        .bar { width: 3px; height: 100%; background: #fff; border-radius: 2px; animation: none; }
-        .active .bar { animation: wave 0.6s infinite ease-in-out; } /* 加快了动画频率 */
-        .active .bar:nth-child(1) { animation-delay: 0.0s; }
+        .bar { width: 3px; height: 100%; background: #fff; border-radius: 2px; }
+        .active .bar { animation: wave 0.6s infinite ease-in-out; }
+        .active .bar:nth-child(1) { animation-delay: 0s; }
         .active .bar:nth-child(2) { animation-delay: 0.2s; }
         .active .bar:nth-child(3) { animation-delay: 0.4s; }
         .active .bar:nth-child(4) { animation-delay: 0.1s; }
         @keyframes wave { 0%, 100% { height: 4px; opacity: 0.5; } 50% { height: 16px; opacity: 1; } }
 
-        /* --- 换壁纸按钮 --- */
+        /* --- 换壁纸 --- */
         .upload-corner {
             position: fixed; top: 20px; right: 20px;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.2);
             color: #fff; padding: 8px 15px; border-radius: 20px;
             font-size: 13px; cursor: pointer; z-index: 999;
-            backdrop-filter: blur(5px); transition: background 0.3s;
+            backdrop-filter: blur(5px);
         }
-        .upload-corner:hover { background: rgba(255,255,255,0.3); }
 
-        /* --- 日历主体 --- */
+        /* --- 日历主体 (尺寸已恢复) --- */
         .calendar-scene {
             position: relative;
-            width: 380px; height: 620px;
-            perspective: 2500px;
-            margin-top: 0;
+            /* 恢复了大尺寸 */
+            width: 90vw; max-width: 420px; 
+            height: 70vh; max-height: 680px;
+            perspective: 2000px;
         }
 
+        /* 顶部装订条 - 点击此处可向前翻页 */
         .binder-bar {
-            position: absolute; top: -15px; left: 15px; right: 15px; height: 45px;
+            position: absolute; top: -15px; left: 10px; right: 10px; height: 40px;
             background: linear-gradient(to bottom, #444, #222);
             border-radius: 6px; z-index: 500;
             display: flex; justify-content: space-evenly;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            cursor: pointer; /* 提示可点击 */
+            cursor: pointer; /* 手型图标，提示可点击 */
         }
-        /* 增加点击提示 */
-        .binder-bar:active { transform: translateY(2px); }
+        /* 增加一个文字提示 */
         .binder-bar::after {
-            content: "▲ 上一月";
-            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
-            color: rgba(255,255,255,0.3); font-size: 12px; pointer-events: none;
+            content: "点击此处返回上一月";
+            position: absolute; top: -25px; width: 100%; text-align: center;
+            color: rgba(255,255,255,0.4); font-size: 12px; pointer-events: none;
+            opacity: 0; transition: opacity 0.3s;
         }
+        .binder-bar:hover::after { opacity: 1; }
+        .binder-bar:active { transform: translateY(1px); }
 
         .ring {
-            width: 12px; height: 50px;
+            width: 12px; height: 55px;
             background: linear-gradient(to right, #ccc, #fff, #ccc);
-            border-radius: 6px; margin-top: -8px;
+            border-radius: 6px; margin-top: -10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.5);
             pointer-events: none;
         }
@@ -110,59 +107,60 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             transform-origin: top center;
             transform-style: preserve-3d;
-            transition: transform 0.7s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
             display: flex; flex-direction: column;
             overflow: hidden;
             backface-visibility: hidden;
-            cursor: pointer; /* 提示可点击 */
         }
+        /* 翻页动画 */
         .page.flipped { transform: rotateX(-160deg); opacity: 0; pointer-events: none; }
-        
+
         /* 头部 */
         .header-section {
-            height: 150px; background-color: var(--china-red);
+            height: 22%; background-color: var(--china-red);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer; /* 提示可点击翻页 */
         }
+        .header-section:active { background-color: #a0181d; }
+        
         .month-name {
             font-family: 'Ma Shan Zheng', cursive;
-            font-size: 64px; color: var(--gold);
+            font-size: 3.5rem; color: var(--gold);
             text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
             line-height: 1;
         }
         .lunar-tag {
-            color: rgba(255,255,255,0.9); margin-top: 8px; font-size: 16px;
+            color: rgba(255,255,255,0.9); margin-top: 5px; font-size: 1rem;
             border: 1px solid rgba(255,255,255,0.4);
             padding: 2px 12px; border-radius: 20px;
         }
 
         /* 网格 */
-        .grid-wrap { flex-grow: 1; padding: 20px; position: relative; }
+        .grid-wrap { flex-grow: 1; padding: 15px; position: relative; cursor: pointer; }
         table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
         th { color: #886; font-size: 14px; height: 40px; }
         td {
             text-align: center; vertical-align: middle;
-            font-size: 24px; font-weight: 700;
+            font-size: 1.4rem; font-weight: 700;
             color: var(--ink);
-            border-radius: 50%; transition: background 0.2s;
+            border-radius: 50%;
             position: relative; z-index: 2;
         }
-        /* 点击日期时的反馈 */
-        td:active { background-color: rgba(184, 28, 34, 0.1); }
         td:nth-child(1), td:nth-child(7) { color: #c02c26; }
-
+        
         /* 墨水 */
         .ink-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 5;
         }
         .ink-circle {
-            fill: none; stroke: #c02c26; stroke-width: 3.5;
+            fill: none; stroke: #c02c26; stroke-width: 3;
             stroke-linecap: round; stroke-linejoin: round;
             stroke-dasharray: 600; stroke-dashoffset: 600;
-            animation: draw 0.6s ease-out forwards;
+            animation: draw 0.5s ease-out forwards;
         }
         @keyframes draw { to { stroke-dashoffset: 0; } }
 
@@ -179,7 +177,7 @@
     </div>
 
     <label class="upload-corner">
-        🖼️ 更换壁纸
+        🖼️ 换图
         <input type="file" id="img-uploader" accept="image/*" style="display:none">
     </label>
 
@@ -196,38 +194,65 @@
         const YEAR = 2026;
 
         let currentMonth = 1;
+        let targetMonth = 1; // 用于记录指令想要去的目标月份，防止重复翻页
         let isAnimating = false;
         let recognition = null;
         let isVoiceOn = false;
-        let lastCommandTime = 0; // 命令防抖时间戳
 
         window.onload = () => {
             initCalendar();
             initUploader();
+            // 预加载音频上下文
             try { new AudioContext(); } catch(e){}
         };
 
-        // --- 手动翻页逻辑 ---
-        
+        // --- 核心翻页逻辑 (修复版) ---
+
         function nextMonth() {
-            if(currentMonth < 12) {
-                autoFlipTo(currentMonth + 1);
+            if(targetMonth < 12) {
+                targetMonth++;
+                processFlip();
             } else {
-                // 已经在12月，给个视觉反馈
-                playTone('pen', 800); 
+                playTone('pen', 800); // 到底了提示音
             }
         }
 
         function prevMonth(e) {
-            e.stopPropagation(); // 防止冒泡触发 nextMonth
-            if(currentMonth > 1) {
-                autoFlipTo(currentMonth - 1);
+            if(e) e.stopPropagation(); // 防止冒泡
+            if(targetMonth > 1) {
+                targetMonth--;
+                processFlip();
             } else {
-                playTone('pen', 800); 
+                playTone('pen', 800);
             }
         }
 
-        // --- 语音逻辑 (优化版：实时响应) ---
+        // 统一处理翻页动画
+        async function processFlip() {
+            if(isAnimating) return; // 如果正在动，不要重入，但 targetMonth 已经更新了
+            
+            // 循环直到 currentMonth 追上 targetMonth
+            while(currentMonth !== targetMonth) {
+                isAnimating = true;
+                playTone('flip');
+
+                if (targetMonth > currentMonth) {
+                    // 往前翻 (1->2)
+                    document.getElementById(`page-${currentMonth}`).classList.add('flipped');
+                    currentMonth++;
+                } else {
+                    // 往回翻 (2->1)
+                    currentMonth--;
+                    document.getElementById(`page-${currentMonth}`).classList.remove('flipped');
+                }
+                
+                // 等待动画
+                await new Promise(r => setTimeout(r, 200));
+            }
+            isAnimating = false;
+        }
+
+        // --- 语音逻辑 (连贯指令修复) ---
         
         function toggleVoice() {
             const btn = document.getElementById('voice-btn');
@@ -243,7 +268,7 @@
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if(!SpeechRecognition) {
-                alert("抱歉，此浏览器不支持语音API (请使用 Chrome/Safari)。");
+                alert("浏览器不支持语音，请使用Chrome或Safari。");
                 return;
             }
 
@@ -251,154 +276,116 @@
                 recognition = new SpeechRecognition();
                 recognition.lang = 'zh-CN';
                 recognition.continuous = true;
-                recognition.interimResults = true; // 关键修改：开启实时中间结果
+                recognition.interimResults = true; // 实时监听
 
-                recognition.onend = () => {
-                    if(isVoiceOn) {
-                        try { recognition.start(); } catch(e){}
-                    }
-                };
-
-                recognition.onerror = (e) => {
-                    console.log("Voice Error:", e.error);
-                    if(e.error === 'not-allowed') {
-                        isVoiceOn = false;
-                        btn.classList.remove('active');
-                        txt.innerText = "权限被拒";
-                    }
-                };
-
+                recognition.onend = () => { if(isVoiceOn) try{ recognition.start(); }catch(e){} };
+                
                 recognition.onresult = (e) => {
-                    // 获取最新的识别结果（包含中间结果）
-                    const results = Array.from(e.results);
-                    const transcript = results[results.length - 1][0].transcript;
-                    
-                    // 实时显示
-                    txt.innerText = transcript;
-                    
-                    // 立即尝试解析，不等句子结束
-                    const success = parseCommand(transcript);
-                    
-                    if(success) {
-                        // 如果指令成功执行，重置识别流以避免重复触发
-                        recognition.abort(); 
-                        txt.innerText = "指令已执行";
-                        setTimeout(() => { if(isVoiceOn) txt.innerText = "正在聆听..."; }, 1200);
-                    }
+                    const t = e.results[e.results.length - 1][0].transcript;
+                    txt.innerText = t;
+                    parseCommand(t); // 实时解析
                 };
             }
-
+            
             try {
                 recognition.start();
                 isVoiceOn = true;
                 btn.classList.add('active');
                 txt.innerText = "正在聆听...";
-            } catch(e) { console.error(e); }
+            } catch(e){}
         }
 
-        // --- 智能指令解析 (优化：模糊匹配与去重) ---
-        
+        // 智能指令解析 (支持 "五月五号" 一次性说完)
         function parseCommand(str) {
-            // 防抖：如果500ms内刚执行过指令，忽略
-            if(Date.now() - lastCommandTime < 500) return false;
-
-            // 移除标点符号，统一处理
             str = str.replace(/[，。？！,.]/g, '');
-            console.log("Detecting:", str);
-
+            
             const map = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12};
             let m = -1, d = -1;
-            let actionTriggered = false;
 
-            // 1. 解析月份 (优先匹配末尾的“月”)
-            // 匹配正则：(中文数字|阿拉伯数字) + 月
-            let monthMatch = str.match(/([一二三四五六七八九十]+|\d+)月/);
-            
-            if(monthMatch) {
-                let mStr = monthMatch[1];
-                if(map[mStr]) m = map[mStr];
-                else m = parseInt(mStr);
+            // 1. 找月份
+            let mMatch = str.match(/([一二三四五六七八九十]+|\d+)月/);
+            if(mMatch) {
+                let s = mMatch[1];
+                m = map[s] || parseInt(s);
             }
 
-            // 2. 解析日期
-            // 匹配正则：(中文数字|阿拉伯数字) + (号|日)
-            if(m !== -1) {
-                // 简单的切分，只看“月”字后面的部分
-                let afterMonth = str.split('月')[1] || "";
-                
-                // 尝试解析中文日期 (如：二十五)
-                if(afterMonth.length > 0) {
-                     // 处理中文口语习惯
-                    const cnNums = "一二三四五六七八九十";
-                    
-                    // 20-31
-                    if(afterMonth.includes("三十")) {
-                        let end = afterMonth.split("三十")[1];
-                        d = 30 + (map[end && end[0]] || 0);
-                    } else if(afterMonth.includes("二十")) {
-                        let end = afterMonth.split("二十")[1];
-                        d = 20 + (map[end && end[0]] || 0);
-                    } else if(afterMonth.includes("十") && !afterMonth.startsWith("二") && !afterMonth.startsWith("三")) {
-                        // 10-19
-                        let parts = afterMonth.split("十");
-                        if(parts[0].length === 0) { // "十"开头
-                            d = 10 + (map[parts[1] && parts[1][0]] || 0);
-                        }
-                    } else {
-                        // 1-9 (查找单个数字)
-                        for(let k in map) {
-                            if(afterMonth.includes(k+"号") || afterMonth.includes(k+"日")) {
-                                d = map[k];
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // 如果中文没匹配到，尝试阿拉伯数字
-                    if(d === -1) {
-                        let dNum = afterMonth.match(/\d+/);
-                        if(dNum) d = parseInt(dNum[0]);
-                    }
+            // 2. 找日期 (简单匹配 "月" 后面的内容)
+            let afterMonth = m !== -1 ? str.split('月')[1] : str;
+            if(afterMonth) {
+                // 中文处理
+                if(afterMonth.includes("三十")) d = 30 + (map[afterMonth.split("三十")[1]?.[0]] || 0);
+                else if(afterMonth.includes("二十")) d = 20 + (map[afterMonth.split("二十")[1]?.[0]] || 0);
+                else if(afterMonth.includes("十") && !afterMonth.startsWith("二") && !afterMonth.startsWith("三")) {
+                    let p = afterMonth.split("十");
+                    d = 10 + (map[p[1]?.[0]] || 0);
+                } 
+                else {
+                    // 找个位数字
+                    for(let k in map) if(afterMonth.includes(k+"号") || afterMonth.includes(k+"日")) d = map[k];
+                }
+                // 数字处理
+                if(d === -1) {
+                    let num = afterMonth.match(/\d+/);
+                    if(num) d = parseInt(num[0]);
                 }
             }
 
-            // 执行逻辑
-            if(m >= 1 && m <= 12) {
-                // 如果只说了月份，且月份变了，就翻页
-                if(m !== currentMonth) {
-                    playTone('success');
-                    autoFlipTo(m);
-                    lastCommandTime = Date.now();
-                    actionTriggered = true;
+            // --- 执行逻辑 (关键修复) ---
+            if (m !== -1 && m >= 1 && m <= 12) {
+                // 如果说的是 "五月"，不管当前是几月，我们都设定目标为5月
+                if (targetMonth !== m) {
+                    targetMonth = m;
+                    processFlip().then(() => {
+                        // 翻页完成后，如果有日期，就画圈
+                        if (d !== -1) setTimeout(() => circleDate(m, d), 300);
+                    });
+                } else {
+                    // 如果已经在目标月份，直接画圈
+                    if (d !== -1) circleDate(m, d);
                 }
-                
-                // 如果还解析出了日期
-                if(d >= 1 && d <= 31) {
-                    // 确保翻页后再圈日期
-                    if(!actionTriggered && m === currentMonth) {
-                        // 同月份直接圈
-                        circleDate(m, d);
-                        playTone('success');
-                        lastCommandTime = Date.now();
-                        actionTriggered = true;
-                    } else {
-                        // 不同月份，翻页后延时圈
-                        setTimeout(() => circleDate(m, d), 800);
-                        // 这里 actionTriggered 已经是 true 了
-                    }
-                }
-                
-                // 如果只是“五月”且已经在五月，也算指令成功（防止重复识别）
-                if(m === currentMonth && d === -1) {
-                     // 可选：播放个提示音或者忽略
-                     // actionTriggered = true; 
-                }
+            } 
+            // 如果只说了日期 "5号" (假设用户想在当前月份画)
+            else if (m === -1 && d !== -1) {
+                circleDate(currentMonth, d);
             }
-
-            return actionTriggered;
         }
 
-        // --- 日历核心 ---
+        function circleDate(m, d) {
+            if(m !== currentMonth) return; // 确保只在当前页画
+            
+            // 简单的防抖，防止同一个位置重复画太密
+            const cell = document.getElementById(`d-${m}-${d}`);
+            if(!cell || cell.getAttribute('data-circled') === 'true') return;
+            
+            playTone('pen');
+            cell.setAttribute('data-circled', 'true');
+            
+            const svg = document.getElementById(`ink-${m}`);
+            const wrap = document.getElementById(`wrap-${m}`);
+            
+            const cR = cell.getBoundingClientRect();
+            const wR = wrap.getBoundingClientRect();
+            
+            const cx = ((cR.left - wR.left + cR.width/2) / wR.width) * 100;
+            const cy = ((cR.top - wR.top + cR.height/2) / wR.height) * 100;
+            const rx = (30 / wR.width) * 100;
+            const ry = (30 / wR.height) * 100;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const noise = () => (Math.random()-0.5)*5;
+            let p = `M ${cx+rx} ${cy} `;
+            p += `Q ${cx+rx} ${cy+ry+noise()} ${cx} ${cy+ry+noise()} `;
+            p += `Q ${cx-rx+noise()} ${cy+ry} ${cx-rx+noise()} ${cy} `;
+            p += `Q ${cx-rx} ${cy-ry+noise()} ${cx} ${cy-ry+noise()} `;
+            p += `Q ${cx+rx+noise()} ${cy-ry} ${cx+rx-5} ${cy-2} `;
+            path.setAttribute("d", p);
+            path.setAttribute("class", "ink-circle");
+            svg.appendChild(path);
+            
+            // 1秒后允许重画
+            setTimeout(() => cell.removeAttribute('data-circled'), 1000);
+        }
+
         function initCalendar() {
             const container = document.getElementById('scene');
             for (let m = 12; m >= 1; m--) {
@@ -406,12 +393,8 @@
                 page.className = 'page';
                 page.id = `page-${m}`;
                 page.style.zIndex = 20 - m;
-                // 添加点击事件：点页面内容 -> 下一月
-                page.onclick = (e) => {
-                    // 排除点击到具体日期（日期有自己的onclick）的情况，虽然日期click会冒泡，但我们可以在日期click里处理
-                    // 这里主要处理空白处点击
-                    nextMonth();
-                };
+                // 点击页面主体 -> 下一页
+                page.onclick = nextMonth;
 
                 const lunarYear = (m === 1) ? "乙巳年" : "丙午年";
                 page.innerHTML = `
@@ -436,563 +419,30 @@
             for(let i=0; i<start; i++) h+='<td></td>';
             for(let i=1; i<=days; i++){
                 if((start+i-1)%7===0 && i!==1) h+='</tr><tr>';
-                // stopPropagation 防止触发整页的翻页
+                // 阻止冒泡，点击日期只画圈，不翻页
                 h+=`<td id="d-${m}-${i}" onclick="event.stopPropagation(); circleDate(${m},${i})">${i}</td>`;
             }
             h+='</tr></tbody></table>';
             return h;
         }
 
-        async function autoFlipTo(target) {
-            if(target === currentMonth || isAnimating) return;
-            isAnimating = true;
-            playTone('flip');
-
-            if (target > currentMonth) {
-                for (let i = currentMonth; i < target; i++) {
-                    document.getElementById(`page-${i}`).classList.add('flipped');
-                    await new Promise(r => setTimeout(r, 150));
-                }
-            } else {
-                for (let i = currentMonth - 1; i >= target; i--) {
-                    document.getElementById(`page-${i}`).classList.remove('flipped');
-                    await new Promise(r => setTimeout(r, 150));
-                }
-            }
-            currentMonth = target;
-            isAnimating = false;
-        }
-
-        function circleDate(m, d) {
-            if(m !== currentMonth) return;
-            playTone('pen');
-            const svg = document.getElementById(`ink-${m}`);
-            const cell = document.getElementById(`d-${m}-${d}`);
-            const wrap = document.getElementById(`wrap-${m}`);
-            if(!cell) return;
-            
-            const cR = cell.getBoundingClientRect();
-            const wR = wrap.getBoundingClientRect();
-            
-            const cx = ((cR.left - wR.left + cR.width/2) / wR.width) * 100;
-            const cy = ((cR.top - wR.top + cR.height/2) / wR.height) * 100;
-            const rx = (30 / wR.width) * 100;
-            const ry = (30 / wR.height) * 100;
-
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            const noise = () => (Math.random()-0.5)*5;
-            let p = `M ${cx+rx} ${cy} `;
-            p += `Q ${cx+rx} ${cy+ry+noise()} ${cx} ${cy+ry+noise()} `;
-            p += `Q ${cx-rx+noise()} ${cy+ry} ${cx-rx+noise()} ${cy} `;
-            p += `Q ${cx-rx} ${cy-ry+noise()} ${cx} ${cy-ry+noise()} `;
-            p += `Q ${cx+rx+noise()} ${cy-ry} ${cx+rx-1} ${cy-2} `;
-            path.setAttribute("d", p);
-            path.setAttribute("class", "ink-circle");
-            svg.appendChild(path);
-        }
-
-        // --- 音效 ---
-        function playTone(type, freqOverride) {
+        function playTone(type, f) {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
             osc.connect(g); g.connect(ctx.destination);
             const now = ctx.currentTime;
-
+            
             if (type === 'flip') {
-                osc.type = 'triangle'; osc.frequency.value = 120;
-                g.gain.setValueAtTime(0.4, now);
-                g.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2);
-            } else if (type === 'pen') {
-                osc.type = 'sine'; osc.frequency.value = freqOverride || 400;
-                g.gain.setValueAtTime(0.1, now);
-                g.gain.linearRampToValueAtTime(0, now + 0.15);
-                osc.start(now); osc.stop(now + 0.15);
-            } else if (type === 'success') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(500, now);
-                osc.frequency.linearRampToValueAtTime(800, now+0.1);
-                g.gain.setValueAtTime(0.1, now);
-                g.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now); osc.stop(now + 0.5);
-            }
-        }
-
-        function initUploader() {
-            document.getElementById('img-uploader').onchange = (e) => {
-                if(e.target.files[0]) {
-                    const r = new FileReader();
-                    r.onload = v => document.body.style.backgroundImage = `url('${v.target.result}')`;
-                    r.readAsDataURL(e.target.files[0]);
-                }
-            }
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 年日历 - 完美单圈版</title>
-    <style>
-        @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@500;700;900&display=swap');
-        
-        :root {
-            --bg-wood: #2c1e14;
-            --paper-base: #fcf8e8; 
-            --china-red: #b81c22;
-            --gold: #e0b043;
-            --ink: #1a1a1a;
-        }
-
-        body {
-            background-color: var(--bg-wood);
-            background-image: repeating-linear-gradient(90deg, #36251d 0, #36251d 2px, #2c1e14 0, #2c1e14 20px);
-            margin: 0; height: 100vh;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            font-family: 'Noto Serif SC', serif;
-            overflow: hidden; user-select: none;
-        }
-
-        /* --- 语音开关 --- */
-        .voice-switch {
-            position: fixed; top: 20px; left: 20px; z-index: 999;
-            pointer-events: auto;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            display: flex; align-items: center; gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            font-size: 14px;
-        }
-        .voice-switch:hover { background: rgba(0,0,0,0.8); }
-        .voice-switch.active {
-            background: rgba(184, 28, 34, 0.9);
-            border-color: #ff6666;
-            box-shadow: 0 0 15px rgba(184, 28, 34, 0.5);
-        }
-
-        /* 声波动画 */
-        .wave-bars { display: flex; gap: 3px; height: 12px; align-items: center; }
-        .bar { width: 3px; height: 100%; background: #fff; border-radius: 2px; }
-        .active .bar { animation: wave 0.8s infinite ease-in-out; }
-        .active .bar:nth-child(1) { animation-delay: 0.0s; }
-        .active .bar:nth-child(2) { animation-delay: 0.2s; }
-        .active .bar:nth-child(3) { animation-delay: 0.4s; }
-        .active .bar:nth-child(4) { animation-delay: 0.1s; }
-
-        @keyframes wave {
-            0%, 100% { height: 4px; opacity: 0.5; }
-            50% { height: 16px; opacity: 1; }
-        }
-
-        /* --- 换壁纸 --- */
-        .upload-corner {
-            position: fixed; top: 20px; right: 20px;
-            background: rgba(255,255,255,0.15);
-            color: #fff; padding: 8px 15px; border-radius: 20px;
-            font-size: 13px; cursor: pointer; z-index: 999;
-            backdrop-filter: blur(5px); transition: background 0.3s;
-        }
-        .upload-corner:hover { background: rgba(255,255,255,0.3); }
-
-        /* --- 日历主体 --- */
-        .calendar-scene {
-            position: relative;
-            width: 380px; height: 620px;
-            perspective: 2500px;
-            margin-top: 0;
-        }
-
-        .binder-bar {
-            position: absolute; top: -15px; left: 15px; right: 15px; height: 36px;
-            background: linear-gradient(to bottom, #444, #222);
-            border-radius: 6px; z-index: 500;
-            display: flex; justify-content: space-evenly;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .ring {
-            width: 12px; height: 50px;
-            background: linear-gradient(to right, #ccc, #fff, #ccc);
-            border-radius: 6px; margin-top: -12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-        }
-
-        /* 页面样式 */
-        .page {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: var(--paper-base);
-            border-radius: 12px;
-            border: 1px solid #e0d0b0;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            transform-origin: top center;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
-            display: flex; flex-direction: column;
-            overflow: hidden;
-            backface-visibility: hidden;
-        }
-        .page.flipped { transform: rotateX(-160deg); opacity: 0; pointer-events: none; }
-
-        /* 头部交互 */
-        .header-section {
-            height: 150px; background-color: var(--china-red);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            cursor: pointer; position: relative;
-        }
-        .header-section::after {
-            content: "← 上月 | 下月 →";
-            position: absolute; bottom: 8px;
-            font-size: 10px; color: rgba(255,255,255,0.4); pointer-events: none;
-        }
-
-        .month-name {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 64px; color: var(--gold);
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-            line-height: 1;
-        }
-        .lunar-tag {
-            color: rgba(255,255,255,0.9); margin-top: 8px; font-size: 16px;
-            border: 1px solid rgba(255,255,255,0.4);
-            padding: 2px 12px; border-radius: 20px;
-        }
-
-        /* 网格 */
-        .grid-wrap { flex-grow: 1; padding: 20px; position: relative; }
-        table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { color: #886; font-size: 14px; height: 40px; }
-        td {
-            text-align: center; vertical-align: middle;
-            font-size: 24px; font-weight: 700;
-            color: var(--ink); cursor: pointer;
-            border-radius: 50%; transition: background 0.2s;
-            position: relative; z-index: 2;
-        }
-        td:nth-child(1), td:nth-child(7) { color: #c02c26; }
-        
-        /* 墨水 */
-        .ink-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 5;
-        }
-        .ink-circle {
-            fill: none; stroke: #c02c26; stroke-width: 3.5;
-            stroke-linecap: round; stroke-linejoin: round;
-            stroke-dasharray: 600; stroke-dashoffset: 600;
-            animation: draw 0.6s ease-out forwards;
-        }
-        @keyframes draw { to { stroke-dashoffset: 0; } }
-    </style>
-</head>
-<body>
-
-    <div class="voice-switch" id="voice-btn" onclick="toggleVoice()">
-        <div class="wave-bars">
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
-        </div>
-        <span id="status-txt">点击开启声控</span>
-    </div>
-
-    <label class="upload-corner">
-        🖼️ 更换壁纸
-        <input type="file" id="img-uploader" accept="image/*" style="display:none">
-    </label>
-
-    <div class="calendar-scene" id="scene">
-        <div class="binder-bar">
-            <div class="ring"></div><div class="ring"></div><div class="ring"></div>
-            <div class="ring"></div><div class="ring"></div><div class="ring"></div>
-        </div>
-    </div>
-
-    <script>
-        const MONTHS_CN = ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"];
-        const LUNAR = ["腊月", "正月", "杏月", "桃月", "槐月", "蒲月", "荷月", "兰月", "桂月", "菊月", "露月", "冬月"];
-        const YEAR = 2026;
-
-        let currentMonth = 1;
-        let isAnimating = false;
-        let recognition = null;
-        let isVoiceOn = false; 
-        
-        // 防抖计时器
-        let debounceTimer = null; 
-
-        window.onload = () => {
-            initCalendar();
-            initUploader();
-            try { new AudioContext(); } catch(e){}
-        };
-
-        // --- 手动翻页 ---
-        function handleHeaderClick(e, m) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            if (e.clientX - rect.left < rect.width / 2) {
-                if (currentMonth > 1) autoFlipTo(currentMonth - 1);
-                else playTone('pen');
-            } else {
-                if (currentMonth < 12) autoFlipTo(currentMonth + 1);
-                else playTone('pen');
-            }
-        }
-
-        // --- 语音逻辑 ---
-        function toggleVoice() {
-            const btn = document.getElementById('voice-btn');
-            const txt = document.getElementById('status-txt');
-            
-            if(isVoiceOn) {
-                isVoiceOn = false;
-                if(recognition) recognition.stop();
-                btn.classList.remove('active');
-                txt.innerText = "点击开启声控";
-                return;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if(!SpeechRecognition) {
-                alert("浏览器不支持语音API，建议使用 Chrome");
-                return;
-            }
-
-            if(!recognition) {
-                recognition = new SpeechRecognition();
-                recognition.lang = 'zh-CN';
-                recognition.continuous = true; 
-                recognition.interimResults = true; 
-
-                recognition.onend = () => {
-                    if(isVoiceOn) try { recognition.start(); } catch(e){}
-                };
-
-                recognition.onresult = (e) => {
-                    // 1. 获取当前句子的 唯一索引 (ResultIndex)
-                    const idx = e.resultIndex; 
-                    const result = e.results[idx];
-                    const transcript = result[0].transcript;
-                    
-                    // 2. 将索引传给解析器，作为“身份证”
-                    parseCommand(transcript, idx);
-                    
-                    txt.innerText = transcript.length > 8 ? "..." + transcript.slice(-8) : transcript;
-                };
-            }
-
-            try {
-                recognition.start();
-                isVoiceOn = true;
-                btn.classList.add('active');
-                txt.innerText = "聆听中...";
-            } catch(e) { console.error(e); }
-        }
-
-        function parseCommand(str, cmdId) {
-            console.log("CMD:", str, "ID:", cmdId);
-            const map = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12};
-            let m = -1, d = -1;
-
-            // 1. 解析月份
-            if(str.indexOf('月') > -1) {
-                let p = str.substring(Math.max(0, str.lastIndexOf('月') - 3), str.lastIndexOf('月')); 
-                if (p.includes("十一") || p.includes("11")) m = 11;
-                else if (p.includes("十二") || p.includes("12")) m = 12;
-                else {
-                    for(let k in map) { 
-                        if(p.endsWith(k) && !p.endsWith("十"+k)) { m = map[k]; break; } 
-                    }
-                    if(m === -1) {
-                        let num = p.match(/\d+/);
-                        if(num) m = parseInt(num[0]);
-                    }
-                }
-            }
-
-            // 2. 解析日期
-            if(m !== -1) {
-                let afterMonth = str.split('月')[1] || "";
-                if (afterMonth.length > 0) {
-                     if(afterMonth.includes("三十")) {
-                        d = 30 + (map[afterMonth.slice(-1)] || 0);
-                        if(afterMonth.includes("三十一")) d = 31;
-                    } else if(afterMonth.includes("二十")) {
-                        d = 20 + (map[afterMonth.replace("号","").replace("日","").slice(-1)] || 0);
-                    } else if(afterMonth.includes("十") && !afterMonth.startsWith("二") && !afterMonth.startsWith("三")) {
-                        d = 10 + (map[afterMonth.replace("号","").replace("日","").slice(-1)] || 0);
-                    } else {
-                         let num = afterMonth.match(/\d+/);
-                         if(num) d = parseInt(num[0]);
-                         else {
-                             for(let k in map) {
-                                if(afterMonth.includes(k + "号") || afterMonth.includes(k + "日")) d = map[k];
-                             }
-                         }
-                    }
-                }
-            }
-
-            // 执行逻辑
-            if(m >= 1 && m <= 12) {
-                if (m !== currentMonth) {
-                    autoFlipTo(m);
-                }
-                
-                if(d >= 1 && d <= 31) {
-                    // 依然保留一点点防抖，让视觉更平滑（避免每毫秒都在画）
-                    if(debounceTimer) clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => {
-                        // 传入 cmdId，确保同一句话只留一个圈
-                        circleDate(m, d, cmdId);
-                    }, 400); 
-                }
-            }
-        }
-
-        // --- 日历核心 ---
-        function initCalendar() {
-            const container = document.getElementById('scene');
-            for (let m = 12; m >= 1; m--) {
-                const page = document.createElement('div');
-                page.className = 'page';
-                page.id = `page-${m}`;
-                page.style.zIndex = 20 - m; 
-                const lunarYear = (m === 1) ? "乙巳年" : "丙午年";
-                page.innerHTML = `
-                    <div class="header-section" onclick="handleHeaderClick(event, ${m})">
-                        <div class="month-name">${MONTHS_CN[m-1]}</div>
-                        <div class="lunar-tag">${lunarYear} · ${LUNAR[m-1]}</div>
-                    </div>
-                    <div class="grid-wrap" id="wrap-${m}">
-                        ${genGrid(YEAR, m)}
-                        <svg class="ink-layer" id="ink-${m}" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-                    </div>
-                `;
-                container.appendChild(page);
-            }
-        }
-
-        function genGrid(y, m) {
-            const d = new Date(y, m - 1, 1);
-            const days = new Date(y, m, 0).getDate();
-            const start = d.getDay();
-            let h = '<table><thead><tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr></thead><tbody><tr>';
-            for(let i=0; i<start; i++) h+='<td></td>';
-            for(let i=1; i<=days; i++){
-                if((start+i-1)%7===0 && i!==1) h+='</tr><tr>';
-                // 手动点击没有cmdId，传 'manual'
-                h+=`<td id="d-${m}-${i}" onclick="circleDate(${m},${i}, 'manual')">${i}</td>`;
-            }
-            h+='</tr></tbody></table>';
-            return h;
-        }
-
-        async function autoFlipTo(target) {
-            if(target === currentMonth || isAnimating) return;
-            if(target < 1 || target > 12) return;
-            isAnimating = true;
-            playTone('flip');
-
-            if (target > currentMonth) {
-                for (let i = currentMonth; i < target; i++) {
-                    document.getElementById(`page-${i}`).classList.add('flipped');
-                    await new Promise(r => setTimeout(r, 100));
-                }
-            } else {
-                for (let i = currentMonth - 1; i >= target; i--) {
-                    document.getElementById(`page-${i}`).classList.remove('flipped');
-                    await new Promise(r => setTimeout(r, 100));
-                }
-            }
-            currentMonth = target;
-            isAnimating = false;
-        }
-
-        // --- 核心修复：绘制与擦除 ---
-        function circleDate(m, d, cmdId) {
-            // 翻页保护
-            if(isAnimating || m !== currentMonth) {
-                if (m === currentMonth) setTimeout(() => circleDate(m, d, cmdId), 200);
-                else autoFlipTo(m).then(() => setTimeout(() => circleDate(m, d, cmdId), 500));
-                return;
-            }
-
-            const svg = document.getElementById(`ink-${m}`);
-            
-            // 1. 【关键步骤】检查并移除同一个指令ID产生过的旧圈
-            if (cmdId && cmdId !== 'manual') {
-                const existing = svg.querySelectorAll(`[data-voice-id="${cmdId}"]`);
-                existing.forEach(el => el.remove());
-            }
-
-            const cell = document.getElementById(`d-${m}-${d}`);
-            const wrap = document.getElementById(`wrap-${m}`);
-            if(!cell) return;
-            
-            playTone('pen'); // 播放音效
-
-            const cR = cell.getBoundingClientRect();
-            const wR = wrap.getBoundingClientRect();
-            
-            const cx = ((cR.left - wR.left + cR.width/2) / wR.width) * 100;
-            const cy = ((cR.top - wR.top + cR.height/2) / wR.height) * 100;
-            const rx = (30 / wR.width) * 100;
-            const ry = (30 / wR.height) * 100;
-
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            const noise = () => (Math.random()-0.5)*5;
-            let p = `M ${cx+rx} ${cy} `;
-            p += `Q ${cx+rx} ${cy+ry+noise()} ${cx} ${cy+ry+noise()} `;
-            p += `Q ${cx-rx+noise()} ${cy+ry} ${cx-rx+noise()} ${cy} `;
-            p += `Q ${cx-rx} ${cy-ry+noise()} ${cx} ${cy-ry+noise()} `;
-            p += `Q ${cx+rx+noise()} ${cy-ry} ${cx+rx-1} ${cy-2} `;
-            
-            path.setAttribute("d", p);
-            path.setAttribute("class", "ink-circle");
-            
-            // 2. 【关键步骤】打上身份证号
-            if (cmdId) {
-                path.setAttribute("data-voice-id", cmdId);
-            }
-            
-            svg.appendChild(path);
-        }
-
-        // --- 音效 ---
-        function playTone(type) {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.connect(g); g.connect(ctx.destination);
-            const now = ctx.currentTime;
-
-            if (type === 'flip') {
-                osc.type = 'triangle'; osc.frequency.value = 120;
-                g.gain.setValueAtTime(0.4, now);
+                osc.type = 'triangle'; osc.frequency.value = 100;
+                g.gain.setValueAtTime(0.3, now);
                 g.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
                 osc.start(now); osc.stop(now + 0.15);
             } else if (type === 'pen') {
-                osc.type = 'sine'; osc.frequency.value = 400;
+                osc.type = 'sine'; osc.frequency.value = f || 400;
                 g.gain.setValueAtTime(0.1, now);
-                g.gain.linearRampToValueAtTime(0, now + 0.15);
-                osc.start(now); osc.stop(now + 0.15);
-            } else if (type === 'success') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(500, now);
-                osc.frequency.linearRampToValueAtTime(800, now+0.1);
-                g.gain.setValueAtTime(0.1, now);
-                g.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now); osc.stop(now + 0.5);
+                g.gain.linearRampToValueAtTime(0, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
             }
         }
 
@@ -1008,4 +458,3 @@
     </script>
 </body>
 </html>
-
