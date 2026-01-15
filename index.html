@@ -1,348 +1,458 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>声控地图 (纯净发光版)</title>
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 年日历</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0b1124; /* 深蓝背景 */
-            overflow: hidden;
-            font-family: "Microsoft YaHei", sans-serif;
+        @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@500;700;900&display=swap');
+        
+        :root {
+            --bg-wood: #2c1e14;
+            /* 纯色米黄纸张，完全不透明 */
+            --paper-base: #fcf8e8; 
+            --china-red: #b81c22;
+            --gold: #e0b043;
+            --ink: #1a1a1a;
         }
 
-        #map-container {
-            width: 100%;
-            height: 100%;
+        body {
+            background-color: var(--bg-wood);
+            background-image: repeating-linear-gradient(90deg, #36251d 0, #36251d 2px, #2c1e14 0, #2c1e14 20px);
+            margin: 0; height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            font-family: 'Noto Serif SC', serif;
+            overflow: hidden; user-select: none;
         }
 
-        /* 顶部状态栏 - 现在是查看国家名的主要位置 */
-        #status-bar {
-            position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            text-align: center;
-            pointer-events: none;
-            width: 80%; /* 加宽以适应长名字 */
-        }
-
-        #voice-msg {
-            display: inline-block;
-            background: rgba(11, 17, 36, 0.9); /* 加深背景，突出文字 */
-            border: 1px solid #00d0ff;
-            color: #00d0ff;
-            padding: 12px 40px;
-            border-radius: 50px;
-            font-size: 24px; /* 加大字体 */
-            font-weight: bold;
-            box-shadow: 0 0 20px rgba(0, 208, 255, 0.4);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            text-shadow: 0 0 10px rgba(0, 208, 255, 0.5);
-        }
-
-        /* 按钮样式 */
-        #start-btn {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 200;
-            padding: 15px 50px;
-            background: linear-gradient(135deg, #0066ff, #00ccff);
-            color: white;
-            border: none;
+        /* --- 语音开关 (已移至左上角) --- */
+        .voice-switch {
+            position: fixed; 
+            top: 20px; 
+            left: 20px; 
+            z-index: 999; /* 保证在最上层 */
+            
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
             border-radius: 30px;
-            font-size: 18px;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            display: flex; align-items: center; gap: 10px;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 150, 255, 0.5);
-            transition: transform 0.1s;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 14px;
         }
 
-        #start-btn:active { transform: translateX(-50%) scale(0.95); }
+        .voice-switch:hover { background: rgba(0,0,0,0.8); }
+
+        /* 激活状态 (变红) */
+        .voice-switch.active {
+            background: rgba(184, 28, 34, 0.9);
+            border-color: #ff6666;
+            box-shadow: 0 0 15px rgba(184, 28, 34, 0.5);
+        }
+
+        /* 声波动画条 */
+        .wave-bars {
+            display: flex; gap: 3px; height: 12px; align-items: center;
+        }
+        .bar {
+            width: 3px; height: 100%; background: #fff; border-radius: 2px;
+            animation: none;
+        }
+        .active .bar { animation: wave 1s infinite ease-in-out; }
+        .active .bar:nth-child(1) { animation-delay: 0.0s; }
+        .active .bar:nth-child(2) { animation-delay: 0.2s; }
+        .active .bar:nth-child(3) { animation-delay: 0.4s; }
+        .active .bar:nth-child(4) { animation-delay: 0.1s; }
+
+        @keyframes wave {
+            0%, 100% { height: 4px; opacity: 0.5; }
+            50% { height: 16px; opacity: 1; }
+        }
+
+        /* --- 换壁纸按钮 (右上角) --- */
+        .upload-corner {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(255,255,255,0.15);
+            color: #fff; padding: 8px 15px; border-radius: 20px;
+            font-size: 13px; cursor: pointer; z-index: 999;
+            backdrop-filter: blur(5px); transition: background 0.3s;
+        }
+        .upload-corner:hover { background: rgba(255,255,255,0.3); }
+
+        /* --- 日历主体 --- */
+        .calendar-scene {
+            position: relative;
+            width: 380px; height: 620px;
+            perspective: 2500px;
+            margin-top: 0; /* 居中 */
+        }
+
+        .binder-bar {
+            position: absolute; top: -15px; left: 15px; right: 15px; height: 36px;
+            background: linear-gradient(to bottom, #444, #222);
+            border-radius: 6px; z-index: 500;
+            display: flex; justify-content: space-evenly;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .ring {
+            width: 12px; height: 50px;
+            background: linear-gradient(to right, #ccc, #fff, #ccc);
+            border-radius: 6px; margin-top: -12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        /* 页面样式 */
+        .page {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--paper-base);
+            border-radius: 12px;
+            border: 1px solid #e0d0b0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transform-origin: top center;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.645, 0.045, 0.355, 1);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            backface-visibility: hidden;
+        }
+        .page.flipped { transform: rotateX(-160deg); opacity: 0; pointer-events: none; }
+
+        /* 头部 */
+        .header-section {
+            height: 150px; background-color: var(--china-red);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .month-name {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 64px; color: var(--gold);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            line-height: 1;
+        }
+        .lunar-tag {
+            color: rgba(255,255,255,0.9); margin-top: 8px; font-size: 16px;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 2px 12px; border-radius: 20px;
+        }
+
+        /* 网格 */
+        .grid-wrap { flex-grow: 1; padding: 20px; position: relative; }
+        table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { color: #886; font-size: 14px; height: 40px; }
+        td {
+            text-align: center; vertical-align: middle;
+            font-size: 24px; font-weight: 700;
+            color: var(--ink); cursor: pointer;
+            border-radius: 50%; transition: background 0.2s;
+            position: relative; z-index: 2;
+        }
+        td:nth-child(1), td:nth-child(7) { color: #c02c26; }
+
+        /* 墨水 */
+        .ink-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 5;
+        }
+        .ink-circle {
+            fill: none; stroke: #c02c26; stroke-width: 3.5;
+            stroke-linecap: round; stroke-linejoin: round;
+            stroke-dasharray: 600; stroke-dashoffset: 600;
+            animation: draw 0.6s ease-out forwards;
+        }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+
     </style>
 </head>
 <body>
 
-    <div id="status-bar">
-        <div id="voice-msg">点击下方按钮 -> 允许麦克风 -> 说出国家名</div>
+    <div class="voice-switch" id="voice-btn" onclick="toggleVoice()">
+        <div class="wave-bars">
+            <div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div>
+        </div>
+        <span id="status-txt">点击开启声控</span>
     </div>
-    
-    <div id="map-container"></div>
-    <button id="start-btn">点击开启声控</button>
+
+    <label class="upload-corner">
+        🖼️ 更换壁纸
+        <input type="file" id="img-uploader" accept="image/*" style="display:none">
+    </label>
+
+    <div class="calendar-scene" id="scene">
+        <div class="binder-bar">
+            <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+            <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+        </div>
+    </div>
 
     <script>
-        const myChart = echarts.init(document.getElementById('map-container'));
-        let recognition;
-        let highlightTimer = null; 
+        const MONTHS_CN = ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"];
+        const LUNAR = ["腊月", "正月", "杏月", "桃月", "槐月", "蒲月", "荷月", "兰月", "桂月", "菊月", "露月", "冬月"];
+        const YEAR = 2026;
 
-        // === 国家中英文映射表 ===
-        const countryNameMap = {
-            'China': '中国',
-            'United States': '美国',
-            'Russia': '俄罗斯',
-            'Japan': '日本',
-            'United Kingdom': '英国',
-            'France': '法国',
-            'Germany': '德国',
-            'Canada': '加拿大',
-            'Australia': '澳大利亚',
-            'India': '印度',
-            'Brazil': '巴西',
-            'South Korea': '韩国',
-            'North Korea': '朝鲜',
-            'Pakistan': '巴基斯坦',
-            'Italy': '意大利',
-            'Spain': '西班牙',
-            'Ukraine': '乌克兰',
-            'Turkey': '土耳其',
-            'Iran': '伊朗',
-            'Iraq': '伊拉克',
-            'Afghanistan': '阿富汗',
-            'Vietnam': '越南',
-            'Thailand': '泰国',
-            'Indonesia': '印度尼西亚',
-            'Malaysia': '马来西亚',
-            'Philippines': '菲律宾',
-            'Singapore': '新加坡',
-            'Mexico': '墨西哥',
-            'Argentina': '阿根廷',
-            'Chile': '智利',
-            'South Africa': '南非',
-            'Egypt': '埃及',
-            'Saudi Arabia': '沙特阿拉伯',
-            'Israel': '以色列',
-            'Poland': '波兰',
-            'Sweden': '瑞典',
-            'Norway': '挪威',
-            'Finland': '芬兰',
-            'Netherlands': '荷兰',
-            'Belgium': '比利时',
-            'Switzerland': '瑞士',
-            'Austria': '奥地利',
-            'Greece': '希腊',
-            'Portugal': '葡萄牙',
-            'New Zealand': '新西兰',
-            'Mongolia': '蒙古',
-            'Kazakhstan': '哈萨克斯坦',
-            'Bulgaria': '保加利亚',
-            'Romania': '罗马尼亚',
-            'Hungary': '匈牙利',
-            'Czech Republic': '捷克',
-            'Slovakia': '斯洛伐克',
-            'Belarus': '白俄罗斯',
-            'Taiwan': '中国台湾',
-            'Vatican': '梵蒂冈',
-            'Monaco': '摩纳哥',
-            'Luxembourg': '卢森堡'
+        let currentMonth = 1;
+        let isAnimating = false;
+        let recognition = null;
+        let isVoiceOn = false; 
+
+        window.onload = () => {
+            initCalendar();
+            initUploader();
+            try { new AudioContext(); } catch(e){}
         };
 
-        // 1. 加载并重构地图数据
-        myChart.showLoading({ text: '正在加载纯净版地图...', color: '#00d0ff', textColor: '#fff' });
-
-        fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
-            .then(res => res.json())
-            .then(worldJson => {
-                // 地图移位算法
-                worldJson.features.forEach(feature => {
-                    const geometry = feature.geometry;
-                    const shiftCoord = (coord) => {
-                        if (coord[0] < -30) coord[0] += 360;
-                        return coord;
-                    };
-                    if (geometry.type === "Polygon") {
-                        geometry.coordinates.forEach(ring => ring.forEach(shiftCoord));
-                    } else if (geometry.type === "MultiPolygon") {
-                        geometry.coordinates.forEach(poly => poly.forEach(ring => ring.forEach(shiftCoord)));
-                    }
-                });
-
-                echarts.registerMap('world', worldJson);
-                myChart.hideLoading();
-                initMap();
-                initSpeech();
-            });
-
-        // 2. 初始化地图配置
-        function initMap() {
-            const option = {
-                backgroundColor: '#0b1124',
-                // Tooltip 仍然保留，作为鼠标交互的辅助
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{b}',
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    textStyle: { color: '#fff' },
-                    borderColor: '#00d0ff'
-                },
-                series: [
-                    {
-                        type: 'map',
-                        map: 'world',
-                        roam: true,
-                        zoom: 1.1,
-                        center: [150, 30],
-                        
-                        // === 核心修改：普通状态 ===
-                        label: {
-                            show: false, // 永远不显示标签
-                        },
-
-                        itemStyle: {
-                            areaColor: '#1a2640', 
-                            borderColor: '#455a84',
-                            borderWidth: 1
-                        },
-
-                        // === 核心修改：鼠标悬停状态 ===
-                        emphasis: {
-                            label: { show: false }, // 鼠标放上去也不显示文字，防止挡住小国
-                            itemStyle: { areaColor: '#2a3f66' }
-                        },
-
-                        // === 核心修改：选中/高亮状态 (语音触发) ===
-                        selectedMode: 'multiple', 
-                        select: {
-                            label: { 
-                                show: false, // ！！！选中时坚决不显示文字，只发光！！！
-                            },
-                            itemStyle: {
-                                areaColor: '#ffcc00', 
-                                borderColor: '#fff',
-                                borderWidth: 2,
-                                shadowColor: 'rgba(255, 204, 0, 1)', 
-                                shadowBlur: 30 // 光晕强一点，哪怕国家只有一个点也能看清
-                            }
-                        },
-
-                        nameMap: countryNameMap,
-                        data: [] 
-                    }
-                ]
-            };
-            myChart.setOption(option);
+        // --- 语音逻辑 (Overseas Mode: Continuous) ---
+        function toggleVoice() {
+            const btn = document.getElementById('voice-btn');
+            const txt = document.getElementById('status-txt');
             
-            myChart.on('click', function(params) {
-                highlightWithTimer(params.name);
-            });
-        }
-
-        // 3. 语音识别逻辑
-        function initSpeech() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-            if (!SpeechRecognition) {
-                document.getElementById('voice-msg').innerText = "浏览器不支持语音";
+            if(isVoiceOn) {
+                isVoiceOn = false;
+                if(recognition) recognition.stop();
+                btn.classList.remove('active');
+                txt.innerText = "点击开启声控";
                 return;
             }
 
-            recognition = new SpeechRecognition();
-            recognition.lang = 'zh-CN';
-            recognition.continuous = false; 
-            recognition.interimResults = false;
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SpeechRecognition) {
+                alert("抱歉，此浏览器不支持语音API。");
+                return;
+            }
 
-            const msgBox = document.getElementById('voice-msg');
-            const btn = document.getElementById('start-btn');
+            if(!recognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'zh-CN';
+                recognition.continuous = true; // 持续监听
+                recognition.interimResults = false; 
 
-            recognition.onstart = function() {
-                msgBox.innerText = "🎤 聆听中... 说出国家名";
-                msgBox.style.color = "#fff";
-                msgBox.style.borderColor = "#fff";
-                msgBox.style.textShadow = "none";
-                btn.style.display = 'none';
-            };
+                recognition.onend = () => {
+                    // 自动重启机制：实现永久在线
+                    if(isVoiceOn) {
+                        try { recognition.start(); } catch(e){}
+                    }
+                };
 
-            recognition.onend = function() {
-                try { recognition.start(); } catch(e) {}
-            };
+                recognition.onerror = (e) => {
+                    console.log("Voice Error:", e.error);
+                    if(e.error === 'not-allowed') {
+                        isVoiceOn = false;
+                        btn.classList.remove('active');
+                        txt.innerText = "权限被拒";
+                    }
+                };
 
-            recognition.onresult = function(event) {
-                const text = event.results[0][0].transcript;
-                handleCommand(text);
-            };
+                recognition.onresult = (e) => {
+                    const lastResult = e.results[e.results.length - 1];
+                    if(lastResult.isFinal) {
+                        const transcript = lastResult[0].transcript;
+                        txt.innerText = transcript; // 显示听到的内容
+                        parseCommand(transcript);
+                        
+                        // 1.5秒后恢复“正在聆听”状态文本
+                        setTimeout(() => {
+                            if(isVoiceOn) txt.innerText = "正在聆听...";
+                        }, 1500);
+                    }
+                };
+            }
 
-            btn.onclick = function() {
-                try { recognition.start(); } catch(e) {}
-            };
+            try {
+                recognition.start();
+                isVoiceOn = true;
+                btn.classList.add('active');
+                txt.innerText = "正在聆听...";
+            } catch(e) { console.error(e); }
         }
 
-        // 4. 处理指令
-        function handleCommand(text) {
-            const msgBox = document.getElementById('voice-msg');
-            let matchedCountry = null;
+        // --- 智能指令解析 ---
+        function parseCommand(str) {
+            console.log("CMD:", str);
+            const map = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12};
+            let m = -1, d = -1;
 
-            for (let enName in countryNameMap) {
-                const cnName = countryNameMap[enName];
-                if (text.includes(cnName)) {
-                    matchedCountry = cnName;
-                    break;
+            // 1. 解析月份 (支持 "5月", "五月")
+            if(str.indexOf('月') > -1) {
+                let p = str.split('月')[0]; 
+                for(let k in map) { if(p.endsWith(k)) { m = map[k]; break; } }
+                if(m === -1) {
+                    let num = p.match(/\d+/);
+                    if(num) m = parseInt(num[0]);
                 }
             }
 
-            if (matchedCountry) {
-                // 在顶部 UI 大字显示识别结果
-                msgBox.innerText = `✨ 识别到：${matchedCountry}`;
-                msgBox.style.color = "#ffcc00"; // 金色文字
-                msgBox.style.borderColor = "#ffcc00"; // 金色边框
-                msgBox.style.textShadow = "0 0 20px rgba(255, 204, 0, 0.8)"; // 金色文字发光
-                
-                highlightWithTimer(matchedCountry);
-            } else {
-                msgBox.innerText = `🤔 听到了: "${text}"`;
-                msgBox.style.color = "#00d0ff";
-                msgBox.style.borderColor = "#00d0ff";
-                msgBox.style.textShadow = "none";
+            // 2. 解析日期 (支持 "20号", "二十日", "20")
+            if(m !== -1) {
+                let afterMonth = str.split('月')[1];
+                if(afterMonth) {
+                    // 中文日期处理
+                    if(afterMonth.includes("三十")) {
+                        d = 30 + (map[afterMonth.slice(-1)] || 0);
+                        if(afterMonth.includes("三十一")) d = 31;
+                    } 
+                    else if(afterMonth.includes("二十")) {
+                        d = 20 + (map[afterMonth.replace("号","").replace("日","").slice(-1)] || 0);
+                    }
+                    else if(afterMonth.includes("十") && !afterMonth.startsWith("二") && !afterMonth.startsWith("三")) {
+                        d = 10 + (map[afterMonth.replace("号","").replace("日","").slice(-1)] || 0);
+                    }
+                    
+                    // 数字日期处理
+                    if(d === -1) {
+                        let num = afterMonth.match(/\d+/);
+                        if(num) d = parseInt(num[0]);
+                        else {
+                            // 纯个位中文 "五号"
+                            for(let k in map) {
+                                if(afterMonth.includes(k + "号") || afterMonth.includes(k + "日")) d = map[k];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 执行操作
+            if(m >= 1 && m <= 12) {
+                playTone('success');
+                autoFlipTo(m).then(() => {
+                    if(d >= 1 && d <= 31) {
+                        setTimeout(() => circleDate(m, d), 600);
+                    }
+                });
             }
         }
 
-        // 5. 高亮 + 2秒自动熄灭
-        function highlightWithTimer(name) {
-            if (highlightTimer) clearTimeout(highlightTimer);
-
-            myChart.dispatchAction({ type: 'unselect', seriesIndex: 0 }); 
-            myChart.dispatchAction({ type: 'downplay', seriesIndex: 0 }); 
-
-            myChart.dispatchAction({
-                type: 'select',
-                seriesIndex: 0,
-                name: name
-            });
-            myChart.dispatchAction({
-                type: 'highlight',
-                seriesIndex: 0,
-                name: name
-            });
-
-            highlightTimer = setTimeout(() => {
-                myChart.dispatchAction({
-                    type: 'unselect',
-                    seriesIndex: 0,
-                    name: name
-                });
-                myChart.dispatchAction({
-                    type: 'downplay',
-                    seriesIndex: 0,
-                    name: name
-                });
-                
-                // 恢复提示
-                const msgBox = document.getElementById('voice-msg');
-                msgBox.innerText = "🎤 请继续说话...";
-                msgBox.style.color = "#fff";
-                msgBox.style.borderColor = "#fff";
-                msgBox.style.textShadow = "none";
-
-            }, 2000); 
+        // --- 日历核心 ---
+        function initCalendar() {
+            const container = document.getElementById('scene');
+            for (let m = 12; m >= 1; m--) {
+                const page = document.createElement('div');
+                page.className = 'page';
+                page.id = `page-${m}`;
+                page.style.zIndex = 20 - m; 
+                const lunarYear = (m === 1) ? "乙巳年" : "丙午年";
+                page.innerHTML = `
+                    <div class="header-section">
+                        <div class="month-name">${MONTHS_CN[m-1]}</div>
+                        <div class="lunar-tag">${lunarYear} · ${LUNAR[m-1]}</div>
+                    </div>
+                    <div class="grid-wrap" id="wrap-${m}">
+                        ${genGrid(YEAR, m)}
+                        <svg class="ink-layer" id="ink-${m}" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                    </div>
+                `;
+                container.appendChild(page);
+            }
         }
 
-        window.onresize = function() { myChart.resize(); };
+        function genGrid(y, m) {
+            const d = new Date(y, m - 1, 1);
+            const days = new Date(y, m, 0).getDate();
+            const start = d.getDay();
+            let h = '<table><thead><tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr></thead><tbody><tr>';
+            for(let i=0; i<start; i++) h+='<td></td>';
+            for(let i=1; i<=days; i++){
+                if((start+i-1)%7===0 && i!==1) h+='</tr><tr>';
+                h+=`<td id="d-${m}-${i}" onclick="circleDate(${m},${i})">${i}</td>`;
+            }
+            h+='</tr></tbody></table>';
+            return h;
+        }
 
+        async function autoFlipTo(target) {
+            if(target === currentMonth || isAnimating) return;
+            isAnimating = true;
+            playTone('flip');
+
+            if (target > currentMonth) {
+                for (let i = currentMonth; i < target; i++) {
+                    document.getElementById(`page-${i}`).classList.add('flipped');
+                    await new Promise(r => setTimeout(r, 150));
+                }
+            } else {
+                for (let i = currentMonth - 1; i >= target; i--) {
+                    document.getElementById(`page-${i}`).classList.remove('flipped');
+                    await new Promise(r => setTimeout(r, 150));
+                }
+            }
+            currentMonth = target;
+            isAnimating = false;
+        }
+
+        function circleDate(m, d) {
+            if(m !== currentMonth) return;
+            playTone('pen');
+            const svg = document.getElementById(`ink-${m}`);
+            const cell = document.getElementById(`d-${m}-${d}`);
+            const wrap = document.getElementById(`wrap-${m}`);
+            if(!cell) return;
+            
+            const cR = cell.getBoundingClientRect();
+            const wR = wrap.getBoundingClientRect();
+            
+            const cx = ((cR.left - wR.left + cR.width/2) / wR.width) * 100;
+            const cy = ((cR.top - wR.top + cR.height/2) / wR.height) * 100;
+            const rx = (30 / wR.width) * 100;
+            const ry = (30 / wR.height) * 100;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            const noise = () => (Math.random()-0.5)*5;
+            let p = `M ${cx+rx} ${cy} `;
+            p += `Q ${cx+rx} ${cy+ry+noise()} ${cx} ${cy+ry+noise()} `;
+            p += `Q ${cx-rx+noise()} ${cy+ry} ${cx-rx+noise()} ${cy} `;
+            p += `Q ${cx-rx} ${cy-ry+noise()} ${cx} ${cy-ry+noise()} `;
+            p += `Q ${cx+rx+noise()} ${cy-ry} ${cx+rx-1} ${cy-2} `;
+            path.setAttribute("d", p);
+            path.setAttribute("class", "ink-circle");
+            svg.appendChild(path);
+        }
+
+        // --- 音效 ---
+        function playTone(type) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.connect(g); g.connect(ctx.destination);
+            const now = ctx.currentTime;
+
+            if (type === 'flip') {
+                osc.type = 'triangle'; osc.frequency.value = 120;
+                g.gain.setValueAtTime(0.4, now);
+                g.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'pen') {
+                osc.type = 'sine'; osc.frequency.value = 400;
+                g.gain.setValueAtTime(0.1, now);
+                g.gain.linearRampToValueAtTime(0, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (type === 'success') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(500, now);
+                osc.frequency.linearRampToValueAtTime(800, now+0.1);
+                g.gain.setValueAtTime(0.1, now);
+                g.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
+            }
+        }
+
+        function initUploader() {
+            document.getElementById('img-uploader').onchange = (e) => {
+                if(e.target.files[0]) {
+                    const r = new FileReader();
+                    r.onload = v => document.body.style.backgroundImage = `url('${v.target.result}')`;
+                    r.readAsDataURL(e.target.files[0]);
+                }
+            }
+        }
     </script>
 </body>
 </html>
