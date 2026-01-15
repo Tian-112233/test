@@ -1,360 +1,267 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>持续声控生日蛋糕</title>
+    <title>声控中国视角世界地图</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        body, html {
             margin: 0;
-            background: radial-gradient(circle at center, #fff1eb, #ace0f9); /* 更梦幻的背景 */
-            font-family: 'Microsoft YaHei', cursive, sans-serif;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #021019; /* 深海蓝背景 */
             overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
         }
 
-        /* 主容器 */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        #main {
+            width: 100%;
+            height: 100%;
         }
 
-        /* 状态提示文字 */
-        .status-message {
-            margin-bottom: 30px;
-            font-size: 1.5em;
-            color: #555;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-            height: 1.5em; /* 固定高度防止跳动 */
-        }
-
-        /* 蛋糕整体结构，用于解决缝隙问题 */
-        .cake-structure {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* 蛋糕托盘 */
-        .cake-stand {
-            width: 550px; /* 加宽 */
-            height: 60px;
-            background: linear-gradient(to right, #d4af37, #fddb92, #d4af37); /* 金色质感 */
-            border-radius: 50% / 100%;
-            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1; /* 在蛋糕下面 */
-            margin-top: -25px; /* 向上重叠，消除缝隙 */
-        }
-
-        /* 蛋糕主体 */
-        .cake {
-            width: 500px; /* 加宽蛋糕 */
-            height: 200px;
-            background: linear-gradient(to bottom, #ffdde1, #ee9ca7); /* 粉色蛋糕体 */
-            border-radius: 50% / 100px 100px 0 0;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 -10px 20px rgba(0, 0, 0, 0.1);
-            z-index: 2;
-        }
-
-        /* 蛋糕顶部的奶油淋面 */
-        .cake::before {
-            content: '';
+        /* 语音状态指示器 */
+        #voice-status {
             position: absolute;
-            top: -10px; left: -5px; right: -5px;
-            height: 120px;
-            background: linear-gradient(to bottom, #fff, #f8f8f8 60%, transparent); /* 白色奶油 */
-            border-radius: 50% / 60px 60px 20px 20px;
-            box-shadow: inset 0 5px 10px rgba(255,255,255,0.8);
-            z-index: 3;
-        }
-
-        /* 蜡烛容器 */
-        .candles-container {
-            position: absolute;
-            top: -70px; /* 调整蜡烛位置 */
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80%; /* 限制蜡烛分布范围 */
-            height: 80px;
-            display: flex;
-            justify-content: space-around; /* 均匀分布 */
-            align-items: flex-end;
-            z-index: 10;
-            pointer-events: none;
+            z-index: 100;
+            color: #00d0ff;
+            background: rgba(0, 20, 40, 0.8);
+            padding: 10px 30px;
+            border-radius: 30px;
+            border: 1px solid #00d0ff;
+            font-size: 18px;
+            pointer-events: none; /* 让鼠标事件穿透 */
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 208, 255, 0.3);
         }
 
-        /* --- 全新设计的生日蜡烛 --- */
-        .candle {
-            position: relative;
-            width: 12px; /* 更细 */
-            height: 70px; /* 更高 */
-            /* 经典的红白斜纹 */
-            background: repeating-linear-gradient(
-                45deg,
-                #ff6b6b, /* 红色 */
-                #ff6b6b 5px,
-                #fff 5px, /* 白色 */
-                #fff 10px
-            );
-            border-radius: 2px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            /* 初始状态：隐藏在蛋糕里 */
-            opacity: 0;
-            transform: translateY(30px) scale(0.8);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弹性出现的动画 */
-        }
-
-        /* 蜡烛出现的状态 */
-        .candle.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* 烛芯 */
-        .candle::after {
-            content: '';
+        /* 控制按钮 */
+        #control-btn {
             position: absolute;
-            top: -6px;
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
-            width: 2px;
-            height: 6px;
-            background-color: #333; /* 深色烛芯 */
-        }
-
-        /* 火焰 */
-        .flame {
-            position: absolute;
-            top: -22px;
-            left: 50%;
-            transform: translateX(-50%) scale(0); /* 初始无火焰 */
-            width: 12px;
-            height: 20px;
-            background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff9900 60%, transparent 80%);
-            border-radius: 50% 50% 20% 20%;
-            box-shadow: 0 0 10px #ff9900, 0 0 20px #ffff00;
-            filter: blur(0.5px);
-            animation: flicker 0.3s infinite alternate;
-            transition: transform 0.3s ease-out 0.4s; /* 火焰延迟出现 */
-        }
-
-        .candle.show .flame {
-            transform: translateX(-50%) scale(1); /* 蜡烛出现后火焰出现 */
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.9; transform: translateX(-50%) scale(1) rotate(-2deg); }
-            100% { opacity: 1; transform: translateX(-50%) scale(1.1) rotate(2deg); }
-        }
-
-        /* 初始启动按钮 */
-        #startButton {
-            margin-top: 40px;
-            padding: 12px 30px;
-            font-size: 1.2em;
-            background-color: #ff6b6b;
+            z-index: 100;
+            padding: 12px 40px;
+            font-size: 18px;
+            background: linear-gradient(90deg, #00d0ff, #0080ff);
             color: white;
             border: none;
-            border-radius: 25px;
+            border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.5);
         }
-        #startButton:hover { background-color: #ff4757; transform: translateY(-2px); }
-        #startButton.hidden { display: none; }
-
-        /* 监听指示器 */
-        .listening-indicator {
-            display: none;
-            margin-top: 20px;
-            color: #ff6b6b;
-            font-weight: bold;
+        
+        #control-btn:hover {
+            opacity: 0.9;
+            transform: translateX(-50%) scale(1.05);
         }
-        .listening-indicator.active { display: block; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 50% { opacity: 0.5; } }
 
+        /* 录音时的动画效果 */
+        .listening {
+            animation: pulse 1.5s infinite;
+            background: rgba(255, 50, 50, 0.2) !important;
+            border-color: #ff3333 !important;
+            color: #ff3333 !important;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 50, 50, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 50, 50, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 50, 50, 0); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="status-message" id="statusMessage">准备好了吗？</div>
-
-        <div class="cake-structure">
-            <div class="cake">
-                <div class="candles-container" id="candlesContainer"></div>
-            </div>
-            <div class="cake-stand"></div>
-        </div>
-
-        <button id="startButton">点击这里激活麦克风</button>
-        <div class="listening-indicator" id="listeningIndicator">正在聆听中... (请说“我X岁了”)</div>
-    </div>
+    <div id="voice-status">等待指令...</div>
+    <div id="main"></div>
+    <button id="control-btn">点击开始说话</button>
 
     <script>
-        const statusMessage = document.getElementById('statusMessage');
-        const candlesContainer = document.getElementById('candlesContainer');
-        const startButton = document.getElementById('startButton');
-        const listeningIndicator = document.getElementById('listeningIndicator');
+        // 1. 初始化 ECharts 实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var recognition; // 语音识别对象
 
-        let recognition;
-        let isListening = false;
-        let isBusy = false; // 新增：忙碌状态锁，防止在显示蜡烛时处理新语音
-        let clearTimer = null;
+        // 显示加载动画
+        myChart.showLoading();
 
-        // 初始化 Web Speech API
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = true; // 关键改动：持续监听
-            recognition.lang = 'zh-CN';
-            recognition.interimResults = false; // 不需要临时结果
-
-            recognition.onstart = () => {
-                isListening = true;
-                startButton.classList.add('hidden'); // 隐藏启动按钮
-                listeningIndicator.classList.add('active');
-                statusMessage.textContent = '请说出你的年龄...';
-            };
-
-            recognition.onresult = (event) => {
-                // 如果正在忙着显示蜡烛，则忽略新的语音
-                if (isBusy) {
-                    console.log('正如火如荼地展示中，忽略此次输入');
-                    return;
-                }
-
-                // 获取最新的识别结果（因为是持续监听，结果是一个数组）
-                const latestResult = event.results[event.results.length - 1];
-                if (latestResult.isFinal) {
-                    const transcript = latestResult[0].transcript;
-                    console.log('收到语音:', transcript);
-                    processSpeech(transcript);
-                }
-            };
-
-            // 如果异常断开，尝试自动重连（为了实现“持续”体验）
-            recognition.onend = () => {
-                if (isListening) {
-                    console.log('识别意外中断，尝试重启...');
-                    recognition.start();
-                } else {
-                    listeningIndicator.classList.remove('active');
-                }
-            };
-
-            recognition.onerror = (event) => {
-                console.error('语音识别错误:', event.error);
-                // 如果是没听清或者网络小问题，不打断流程，让用户继续说
-                if (event.error === 'no-speech' || event.error === 'network') {
-                   statusMessage.textContent = '刚才没听清，请再说一次...';
-                } else {
-                   statusMessage.textContent = '发生错误，请刷新页面重试。';
-                   isListening = false;
-                   recognition.stop();
-                }
-            };
-
-        } else {
-            statusMessage.textContent = '抱歉，你的浏览器不支持此功能，请使用 Chrome。';
-            startButton.disabled = true;
-        }
-
-        // 因为浏览器安全限制，首次必须用户手动点击才能开启麦克风
-        startButton.addEventListener('click', () => {
-            if (recognition && !isListening) {
-                recognition.start();
-            }
-        });
-
-        function processSpeech(transcript) {
-            const regex = /(\d+)\s*(岁|年|年级|了)/;
-            const match = transcript.match(regex);
-            let age = null;
-
-            if (match && match[1]) {
-                age = parseInt(match[1]);
-            } else {
-                const chineseNumbers = {
-                    '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5,
-                    '六': 6, '七': 7, '八': 8, '九': 9, '十': 10
-                };
-                for (const key in chineseNumbers) {
-                    if (transcript.includes(key)) { // 简化匹配逻辑
-                        age = chineseNumbers[key];
-                        break;
-                    }
-                }
-            }
-
-            // 限制年龄在 1 到 10 岁
-            if (age !== null && age > 0 && age <= 10) {
-                showCandlesSequence(age);
-            } else if (transcript.length > 1 && !isBusy) {
-                 // 只有在不忙的时候才提示没听懂，避免刷屏
-                statusMessage.textContent = '没听懂是几岁呢？(试试1-10岁)';
-            }
-        }
-
-        function showCandlesSequence(age) {
-            isBusy = true; // 上锁
-            statusMessage.textContent = `哇！祝你 ${age} 岁生日快乐！`;
-            generateCandles(age);
-
-            // 清除之前的定时器（如果有）
-            if (clearTimer) clearTimeout(clearTimer);
-
-            // 2秒后清空蜡烛并解锁
-            clearTimer = setTimeout(() => {
-                clearCandles();
-                statusMessage.textContent = '下一个小朋友几岁了？';
-                isBusy = false; // 解锁
-            }, 2500); // 稍微多给0.5秒让动画播完
-        }
-
-        function generateCandles(count) {
-            candlesContainer.innerHTML = '';
-            for (let i = 0; i < count; i++) {
-                const candleDiv = document.createElement('div');
-                candleDiv.classList.add('candle');
+        // 2. 获取地图数据
+        // 注意：为了演示，这里使用了公共 CDN 的 World JSON。
+        // 在正式生产环境中，为了绝对严谨的政治合规（如九段线），建议下载阿里云 DataV 的 world.json 本地引用
+        fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
+            .then(response => response.json())
+            .then(worldJson => {
+                myChart.hideLoading();
                 
-                // 添加火焰
-                const flameDiv = document.createElement('div');
-                flameDiv.classList.add('flame');
-                candleDiv.appendChild(flameDiv);
+                // 注册地图
+                echarts.registerMap('world', worldJson);
 
-                candlesContainer.appendChild(candleDiv);
+                // 3. 配置项
+                var option = {
+                    backgroundColor: '#021019',
+                    title: {
+                        text: '声控世界地图 (中国 & 保加利亚)',
+                        left: 'center',
+                        top: 20,
+                        textStyle: { color: '#fff' }
+                    },
+                    // 提示框
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{b}'
+                    },
+                    geo: {
+                        map: 'world',
+                        roam: true, // 开启缩放和平移
+                        zoom: 1.2,
+                        // 核心：设置中心点，调整为中国/太平洋视角 (经度 115)
+                        center: [115, 30], 
+                        label: {
+                            show: false
+                        },
+                        // 地图区域的多边形 图形样式
+                        itemStyle: {
+                            areaColor: '#323c48', // 普通状态颜色
+                            borderColor: '#111'
+                        },
+                        // 选中/高亮时的样式（发光效果）
+                        select: {
+                            itemStyle: {
+                                areaColor: '#f4e925', // 选中后的金色
+                                shadowBlur: 20,
+                                shadowColor: 'rgba(255, 215, 0, 0.8)'
+                            },
+                            label: { show: true, color: '#000' }
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                areaColor: '#f4e925',
+                                shadowBlur: 20,
+                                shadowColor: 'rgba(255, 215, 0, 0.8)'
+                            },
+                            label: { show: true, color: '#000' }
+                        },
+                        // 关键：名称映射，确保数据匹配，并修正可能的地图错误
+                        nameMap: {
+                            'China': '中国',
+                            'Bulgaria': '保加利亚',
+                            // 政治正确性修正：如果原 JSON 把台湾单独列出，这里尝试将其归并（视 JSON 结构而定）
+                            // 即使 JSON 把 Taiwan 视为独立块，我们也将其显示名称改为中国，
+                            // 并在逻辑中处理高亮
+                            'Taiwan': '中国台湾' 
+                        }
+                    },
+                    series: [] 
+                };
 
-                // 使用 setTimeout 错开每根蜡烛出现的时间，增加动感
-                setTimeout(() => {
-                    candleDiv.classList.add('show');
-                }, i * 100); // 每根间隔100ms出现
+                myChart.setOption(option);
+                
+                // 绑定点击事件用于测试（非语音）
+                myChart.on('click', function (params) {
+                    console.log("点击了: " + params.name);
+                });
+            });
+
+        // 4. 语音识别逻辑 (Web Speech API)
+        function initSpeech() {
+            // 兼容性处理
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                alert("您的浏览器不支持语音识别，请使用最新版 Chrome 或 Edge 浏览器。");
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'zh-CN'; // 识别中文
+            recognition.continuous = false; // 每次只识别一句
+            recognition.interimResults = false;
+
+            const statusDiv = document.getElementById('voice-status');
+            const btn = document.getElementById('control-btn');
+
+            recognition.onstart = function() {
+                statusDiv.innerText = "正在聆听...";
+                statusDiv.classList.add('listening');
+                btn.innerText = "聆听中...";
+            };
+
+            recognition.onend = function() {
+                statusDiv.classList.remove('listening');
+                btn.innerText = "点击开始说话";
+                // 如果你想让它一直听，可以在这里调用 recognition.start()
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                statusDiv.innerText = `识别到: "${transcript}"`;
+                console.log("语音内容:", transcript);
+                
+                // 处理指令
+                handleCommand(transcript);
+            };
+
+            // 绑定按钮点击
+            btn.onclick = function() {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    // 防止重复启动报错
+                    console.log("已启动");
+                }
+            };
+        }
+
+        // 5. 核心：处理语音指令并点亮地图
+        function handleCommand(text) {
+            // 清除之前的选中状态
+            myChart.dispatchAction({ type: 'geoUnSelect' });
+
+            // 逻辑判断
+            // 匹配 "我来自中国" 或 "中国" 等关键词
+            if (text.indexOf("中国") !== -1) {
+                highlightMap("中国");
+                // 额外逻辑：如果地图数据将台湾分离，手动点亮台湾区域（名字需匹配 nameMap）
+                // 尝试点亮常见的台湾命名变体，确保版图完整
+                highlightMap("中国台湾"); 
+            } 
+            else if (text.indexOf("保加利亚") !== -1) {
+                highlightMap("保加利亚");
+            } 
+            else {
+                document.getElementById('voice-status').innerText = `无法识别国家: "${text}"`;
             }
         }
 
-        function clearCandles() {
-             // 获取所有显示的蜡烛
-            const candles = candlesContainer.querySelectorAll('.candle.show');
-            candles.forEach((candle, index) => {
-                // 反向动画：先移除 show class
-                setTimeout(() => {
-                    candle.classList.remove('show');
-                }, index * 50); // 快速依次消失
+        // 封装高亮函数
+        function highlightMap(countryName) {
+            // ECharts 触发选中
+            myChart.dispatchAction({
+                type: 'geoSelect',
+                name: countryName
+            });
+            // 触发高亮（鼠标悬浮效果）
+            myChart.dispatchAction({
+                type: 'highlight',
+                name: countryName
             });
             
-            // 等动画彻底结束后清空 DOM
-            setTimeout(() => {
-                 candlesContainer.innerHTML = '';
-            }, candles.length * 50 + 600);
+            document.getElementById('voice-status').innerText = `欢迎来自 ${countryName} 的朋友！`;
         }
+
+        // 启动语音功能
+        initSpeech();
+
+        // 窗口大小改变时重绘地图
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+
     </script>
 </body>
 </html>
