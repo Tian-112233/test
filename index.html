@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 年日历</title>
+    <title>2026 年日历 - 智能防抖完美版</title>
     <style>
         @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@500;700;900&display=swap');
         
@@ -109,25 +109,21 @@
             overflow: hidden;
             backface-visibility: hidden;
         }
-        /* 翻页效果 */
         .page.flipped { transform: rotateX(-160deg); opacity: 0; pointer-events: none; }
 
-        /* 头部 - 增加点击手型 */
+        /* 头部交互 */
         .header-section {
             height: 150px; background-color: var(--china-red);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            cursor: pointer; /* 提示可点击 */
-            position: relative;
+            cursor: pointer; position: relative;
         }
-        /* 点击区域提示 */
         .header-section::after {
             content: "← 上月 | 下月 →";
             position: absolute; bottom: 8px;
-            font-size: 10px; color: rgba(255,255,255,0.4);
-            pointer-events: none;
+            font-size: 10px; color: rgba(255,255,255,0.4); pointer-events: none;
         }
 
         .month-name {
@@ -167,7 +163,6 @@
             animation: draw 0.6s ease-out forwards;
         }
         @keyframes draw { to { stroke-dashoffset: 0; } }
-
     </style>
 </head>
 <body>
@@ -177,7 +172,7 @@
             <div class="bar"></div><div class="bar"></div>
             <div class="bar"></div><div class="bar"></div>
         </div>
-        <span id="status-txt">点击开启声音</span>
+        <span id="status-txt">点击开启智能声控</span>
     </div>
 
     <label class="upload-corner">
@@ -201,7 +196,9 @@
         let isAnimating = false;
         let recognition = null;
         let isVoiceOn = false; 
-        let lastCommandTime = 0; // 命令冷却，防止太灵敏导致重复
+        
+        // 关键变量：画圈计时器
+        let drawTimer = null; 
 
         window.onload = () => {
             initCalendar();
@@ -209,25 +206,19 @@
             try { new AudioContext(); } catch(e){}
         };
 
-        // --- 核心修复：手动翻页逻辑 ---
+        // --- 手动翻页 ---
         function handleHeaderClick(e, m) {
-            // 获取点击位置相对于元素的宽度
             const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const width = rect.width;
-
-            if (x < width / 2) {
-                // 点击左侧：上一页
+            if (e.clientX - rect.left < rect.width / 2) {
                 if (currentMonth > 1) autoFlipTo(currentMonth - 1);
-                else playTone('pen'); // 已经是第一页，给个反馈音
+                else playTone('pen');
             } else {
-                // 点击右侧：下一页
                 if (currentMonth < 12) autoFlipTo(currentMonth + 1);
-                else playTone('pen'); // 已经是最后一页
+                else playTone('pen');
             }
         }
 
-        // --- 核心修复：极速语音逻辑 ---
+        // --- 语音逻辑 ---
         function toggleVoice() {
             const btn = document.getElementById('voice-btn');
             const txt = document.getElementById('status-txt');
@@ -236,7 +227,7 @@
                 isVoiceOn = false;
                 if(recognition) recognition.stop();
                 btn.classList.remove('active');
-                txt.innerText = "点击开启声音";
+                txt.innerText = "点击开启声控";
                 return;
             }
 
@@ -250,21 +241,16 @@
                 recognition = new SpeechRecognition();
                 recognition.lang = 'zh-CN';
                 recognition.continuous = true; 
-                recognition.interimResults = true; // 【关键修复】开启实时结果，不等停顿
+                recognition.interimResults = true; // 开启实时响应
 
                 recognition.onend = () => {
                     if(isVoiceOn) try { recognition.start(); } catch(e){}
                 };
 
                 recognition.onresult = (e) => {
-                    // 获取最新的结果（包括临时的）
                     const result = e.results[e.results.length - 1];
                     const transcript = result[0].transcript;
-                    
-                    // 无论是否 finalized，只要匹配到命令就执行
-                    parseCommand(transcript); 
-                    
-                    // 视觉反馈
+                    parseCommand(transcript);
                     txt.innerText = transcript.length > 8 ? "..." + transcript.slice(-8) : transcript;
                 };
             }
@@ -278,28 +264,18 @@
         }
 
         function parseCommand(str) {
-            const now = Date.now();
-            if (now - lastCommandTime < 800) return; // 冷却时间 0.8秒，防止太快重复触发
-
-            console.log("Detecting:", str);
+            console.log("CMD:", str);
             const map = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12};
             let m = -1, d = -1;
 
-            // 1. 极速解析月份
-            // 只要字符串里出现了 "x月" 且 x 是有效数字或中文，立刻执行
+            // 1. 解析月份
             if(str.indexOf('月') > -1) {
-                // 截取 "月" 之前的部分
                 let p = str.substring(Math.max(0, str.lastIndexOf('月') - 3), str.lastIndexOf('月')); 
-                
-                // 优先匹配双字中文 (十一月, 十二月)
                 if (p.includes("十一") || p.includes("11")) m = 11;
                 else if (p.includes("十二") || p.includes("12")) m = 12;
                 else {
-                    // 单字匹配
                     for(let k in map) { 
-                        if(p.endsWith(k) && !p.endsWith("十"+k)) { // 避免把十二误判为二
-                            m = map[k]; break; 
-                        } 
+                        if(p.endsWith(k) && !p.endsWith("十"+k)) { m = map[k]; break; } 
                     }
                     if(m === -1) {
                         let num = p.match(/\d+/);
@@ -308,10 +284,9 @@
                 }
             }
 
-            // 2. 解析日期 (简单逻辑)
+            // 2. 解析日期
             if(m !== -1) {
                 let afterMonth = str.split('月')[1] || "";
-                // 只有当"月"后面紧跟着内容才解析日期
                 if (afterMonth.length > 0) {
                      if(afterMonth.includes("三十")) {
                         d = 30 + (map[afterMonth.slice(-1)] || 0);
@@ -321,7 +296,6 @@
                     } else if(afterMonth.includes("十") && !afterMonth.startsWith("二") && !afterMonth.startsWith("三")) {
                         d = 10 + (map[afterMonth.replace("号","").replace("日","").slice(-1)] || 0);
                     } else {
-                        // 纯数字匹配
                          let num = afterMonth.match(/\d+/);
                          if(num) d = parseInt(num[0]);
                          else {
@@ -333,21 +307,23 @@
                 }
             }
 
-            // 执行操作
+            // 执行逻辑：翻页立刻执行，画圈延迟执行
             if(m >= 1 && m <= 12) {
-                // 如果月份变化了，才翻页
+                // 如果月份不对，立刻翻页
                 if (m !== currentMonth) {
-                    playTone('success');
                     autoFlipTo(m);
-                    lastCommandTime = now; // 更新冷却时间
                 }
                 
-                // 画圈圈
+                // 画圈逻辑 (防抖核心)
                 if(d >= 1 && d <= 31) {
-                    // 如果刚翻页，延迟一下再画，否则直接画
-                    let delay = (m !== currentMonth) ? 600 : 0;
-                    setTimeout(() => circleDate(m, d), delay);
-                    lastCommandTime = now;
+                    // 1. 清除上一次准备画圈的动作
+                    if(drawTimer) clearTimeout(drawTimer);
+                    
+                    // 2. 重新设置倒计时 (600毫秒)
+                    // 只有当你停止说话超过0.6秒，才会真的画下去
+                    drawTimer = setTimeout(() => {
+                        circleDate(m, d);
+                    }, 600);
                 }
             }
         }
@@ -361,8 +337,6 @@
                 page.id = `page-${m}`;
                 page.style.zIndex = 20 - m; 
                 const lunarYear = (m === 1) ? "乙巳年" : "丙午年";
-                
-                // 将 header-section 添加 onclick 事件
                 page.innerHTML = `
                     <div class="header-section" onclick="handleHeaderClick(event, ${m})">
                         <div class="month-name">${MONTHS_CN[m-1]}</div>
@@ -399,13 +373,11 @@
             playTone('flip');
 
             if (target > currentMonth) {
-                // 往前翻（去大月份），把当前的页面翻过去
                 for (let i = currentMonth; i < target; i++) {
                     document.getElementById(`page-${i}`).classList.add('flipped');
-                    await new Promise(r => setTimeout(r, 100)); // 加速动画间隔
+                    await new Promise(r => setTimeout(r, 100));
                 }
             } else {
-                // 往回翻（去小月份），把之前的页面翻回来
                 for (let i = currentMonth - 1; i >= target; i--) {
                     document.getElementById(`page-${i}`).classList.remove('flipped');
                     await new Promise(r => setTimeout(r, 100));
@@ -416,9 +388,13 @@
         }
 
         function circleDate(m, d) {
-            // 确保翻到了那一页才能画
-            if(m !== currentMonth) {
-                autoFlipTo(m).then(() => setTimeout(() => circleDate(m, d), 600));
+            // 如果翻页动画还在进行中，延迟一下再试，保证圈画在正确页面
+            if(isAnimating || m !== currentMonth) {
+                if (m === currentMonth) {
+                   setTimeout(() => circleDate(m, d), 200);
+                } else {
+                   autoFlipTo(m).then(() => setTimeout(() => circleDate(m, d), 500));
+                }
                 return;
             }
 
