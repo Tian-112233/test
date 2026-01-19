@@ -3,519 +3,340 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>生日快乐</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>声控旗帜</title>
     <style>
         body {
             margin: 0;
-            background: #fff5f7;
-            height: 100vh;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end; 
-            overflow: hidden;
-            font-family: 'Microsoft YaHei', "STHeiti", sans-serif;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
+            justify-content: center;
+            height: 100vh;
         }
 
-        /* 状态提示 UI */
-        #ui-layer {
-            position: fixed;
-            top: 20px;
-            text-align: center;
-            z-index: 100;
+        .flag-container {
+            position: relative;
+            width: 80vw;
+            max-width: 600px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid #444;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            background: #111;
+        }
+
+        .flag {
+            position: absolute;
             width: 100%;
-            pointer-events: none;
-        }
-        #status-msg {
-            display: inline-block;
-            font-size: 1rem;
-            color: #ff4081;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(255,64,129,0.2);
-            border: 2px solid #ff4081;
-            transition: all 0.3s;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%); 
+            transition: filter 0.1s linear, opacity 0.5s ease;
+            opacity: 0;
         }
 
-        /* 启动层 */
-        #start-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
+        .flag.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* 状态显示区 */
+        .status-container {
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 10;
+            height: 90px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-        #btn-go {
-            margin-top: 30px;
-            padding: 15px 40px;
-            font-size: 1.4rem;
-            background: #ff4081;
-            border: none;
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 0 25px rgba(255, 64, 129, 0.6);
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
 
-        /* 蛋糕区域 */
-        #cake-world {
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            /* 手机端保持完美的 22vh 抬高位置 */
-            padding-bottom: 22vh; 
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            z-index: 10;
-            transform-origin: bottom center; 
-            width: 100%;
+        .country-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #888;
+            margin-bottom: 5px;
         }
 
-        /* 蛋糕层样式 */
-        .layer {
-            height: 0;
-            border-radius: 15px;
-            position: relative;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: -2px;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1);
-        }
-        .layer.active {
-            height: 65px; 
+        .progress-text {
+            font-size: 3rem;
+            color: #fff;
+            font-family: monospace; 
+            font-weight: bold;
+            transition: color 0.3s;
         }
 
-        .drip {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 25px; 
-            background: rgba(255,255,255,0.5);
-            border-radius: 15px 15px 0 0;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 95% 100%, 90% 75%, 85% 100%, 80% 75%, 75% 100%, 70% 75%, 65% 100%, 60% 75%, 55% 100%, 50% 75%, 45% 100%, 40% 75%, 35% 100%, 30% 75%, 25% 100%, 20% 75%, 15% 100%, 10% 75%, 5% 100%, 0% 75%);
-        }
-
-        /* 蜡烛样式 */
-        .candle-box {
-            position: absolute;
-            top: -55px; 
-            display: flex;
-            gap: 10px;
-            z-index: 50;
-            pointer-events: none;
-        }
-        .candle {
-            width: 14px; 
-            height: 0;
-            border-radius: 4px;
-            position: relative;
-            transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #ffb1c1 5px, #ffb1c1 10px);
-            border: 1px solid #f0f0f0;
-        }
-        .candle.active {
-            height: 50px;
+        /* 100% 时的特效 - 更加显眼 */
+        .full-power {
+            color: #ff3333 !important; /* 满能量变成红色 */
+            text-shadow: 0 0 20px #ff0000;
+            animation: shake 0.5s infinite;
         }
         
-        /* 火苗动画 */
-        .flame {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%) scale(0);
-            width: 14px;
-            height: 22px;
-            transition: transform 0.4s;
-        }
-        .candle.active .flame {
-            transform: translateX(-50%) scale(1);
-        }
-        .flame-main {
-            width: 100%;
-            height: 100%;
-            background: #ff9800;
-            border-radius: 50% 50% 20% 20%;
-            position: relative;
-            animation: flicker 0.1s infinite alternate;
-        }
-        .flame-core {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
-            height: 50%;
-            background: #fff176;
-            border-radius: 50%;
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        @keyframes flicker {
-            from { transform: scale(1) rotate(-2deg); opacity: 0.8; }
-            to { transform: scale(1.1) rotate(2deg); opacity: 1; }
-        }
-
-        /* 最终文字 - 基础样式（适配手机） */
-        #final-text {
-            position: fixed;
-            top: 15%; 
-            width: 100%;
+        .subtitle-box {
+            font-size: 1.1rem;
+            color: #0f0;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 20px;
+            border-radius: 4px;
+            min-height: 28px;
+            border: 1px solid #444;
+            max-width: 80%;
             text-align: center;
-            font-size: 15vw;
-            font-weight: 900;
-            color: #ff4081; 
-            transform: scale(0);
-            opacity: 0;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.5);
-            z-index: 200; 
-            pointer-events: none;
-            text-shadow: 3px 3px 0 #fff, 0 0 20px rgba(255,255,255,0.8);
-            white-space: nowrap; 
+            margin-top: 10px;
+            opacity: 0.9;
         }
 
-        /* 关键修改：针对电脑/平板大屏幕的特殊适配 */
-        @media (min-width: 768px) {
-            #final-text {
-                top: 5%; /* 电脑上往上提，给蛋糕留位置 */
-                font-size: 10vw; /* 电脑上字不要太大，稍微收敛一点 */
-            }
+        #visualizer {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 120px;
+            z-index: 1; opacity: 0.3; pointer-events: none;
         }
+
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
+        }
+        button { padding: 15px 40px; font-size: 1.5rem; cursor: pointer; border-radius: 50px; border:none; background: #fff; color:#000; font-weight:bold;}
+        button:hover { background: #eee; transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-<div id="start-overlay">
-    <div style="font-size: 4rem; margin-bottom: 10px;">🎂</div>
-    <h2 style="margin:0 0 10px 0;">开始许愿</h2>
-    <p style="font-size: 1rem; line-height: 1.6; color: #ddd;">
-        请大声说出“<b>生日快乐</b>”<br>
-        每说一次，蛋糕会长高或点亮蜡烛
-    </p>
-    <button id="btn-go">开始仪式</button>
-</div>
+    <div id="overlay">
+        <h1>声控旗帜</h1>
+        <p style="color:#aaa;">请使用 Chrome/Edge 浏览器</p>
+        <p style="color:#888; font-size:0.9rem">提示：如果不持续大声呼唤，颜色会很快消失</p>
+        <button id="startBtn">开始挑战</button>
+    </div>
 
-<div id="ui-layer">
-    <div id="status-msg">准备中...</div>
-</div>
+    <div class="flag-container">
+        <div id="china" class="flag active" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg');"></div>
+        <div id="bulgaria" class="flag" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Bulgaria.svg');"></div>
+    </div>
 
-<div id="final-text">生日快乐</div>
+    <div class="status-container">
+        <div class="country-name" id="countryName">当前：中国</div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
 
-<div id="cake-world">
-    <div class="candle-box" id="candle-box"></div>
-</div>
+    <div class="subtitle-box" id="subtitle">请持续呼喊：中国 / 保加利亚</div>
+
+    <canvas id="visualizer"></canvas>
 
 <script>
-    const CONFIG = {
-        maxLayers: 6,
-        maxCandles: 6,
-        colors: ['#FF8A80', '#FFD180', '#FFFF8D', '#B39DDB', '#80D8FF', '#F8BBD0'],
-        confettiColors: ['#ff4081', '#ffeb3b', '#03a9f4', '#4caf50', '#ff9800', '#9c27b0', '#ffffff', '#e91e63']
-    };
+    // --- 【关键修改】难度参数调整 ---
+    
+    // 1. 衰减速度：从 0.08 提升到 0.15 (不说话时掉得更快)
+    const DECAY_RATE = 0.15;         
+    
+    const MAX_SHOWN_SCORE = 100;
+    // 2. 缓冲区减少：从 130 降到 110 (即使充满了，只要稍停一下马上就会跌破100)
+    const MAX_INTERNAL_SCORE = 110;  
+    
+    // 3. 增量削弱
+    // 基础分从 15 降到 8 (小声说话几乎没用)
+    const BASE_BOOST = 8;           
+    // 音量系数从 60 降到 35 (只有大声喊才能涨得动)
+    const VOLUME_BOOST_FACTOR = 35;  
+    
+    
+    // --- 变量 ---
+    let currentFlag = 'china';
+    let saturation = 0;
+    let audioContext, analyser, dataArray;
+    let recognition;
+    let isRunning = false;
+    let currentVolume = 0; 
+    let lastTriggerTime = 0;
 
-    let state = {
-        layers: 0,
-        candles: 0,
-        finished: false,
-        isLocked: false,
-        audioContext: null,
-        permissionDenied: false
-    };
+    // --- DOM ---
+    const flagChina = document.getElementById('china');
+    const flagBulgaria = document.getElementById('bulgaria');
+    const countryNameEl = document.getElementById('countryName');
+    const progressTextEl = document.getElementById('progressText');
+    const subtitleText = document.getElementById('subtitle');
+    const startBtn = document.getElementById('startBtn');
+    const overlay = document.getElementById('overlay');
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
 
-    const cakeWorld = document.getElementById('cake-world');
-    const candleBox = document.getElementById('candle-box');
-    const statusMsg = document.getElementById('status-msg');
-    const finalText = document.getElementById('final-text');
-
-    // 1. 初始化入口
-    document.getElementById('btn-go').addEventListener('click', () => {
-        document.getElementById('start-overlay').style.opacity = '0';
-        setTimeout(() => document.getElementById('start-overlay').style.display = 'none', 500);
-        
+    startBtn.addEventListener('click', () => {
         initAudio();
-        startVoiceRecognition();
-        enableTouchAudioOnly();
+        initSpeech();
+        overlay.style.display = 'none';
+        isRunning = true;
+        renderLoop();
     });
 
-    // 2. 核心逻辑：执行一步动作
-    function executeOneStep() {
-        if (state.isLocked || state.finished) return;
-        
-        state.isLocked = true;
-        playNoteSound(); 
-
-        if (state.layers < CONFIG.maxLayers) {
-            statusMsg.innerText = "✨ 蛋糕长高啦！";
-            addOneLayer();
-        } else if (state.candles < CONFIG.maxCandles) {
-            statusMsg.innerText = "🕯️ 蜡烛点亮啦！";
-            addOneCandle();
+    async function initAudio() {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.6; // 让波形不那么抖动，看起来更稳
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(analyser);
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+        } catch (e) {
+            alert("无法启动麦克风: " + e);
         }
-
-        setTimeout(() => {
-            if (!state.finished) {
-                state.isLocked = false;
-                statusMsg.innerText = state.layers < CONFIG.maxLayers ? 
-                    `请大声说: 生日快乐 (${state.layers}/${CONFIG.maxLayers})` : 
-                    `请大声说: 生日快乐 (${state.candles}/${CONFIG.maxCandles})`;
-            }
-        }, 800);
     }
 
-    // 3. 语音识别逻辑
-    function startVoiceRecognition() {
-        const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-        
+    function initSpeech() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            statusMsg.innerText = "❌ 浏览器不支持语音";
-            alert("抱歉，您的浏览器不支持Web Speech API。请使用Chrome或Safari。");
+            subtitleText.innerText = "❌ 浏览器不支持语音识别";
             return;
         }
 
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'zh-CN';
+        recognition = new SpeechRecognition();
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
+        recognition.lang = 'zh-CN';
 
-        recognition.onstart = () => {
-            statusMsg.innerText = "🎤 聆听中...请说“生日快乐”";
-        };
+        recognition.onstart = () => { subtitleText.innerText = "监听中..."; };
+        recognition.onend = () => { if (isRunning) recognition.start(); };
 
         recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript;
-            console.log('收到语音:', transcript); 
-            if (transcript.match(/生日|快乐|快|乐|happy|birthday|许愿|仪式/i)) {
-                executeOneStep();
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            subtitleText.innerText = "👂: " + transcript.slice(-10);
+
+            if (transcript.includes('保加利亚')) {
+                triggerAction('bulgaria');
+            } else if (transcript.includes('中国')) {
+                triggerAction('china');
             }
         };
+        recognition.start();
+    }
 
-        recognition.onerror = (event) => {
-            console.warn("语音识别错误:", event.error);
-            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                statusMsg.innerText = "🔇 麦克风权限已拒绝";
-                state.permissionDenied = true;
-            } else {
-                statusMsg.innerText = "🎤 没听清，请大声一点";
-            }
-        };
+    function triggerAction(country) {
+        const now = Date.now();
+        if (now - lastTriggerTime < 400) return; 
+        lastTriggerTime = now;
 
-        recognition.onend = () => {
-            if (!state.finished && !state.permissionDenied) {
-                setTimeout(() => {
-                    try {
-                        recognition.start();
-                    } catch(e) {
-                        console.log("重连语音失败");
-                    }
-                }, 300);
-            }
-        };
-
-        try {
-            recognition.start();
-        } catch(e) {
-            state.permissionDenied = true;
-            statusMsg.innerText = "❌ 语音启动失败";
+        if (currentFlag !== country) {
+            switchFlag(country);
+            saturation = 10; // 切换国家只给 10% 的起步分
+        } else {
+            // 计算加分
+            let volumeBonus = (currentVolume / 255) * VOLUME_BOOST_FACTOR;
+            let totalBoost = BASE_BOOST + volumeBonus;
+            
+            // 没有保底机制了，声音小就是加得少
+            saturation += totalBoost;
+            
+            // 字幕反馈
+            subtitleText.style.color = '#fff';
+            subtitleText.style.borderColor = '#fff';
+            setTimeout(() => {
+                subtitleText.style.color = '#0f0';
+                subtitleText.style.borderColor = '#444';
+            }, 300);
         }
     }
 
-    // 4. 触控辅助
-    function enableTouchAudioOnly() {
-        const resumeAudio = () => {
-            if (state.audioContext && state.audioContext.state === 'suspended') {
-                state.audioContext.resume();
-            }
-        };
-        document.body.addEventListener('click', resumeAudio);
-        document.body.addEventListener('touchstart', resumeAudio, {passive: true});
-    }
-
-    // 5. 动画函数
-    function addOneLayer() {
-        state.layers++;
-        const l = document.createElement('div');
-        l.className = 'layer';
-        l.style.backgroundColor = CONFIG.colors[state.layers - 1];
+    function switchFlag(country) {
+        currentFlag = country;
+        saturation = 0; 
         
-        // 宽度设置：最大宽度450px，手机端占比85%
-        const baseWidth = Math.min(window.innerWidth * 0.85, 450);
-        l.style.width = (baseWidth - state.layers * 30) + 'px';
-        l.style.zIndex = 10 - state.layers;
-        
-        const drip = document.createElement('div');
-        drip.className = 'drip';
-        l.appendChild(drip);
-        
-        cakeWorld.appendChild(l);
-        cakeWorld.appendChild(candleBox); 
-
-        setTimeout(() => l.classList.add('active'), 50);
-        
-        // 每次增加都检查尺寸
-        if (state.layers > 1) {
-            adjustCakeSize();
+        if (country === 'china') {
+            flagChina.classList.add('active');
+            flagBulgaria.classList.remove('active');
+            countryNameEl.innerText = "当前：中国";
+        } else {
+            flagChina.classList.remove('active');
+            flagBulgaria.classList.add('active');
+            countryNameEl.innerText = "当前：保加利亚";
         }
     }
 
-    function addOneCandle() {
-        state.candles++;
-        const c = document.createElement('div');
-        c.className = 'candle';
-        const f = document.createElement('div');
-        f.className = 'flame';
-        f.innerHTML = '<div class="flame-main"><div class="flame-core"></div></div>';
-        c.appendChild(f);
-        candleBox.appendChild(c);
-
-        setTimeout(() => c.classList.add('active'), 50);
+    function renderLoop() {
+        requestAnimationFrame(renderLoop);
         
-        if (state.candles === CONFIG.maxCandles) {
-            finishEverything();
+        if (analyser) {
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            currentVolume = sum / dataArray.length;
+        }
+
+        saturation -= DECAY_RATE;
+        
+        if (saturation > MAX_INTERNAL_SCORE) saturation = MAX_INTERNAL_SCORE;
+        if (saturation < 0) saturation = 0;
+
+        let displaySaturation = Math.min(saturation, MAX_SHOWN_SCORE);
+        
+        updateUI(displaySaturation);
+        drawVisualizer();
+    }
+
+    function updateUI(val) {
+        const currentElement = currentFlag === 'china' ? flagChina : flagBulgaria;
+        currentElement.style.filter = `grayscale(${100 - val}%)`;
+
+        let intVal = Math.floor(val);
+        progressTextEl.innerText = `${intVal}%`;
+
+        // 100% 时加了红色震动特效，增加紧张感
+        if (intVal >= 100) {
+            progressTextEl.classList.add('full-power');
+            progressTextEl.innerText = "⚡ 100% ⚡";
+        } else {
+            progressTextEl.classList.remove('full-power');
+        }
+    }
+
+    function drawVisualizer() {
+        if (!dataArray) return;
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        const barW = (w / dataArray.length) * 2.5;
+        let x = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+            let barH = dataArray[i] / 2.5;
+            ctx.fillRect(x, h - barH, barW, barH);
+            x += barW + 1;
         }
     }
     
-    // 专门用于调整蛋糕大小的函数 - 纯净版（不位移）
-    function adjustCakeSize() {
-        // 仅仅根据层数做极小的缩放，保证不顶出屏幕，但绝不改变位置
-        const scaleFactor = 0.05; 
-        let calcScale = 1 - (state.layers - 1) * scaleFactor;
-        
-        // 限制最小缩放比例为 0.8，保证蛋糕足够大
-        if (calcScale < 0.8) calcScale = 0.8;
+    canvas.width = window.innerWidth;
+    canvas.height = 120;
 
-        // 只缩放，不位移
-        cakeWorld.style.transform = `scale(${calcScale})`;
-    }
-
-    // 6. 结束庆典
-    function finishEverything() {
-        if(state.finished) return;
-        state.finished = true;
-        
-        statusMsg.style.display = 'none';
-        
-        // 显示文字
-        finalText.style.opacity = '1';
-        finalText.style.transform = 'scale(1)';
-
-        // 播放音乐和撒花
-        playFullBirthdaySong();
-        startConfetti();
-    }
-
-    function startConfetti() {
-        const duration = 15000;
-        const animationEnd = Date.now() + duration;
-        
-        (function frame() {
-            const timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return;
-            
-            const confettiConfig = {
-                particleCount: 5,
-                spread: 55,
-                colors: CONFIG.confettiColors,
-                zIndex: 9999, 
-                disableForReducedMotion: true
-            };
-
-            confetti({
-                ...confettiConfig,
-                angle: 60,
-                origin: { x: 0, y: 0.7 }
-            });
-            confetti({
-                ...confettiConfig,
-                angle: 120,
-                origin: { x: 1, y: 0.7 }
-            });
-            
-            requestAnimationFrame(frame);
-        }());
-    }
-
-    // 7. 音频处理
-    function initAudio() {
-        state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = state.audioContext.createOscillator();
-        const gain = state.audioContext.createGain();
-        gain.gain.value = 0;
-        osc.connect(gain);
-        gain.connect(state.audioContext.destination);
-        osc.start();
-        osc.stop(0.1);
-    }
-
-    function playNoteSound() {
-        if(!state.audioContext) return;
-        const osc = state.audioContext.createOscillator();
-        const gain = state.audioContext.createGain();
-        osc.frequency.value = 400 + (state.layers * 50) + (state.candles * 100);
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.1, state.audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, state.audioContext.currentTime + 0.3);
-        osc.connect(gain);
-        gain.connect(state.audioContext.destination);
-        osc.start();
-        osc.stop(state.audioContext.currentTime + 0.3);
-    }
-
-    function playFullBirthdaySong() {
-        if(!state.audioContext) return;
-        const ctx = state.audioContext;
-        
-        const notes = {
-            '5_': 392.00, '6_': 440.00, '7_': 493.88,
-            '1': 523.25, '2': 587.33, '3': 659.25,
-            '4': 698.46, '5': 783.99, '6': 880.00
-        };
-
-        const song = [
-            ['5_', 300], ['5_', 300], ['6_', 600], ['5_', 600], ['1', 600], ['7_', 1000],
-            ['5_', 300], ['5_', 300], ['6_', 600], ['5_', 600], ['2', 600], ['1', 1000],
-            ['5_', 300], ['5_', 300], ['5', 600], ['3', 600], ['1', 600], ['7_', 600], ['6_', 1000],
-            ['4', 300], ['4', 300], ['3', 600], ['1', 600], ['2', 600], ['1', 1200]
-        ];
-
-        let time = ctx.currentTime + 0.5;
-        
-        song.forEach((note) => {
-            const freq = notes[note[0]];
-            const duration = note[1] / 1000;
-            const gap = 0.05;
-
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, time);
-            
-            gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(0.3, time + 0.05);
-            gain.gain.setValueAtTime(0.3, time + duration - 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            
-            osc.start(time);
-            osc.stop(time + duration);
-            
-            time += duration + gap;
-        });
-    }
 </script>
 </body>
 </html>
