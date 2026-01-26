@@ -3,519 +3,504 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>生日快乐</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>声控全家福</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
+        @import url('https://gs.jurieo.com/gemini/fonts-googleapis/css2?family=Zcool+KuaiLe&display=swap');
+
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
-            background: #fff5f7;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end; 
             overflow: hidden;
-            font-family: 'Microsoft YaHei', "STHeiti", sans-serif;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* 状态提示 UI */
-        #ui-layer {
-            position: fixed;
-            top: 20px;
-            text-align: center;
-            z-index: 100;
-            width: 100%;
-            pointer-events: none;
-        }
-        #status-msg {
-            display: inline-block;
-            font-size: 1rem;
-            color: #ff4081;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(255,64,129,0.2);
-            border: 2px solid #ff4081;
-            transition: all 0.3s;
-        }
-
-        /* 启动层 */
-        #start-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
+            font-family: 'Zcool KuaiLe', cursive, 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #E0F7FA 0%, #4DD0E1 100%);
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-        #btn-go {
-            margin-top: 30px;
-            padding: 15px 40px;
-            font-size: 1.4rem;
-            background: #ff4081;
-            border: none;
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 0 25px rgba(255, 64, 129, 0.6);
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            height: 100vh;
         }
 
-        /* 蛋糕区域 */
-        #cake-world {
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
-            /* 手机端保持完美的 22vh 抬高位置 */
-            padding-bottom: 22vh; 
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            z-index: 10;
-            transform-origin: bottom center; 
-            width: 100%;
-        }
-
-        /* 蛋糕层样式 */
-        .layer {
-            height: 0;
-            border-radius: 15px;
-            position: relative;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: -2px;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1);
-        }
-        .layer.active {
-            height: 65px; 
-        }
-
-        .drip {
+        /* 顶部面板 */
+        .header-panel {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 25px; 
-            background: rgba(255,255,255,0.5);
-            border-radius: 15px 15px 0 0;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 95% 100%, 90% 75%, 85% 100%, 80% 75%, 75% 100%, 70% 75%, 65% 100%, 60% 75%, 55% 100%, 50% 75%, 45% 100%, 40% 75%, 35% 100%, 30% 75%, 25% 100%, 20% 75%, 15% 100%, 10% 75%, 5% 100%, 0% 75%);
-        }
-
-        /* 蜡烛样式 */
-        .candle-box {
-            position: absolute;
-            top: -55px; 
+            top: 20px;
+            left: 20px;
+            z-index: 500;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
+            flex-direction: column;
             gap: 10px;
-            z-index: 50;
-            pointer-events: none;
         }
-        .candle {
-            width: 14px; 
-            height: 0;
-            border-radius: 4px;
+
+        .gender-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .toggle-btn {
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .toggle-btn.active.boy { background: #e3f2fd; color: #1976d2; border-color: #1976d2; }
+        .toggle-btn.active.girl { background: #fce4ec; color: #c2185b; border-color: #c2185b; }
+
+        .status-text {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mic-icon { width: 10px; height: 10px; background: #ccc; border-radius: 50%; }
+        .mic-icon.on { background: #4caf50; animation: pulse 1s infinite; }
+
+        /* --- 舞台区域 --- */
+        .stage-container {
+            flex: 1;
+            width: 100%;
+            overflow-x: auto;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 80px; 
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.6) transparent;
+        }
+
+        .stage-wrapper {
+            display: flex;
+            align-items: flex-end;
+            /* 【关键修改1】拉大间距，确保不重叠 */
+            gap: 30px; 
+            padding: 0 50px;
+            padding-top: 220px; 
+            margin: 0 auto;
+            min-width: max-content;
+        }
+
+        /* 人物组件（物理占位框） */
+        .person-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
-            transition: height 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #ffb1c1 5px, #ffb1c1 10px);
-            border: 1px solid #f0f0f0;
-        }
-        .candle.active {
-            height: 50px;
+            /* 【关键修改2】设置足够的物理宽度。240px 足够容纳最宽的发型 */
+            width: 240px; 
+            flex-shrink: 0;
+            transition: transform 0.3s;
+            /* 保持 visible 以防万一，虽然现在宽度够了应该不会溢出 */
+            overflow: visible; 
+            z-index: 10;
         }
         
-        /* 火苗动画 */
-        .flame {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%) scale(0);
-            width: 14px;
-            height: 22px;
-            transition: transform 0.4s;
+        .person-box:hover {
+            z-index: 100;
         }
-        .candle.active .flame {
-            transform: translateX(-50%) scale(1);
-        }
-        .flame-main {
-            width: 100%;
-            height: 100%;
-            background: #ff9800;
-            border-radius: 50% 50% 20% 20%;
+
+        .img-container {
+            width: 100%; /* 占满 240px */
+            height: 280px; 
             position: relative;
-            animation: flicker 0.1s infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 0;
         }
-        .flame-core {
+
+        .avatar-img {
+            /* 回归标准设置，占满容器 */
+            width: 100%; 
+            height: 100%;
+            object-fit: contain; 
+            object-position: bottom center;
+            filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15));
+            transition: transform 0.3s;
+        }
+
+        /* 气泡 */
+        .bubble {
             position: absolute;
-            top: 40%;
+            top: 20px; 
             left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
-            height: 50%;
-            background: #fff176;
-            border-radius: 50%;
-        }
-
-        @keyframes flicker {
-            from { transform: scale(1) rotate(-2deg); opacity: 0.8; }
-            to { transform: scale(1.1) rotate(2deg); opacity: 1; }
-        }
-
-        /* 最终文字 - 基础样式（适配手机） */
-        #final-text {
-            position: fixed;
-            top: 15%; 
-            width: 100%;
-            text-align: center;
-            font-size: 15vw;
-            font-weight: 900;
-            color: #ff4081; 
-            transform: scale(0);
+            transform: translateX(-50%) scale(0.5);
+            background: white;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             opacity: 0;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.5);
-            z-index: 200; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none;
-            text-shadow: 3px 3px 0 #fff, 0 0 20px rgba(255,255,255,0.8);
-            white-space: nowrap; 
+            z-index: 200; 
+            white-space: nowrap;
+        }
+        .bubble::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid;
+            border-color: white transparent transparent transparent;
         }
 
-        /* 关键修改：针对电脑/平板大屏幕的特殊适配 */
-        @media (min-width: 768px) {
-            #final-text {
-                top: 5%; /* 电脑上往上提，给蛋糕留位置 */
-                font-size: 10vw; /* 电脑上字不要太大，稍微收敛一点 */
-            }
+        /* 挥手动画 */
+        .person-box.waving .avatar-img {
+            animation: waveBody 1s ease-in-out infinite;
+        }
+        
+        @keyframes waveBody {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+
+        .person-box.waving .bubble {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+            top: -20px; 
+        }
+
+        .name-card {
+            margin-top: -10px;
+            background: white;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            border: 3px solid #4FC3F7;
+            z-index: 150; 
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .ground {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: #81C784; border-top: 6px solid #66BB6A;
+            z-index: 0; pointer-events: none;
+        }
+
+        .start-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            color: white; cursor: pointer;
+        }
+        .start-overlay h1 { color: #FFD700; margin-bottom: 20px; font-size: 2.5em; }
+        .start-overlay p { font-size: 1.2em; line-height: 1.8; }
+
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        .debug-area {
+            position: fixed; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.6); color: lime; padding: 10px;
+            border-radius: 5px; font-size: 12px; pointer-events: none; z-index: 200;
         }
     </style>
 </head>
 <body>
 
-<div id="start-overlay">
-    <div style="font-size: 4rem; margin-bottom: 10px;">🎂</div>
-    <h2 style="margin:0 0 10px 0;">开始许愿</h2>
-    <p style="font-size: 1rem; line-height: 1.6; color: #ddd;">
-        请大声说出“<b>生日快乐</b>”<br>
-        每说一次，蛋糕会长高或点亮蜡烛
-    </p>
-    <button id="btn-go">开始仪式</button>
-</div>
+<div id="app">
+    <div class="start-overlay" v-if="!hasStarted" @click="startSystem">
+        <h1>🎙️ 点击任意处开始</h1>
+        <p>1. 说“我家有X口人” &nbsp;&nbsp; 2. 说“这是XX”</p>
+    </div>
 
-<div id="ui-layer">
-    <div id="status-msg">准备中...</div>
-</div>
+    <div class="header-panel">
+        <div class="gender-toggle">
+            <span>我是:</span>
+            <div class="toggle-btn" :class="{active: myGender==='Boy', boy: true}" @click="setGender('Boy')">男生 👦</div>
+            <div class="toggle-btn" :class="{active: myGender==='Girl', girl: true}" @click="setGender('Girl')">女生 👧</div>
+        </div>
+        <div class="status-text">
+            <div class="mic-icon" :class="{on: isListening}"></div>
+            <span>{{ statusMsg }}</span>
+        </div>
+    </div>
 
-<div id="final-text">生日快乐</div>
+    <div class="stage-container" ref="stageRef">
+        <div class="stage-wrapper">
+            <div v-for="(p, idx) in people" :key="p.id" class="person-box" :class="{waving: p.isWaving}" :style="{zIndex: 10 + idx}">
+                <div class="bubble">你好!</div>
+                <div class="img-container">
+                    <img :src="p.img" :key="p.img" class="avatar-img" @error="handleImgError(p, $event)">
+                </div>
+                <div class="name-card">{{ p.name }}</div>
+            </div>
+        </div>
+    </div>
 
-<div id="cake-world">
-    <div class="candle-box" id="candle-box"></div>
+    <div class="ground"></div>
+
+    <div class="debug-area" v-if="lastCommand">
+        听到: "{{ lastCommand }}" <br>
+        动作: {{ debugAction }}
+    </div>
 </div>
 
 <script>
-    const CONFIG = {
-        maxLayers: 6,
-        maxCandles: 6,
-        colors: ['#FF8A80', '#FFD180', '#FFFF8D', '#B39DDB', '#80D8FF', '#F8BBD0'],
-        confettiColors: ['#ff4081', '#ffeb3b', '#03a9f4', '#4caf50', '#ff9800', '#9c27b0', '#ffffff', '#e91e63']
-    };
+const { createApp, ref, nextTick } = Vue;
 
-    let state = {
-        layers: 0,
-        candles: 0,
-        finished: false,
-        isLocked: false,
-        audioContext: null,
-        permissionDenied: false
-    };
+createApp({
+    setup() {
+        const hasStarted = ref(false);
+        const isListening = ref(false);
+        const statusMsg = ref("等待启动...");
+        const lastCommand = ref("");
+        const debugAction = ref("无");
+        const myGender = ref("Boy");
+        const people = ref([]);
+        const stageRef = ref(null);
 
-    const cakeWorld = document.getElementById('cake-world');
-    const candleBox = document.getElementById('candle-box');
-    const statusMsg = document.getElementById('status-msg');
-    const finalText = document.getElementById('final-text');
-
-    // 1. 初始化入口
-    document.getElementById('btn-go').addEventListener('click', () => {
-        document.getElementById('start-overlay').style.opacity = '0';
-        setTimeout(() => document.getElementById('start-overlay').style.display = 'none', 500);
-        
-        initAudio();
-        startVoiceRecognition();
-        enableTouchAudioOnly();
-    });
-
-    // 2. 核心逻辑：执行一步动作
-    function executeOneStep() {
-        if (state.isLocked || state.finished) return;
-        
-        state.isLocked = true;
-        playNoteSound(); 
-
-        if (state.layers < CONFIG.maxLayers) {
-            statusMsg.innerText = "✨ 蛋糕长高啦！";
-            addOneLayer();
-        } else if (state.candles < CONFIG.maxCandles) {
-            statusMsg.innerText = "🕯️ 蜡烛点亮啦！";
-            addOneCandle();
-        }
-
-        setTimeout(() => {
-            if (!state.finished) {
-                state.isLocked = false;
-                statusMsg.innerText = state.layers < CONFIG.maxLayers ? 
-                    `请大声说: 生日快乐 (${state.layers}/${CONFIG.maxLayers})` : 
-                    `请大声说: 生日快乐 (${state.candles}/${CONFIG.maxCandles})`;
-            }
-        }, 800);
-    }
-
-    // 3. 语音识别逻辑
-    function startVoiceRecognition() {
-        const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-        
-        if (!SpeechRecognition) {
-            statusMsg.innerText = "❌ 浏览器不支持语音";
-            alert("抱歉，您的浏览器不支持Web Speech API。请使用Chrome或Safari。");
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'zh-CN';
-        recognition.continuous = true;
-        recognition.interimResults = false;
-
-        recognition.onstart = () => {
-            statusMsg.innerText = "🎤 聆听中...请说“生日快乐”";
+        const cnToNum = {
+            '一':1, '二':2, '两':2, '三':3, '四':4, 
+            '五':5, '无':5, '伍':5, '舞':5, 
+            '六':6, '七':7, '八':8, '九':9, '十':10
         };
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript;
-            console.log('收到语音:', transcript); 
-            if (transcript.match(/生日|快乐|快|乐|happy|birthday|许愿|仪式/i)) {
-                executeOneStep();
-            }
-        };
-
-        recognition.onerror = (event) => {
-            console.warn("语音识别错误:", event.error);
-            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                statusMsg.innerText = "🔇 麦克风权限已拒绝";
-                state.permissionDenied = true;
-            } else {
-                statusMsg.innerText = "🎤 没听清，请大声一点";
-            }
-        };
-
-        recognition.onend = () => {
-            if (!state.finished && !state.permissionDenied) {
-                setTimeout(() => {
-                    try {
-                        recognition.start();
-                    } catch(e) {
-                        console.log("重连语音失败");
-                    }
-                }, 300);
-            }
-        };
-
-        try {
-            recognition.start();
-        } catch(e) {
-            state.permissionDenied = true;
-            statusMsg.innerText = "❌ 语音启动失败";
-        }
-    }
-
-    // 4. 触控辅助
-    function enableTouchAudioOnly() {
-        const resumeAudio = () => {
-            if (state.audioContext && state.audioContext.state === 'suspended') {
-                state.audioContext.resume();
-            }
-        };
-        document.body.addEventListener('click', resumeAudio);
-        document.body.addEventListener('touchstart', resumeAudio, {passive: true});
-    }
-
-    // 5. 动画函数
-    function addOneLayer() {
-        state.layers++;
-        const l = document.createElement('div');
-        l.className = 'layer';
-        l.style.backgroundColor = CONFIG.colors[state.layers - 1];
-        
-        // 宽度设置：最大宽度450px，手机端占比85%
-        const baseWidth = Math.min(window.innerWidth * 0.85, 450);
-        l.style.width = (baseWidth - state.layers * 30) + 'px';
-        l.style.zIndex = 10 - state.layers;
-        
-        const drip = document.createElement('div');
-        drip.className = 'drip';
-        l.appendChild(drip);
-        
-        cakeWorld.appendChild(l);
-        cakeWorld.appendChild(candleBox); 
-
-        setTimeout(() => l.classList.add('active'), 50);
-        
-        // 每次增加都检查尺寸
-        if (state.layers > 1) {
-            adjustCakeSize();
-        }
-    }
-
-    function addOneCandle() {
-        state.candles++;
-        const c = document.createElement('div');
-        c.className = 'candle';
-        const f = document.createElement('div');
-        f.className = 'flame';
-        f.innerHTML = '<div class="flame-main"><div class="flame-core"></div></div>';
-        c.appendChild(f);
-        candleBox.appendChild(c);
-
-        setTimeout(() => c.classList.add('active'), 50);
-        
-        if (state.candles === CONFIG.maxCandles) {
-            finishEverything();
-        }
-    }
-    
-    // 专门用于调整蛋糕大小的函数 - 纯净版（不位移）
-    function adjustCakeSize() {
-        // 仅仅根据层数做极小的缩放，保证不顶出屏幕，但绝不改变位置
-        const scaleFactor = 0.05; 
-        let calcScale = 1 - (state.layers - 1) * scaleFactor;
-        
-        // 限制最小缩放比例为 0.8，保证蛋糕足够大
-        if (calcScale < 0.8) calcScale = 0.8;
-
-        // 只缩放，不位移
-        cakeWorld.style.transform = `scale(${calcScale})`;
-    }
-
-    // 6. 结束庆典
-    function finishEverything() {
-        if(state.finished) return;
-        state.finished = true;
-        
-        statusMsg.style.display = 'none';
-        
-        // 显示文字
-        finalText.style.opacity = '1';
-        finalText.style.transform = 'scale(1)';
-
-        // 播放音乐和撒花
-        playFullBirthdaySong();
-        startConfetti();
-    }
-
-    function startConfetti() {
-        const duration = 15000;
-        const animationEnd = Date.now() + duration;
-        
-        (function frame() {
-            const timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return;
+        const getAvatar = (role, genderPreference, index = 0) => {
+            const baseUrl = "https://api.dicebear.com/9.x/avataaars/svg";
             
-            const confettiConfig = {
-                particleCount: 5,
-                spread: 55,
-                colors: CONFIG.confettiColors,
-                zIndex: 9999, 
-                disableForReducedMotion: true
+            // --- 【关键修改3】API 参数调整 ---
+            // scale=80: 标准缩放，配合 240px 的大容器，足够显示完整且不小。
+            // translateY=10: 稍微下移，留出顶部空间。
+            let config = "backgroundType=solid&backgroundRotation=0&translateY=10&scale=80"; 
+            
+            const seed = `${role}_${index}_${Math.random()}`;
+
+            // --- 强制特征匹配 ---
+            if (['爷爷', '外公'].includes(role)) {
+                return `${baseUrl}?seed=${seed}&${config}&top=winterHat01&hairColor=platinum&facialHair=beardMajestic&clothing=collarAndSweater&skinColor=light&accessories=prescription02`;
+            }
+            if (['奶奶', '外婆'].includes(role)) {
+                return `${baseUrl}?seed=${seed}&${config}&top=bigHair&hairColor=platinum&clothing=graphicShirt&accessories=prescription02&skinColor=light`;
+            }
+            if (role === '爸爸') {
+                return `${baseUrl}?seed=${seed}&${config}&top=shortHairShortFlat&hairColor=black&facialHair=beardMedium&clothing=blazerAndShirt&skinColor=light`;
+            }
+            if (role === '妈妈') {
+                return `${baseUrl}?seed=${seed}&${config}&top=longHairCurvy&hairColor=brown&clothing=overall&skinColor=light&accessories=none`;
+            }
+            if (role === '哥哥' || role === '弟弟') {
+                return `${baseUrl}?seed=${seed}&${config}&top=shortHairTheCaesar&hairColor=brown&clothing=hoodie&skinColor=light&accessories=none`;
+            }
+            if (role === '姐姐' || role === '妹妹') {
+                return `${baseUrl}?seed=${seed}&${config}&top=longHairStraight&hairColor=black&clothing=shirtCrewNeck&skinColor=light&accessories=none`;
+            }
+            if (role === '我') {
+                if (genderPreference === 'Boy') {
+                    return `${baseUrl}?seed=${seed}&${config}&top=shortHairDreads01&hairColor=black&clothing=hoodie&skinColor=light&accessories=wayfarers`;
+                } else {
+                    return `${baseUrl}?seed=${seed}&${config}&top=longHairBob&hairColor=black&clothing=shirtScoopNeck&skinColor=light&accessories=catEye`;
+                }
+            }
+            if (role.includes('朋友')) {
+                const num = parseInt(role.replace('朋友', '')) || (index + 1);
+                if (num % 2 !== 0) {
+                    return `${baseUrl}?seed=${seed}&${config}&top=shortHairFrizzle&hairColor=pastelPink&clothing=graphicShirt`;
+                } else {
+                    return `${baseUrl}?seed=${seed}&${config}&top=longHairMiaWallace&hairColor=auburn&clothing=overall`;
+                }
+            }
+
+            return `${baseUrl}?seed=${seed}&${config}`;
+        };
+
+        const handleImgError = (person, e) => {
+            console.log(`${person.name} 图片加载失败，切换到 Emoji 模式`);
+            let emoji = '👤';
+            const name = person.name;
+
+            if (name.includes('爷') || name.includes('外公')) emoji = '👴';
+            else if (name.includes('奶') || name.includes('外婆')) emoji = '👵';
+            else if (name === '爸爸') emoji = '👨';
+            else if (name === '妈妈') emoji = '👩';
+            else if (name.includes('哥') || name.includes('弟')) emoji = '👦';
+            else if (name.includes('姐') || name.includes('妹')) emoji = '👧';
+            else if (name === '我') emoji = myGender.value === 'Boy' ? '🧑‍🎓' : '👩‍🎓';
+            else if (name.includes('朋友')) emoji = (person.id % 2 === 0) ? '👱‍♀️' : '👱';
+
+            const svgContent = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                    <text y=".9em" font-size="90">${emoji}</text>
+                </svg>
+            `;
+            const dataUri = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgContent)))}`;
+            e.target.src = dataUri;
+        };
+
+        const startSystem = () => {
+            hasStarted.value = true;
+            initRecognition();
+            statusMsg.value = "请说：我家有X口人";
+        };
+
+        const setGender = (g) => {
+            myGender.value = g;
+            const meIndex = people.value.findIndex(p => p.name === '我');
+            if (meIndex !== -1) {
+                people.value[meIndex].img = getAvatar('我', g, 0);
+            }
+        };
+
+        const initRecognition = () => {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SpeechRecognition) return alert("请使用 Chrome 或 Edge 浏览器");
+            
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'zh-CN';
+            recognition.continuous = true;
+
+            recognition.onstart = () => { isListening.value = true; statusMsg.value = "正在听..."; };
+            recognition.onend = () => { if(hasStarted.value) recognition.start(); };
+            
+            recognition.onresult = (e) => {
+                const text = e.results[e.results.length-1][0].transcript;
+                lastCommand.value = text;
+                parseCommand(text);
             };
-
-            confetti({
-                ...confettiConfig,
-                angle: 60,
-                origin: { x: 0, y: 0.7 }
-            });
-            confetti({
-                ...confettiConfig,
-                angle: 120,
-                origin: { x: 1, y: 0.7 }
-            });
-            
-            requestAnimationFrame(frame);
-        }());
-    }
-
-    // 7. 音频处理
-    function initAudio() {
-        state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = state.audioContext.createOscillator();
-        const gain = state.audioContext.createGain();
-        gain.gain.value = 0;
-        osc.connect(gain);
-        gain.connect(state.audioContext.destination);
-        osc.start();
-        osc.stop(0.1);
-    }
-
-    function playNoteSound() {
-        if(!state.audioContext) return;
-        const osc = state.audioContext.createOscillator();
-        const gain = state.audioContext.createGain();
-        osc.frequency.value = 400 + (state.layers * 50) + (state.candles * 100);
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.1, state.audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, state.audioContext.currentTime + 0.3);
-        osc.connect(gain);
-        gain.connect(state.audioContext.destination);
-        osc.start();
-        osc.stop(state.audioContext.currentTime + 0.3);
-    }
-
-    function playFullBirthdaySong() {
-        if(!state.audioContext) return;
-        const ctx = state.audioContext;
-        
-        const notes = {
-            '5_': 392.00, '6_': 440.00, '7_': 493.88,
-            '1': 523.25, '2': 587.33, '3': 659.25,
-            '4': 698.46, '5': 783.99, '6': 880.00
+            recognition.start();
         };
 
-        const song = [
-            ['5_', 300], ['5_', 300], ['6_', 600], ['5_', 600], ['1', 600], ['7_', 1000],
-            ['5_', 300], ['5_', 300], ['6_', 600], ['5_', 600], ['2', 600], ['1', 1000],
-            ['5_', 300], ['5_', 300], ['5', 600], ['3', 600], ['1', 600], ['7_', 600], ['6_', 1000],
-            ['4', 300], ['4', 300], ['3', 600], ['1', 600], ['2', 600], ['1', 1200]
-        ];
+        const parseCommand = (text) => {
+            const countMatch = text.match(/有(\d+|[一二两三四五无伍六七八九十]+)[口个]人/);
+            if(countMatch) {
+                let rawNum = countMatch[1];
+                let num = parseInt(rawNum);
+                if(isNaN(num)) num = cnToNum[rawNum] || 0;
+                
+                if (num > 0) updatePeople(num);
+                return;
+            }
 
-        let time = ctx.currentTime + 0.5;
-        
-        song.forEach((note) => {
-            const freq = notes[note[0]];
-            const duration = note[1] / 1000;
-            const gap = 0.05;
+            if (text.includes("朋友")) {
+                const numMatch = text.match(/朋友(\d+|[一二三四五六七八九十]+)/);
+                if (numMatch) {
+                    let fNumStr = numMatch[1];
+                    let fNum = parseInt(fNumStr);
+                    if(isNaN(fNum)) fNum = cnToNum[fNumStr];
+                    doWave(`朋友${fNum}`, true); 
+                    return;
+                } else {
+                    doWave("朋友", false);
+                    return;
+                }
+            }
 
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+            const introMatch = text.match(/这是(我|爸爸|妈妈|爷爷|奶奶|外公|外婆|哥哥|弟弟|姐姐|妹妹)/);
+            const introMatch2 = text.match(/这是我(爸爸|妈妈|爷爷|奶奶|外公|外婆|哥哥|弟弟|姐姐|妹妹)/);
             
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, time);
+            let target = null;
+            if(introMatch2) target = introMatch2[1];
+            else if(introMatch) target = introMatch[1];
             
-            gain.gain.setValueAtTime(0, time);
-            gain.gain.linearRampToValueAtTime(0.3, time + 0.05);
-            gain.gain.setValueAtTime(0.3, time + duration - 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+            if(text.includes("这是我") && !introMatch2 && !text.includes("朋友")) target = "我";
+            
+            if(target) doWave(target, false);
+        };
 
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+        const updatePeople = (count) => {
+            const familyQueue = ['爸爸', '妈妈', '爷爷', '奶奶', '哥哥', '姐姐', '弟弟', '妹妹'];
+            const newList = [];
+            let friendCount = 1;
+
+            newList.push({
+                id: 'me',
+                name: '我',
+                img: getAvatar('我', myGender.value),
+                isWaving: false
+            });
+
+            const remainingCount = count - 1;
             
-            osc.start(time);
-            osc.stop(time + duration);
+            for(let i = 0; i < remainingCount; i++) {
+                let name = "";
+                if (i < familyQueue.length) {
+                    name = familyQueue[i];
+                } else {
+                    name = `朋友${friendCount}`;
+                    friendCount++;
+                }
+
+                newList.push({
+                    id: i,
+                    name: name,
+                    img: getAvatar(name, myGender.value, i), 
+                    isWaving: false
+                });
+            }
+
+            people.value = newList;
+            nextTick(() => {
+                if(stageRef.value) stageRef.value.scrollTo({ left: 0, behavior: 'smooth' });
+            });
+        };
+
+        const doWave = (nameToFind, isExactMatch) => {
+            debugAction.value = `寻找: ${nameToFind}`;
             
-            time += duration + gap;
-        });
+            let p = null;
+            if (isExactMatch) {
+                p = people.value.find(person => person.name === nameToFind);
+            } else {
+                p = people.value.find(person => person.name.includes(nameToFind));
+            }
+            
+            if(p) {
+                p.isWaving = true;
+                
+                let gender = 'female';
+                let pitch = 1;
+                
+                if(['爸爸','爷爷','外公','哥哥','男','弟'].some(k=>p.name.includes(k))) {
+                    gender = 'male'; pitch = 0.8;
+                } else if (p.name === '我' && myGender.value === 'Boy') {
+                    gender = 'male'; pitch = 1.1;
+                }
+                
+                if (p.name.includes('朋友')) { 
+                     if (p.img.includes('clothing=graphicShirt')) {
+                          gender = 'male'; pitch = 0.9;
+                     } else {
+                          gender = 'female'; pitch = 1.2;
+                     }
+                }
+
+                speak("你好", gender, pitch);
+                setTimeout(() => p.isWaving = false, 1500);
+            } else {
+                debugAction.value = `未找到: ${nameToFind}`;
+            }
+        };
+
+        const speak = (txt, gender='female', pitch=1) => {
+            const u = new SpeechSynthesisUtterance(txt);
+            u.lang = 'zh-CN';
+            u.pitch = pitch;
+            window.speechSynthesis.speak(u);
+        };
+
+        return {
+            hasStarted, isListening, statusMsg, lastCommand, debugAction,
+            myGender, people, stageRef,
+            startSystem, setGender, handleImgError
+        };
     }
+}).mount('#app');
 </script>
 </body>
 </html>
