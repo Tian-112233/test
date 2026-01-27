@@ -183,12 +183,14 @@
             border-color: var(--color-accent-gold); z-index: 2;
         }
 
-        /* --- 核心修改：网格背景 (标准米字格 + L折角) --- */
+        /* --- 核心修改：网格背景 --- */
         .grid-bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
-        /* 米字线 */
+        
+        /* 这里的CSS现在匹配HTML中的class "g-line" */
         .g-line { position: absolute; background-color: var(--color-grid-line); }
+        
         .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
         .gl-v { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
         .gl-d1 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
@@ -344,7 +346,7 @@
     <div class="main-content">
         <header>
             <h1>汉字书写练习板（中国新年版）<br>
-            <span class="title-translation">Дъска за писане на китайски йероглифи (Издание за Китайската Нова година)</span></h1>
+            <span class="title-translation">Дъска за писане на китайски йероглифи (Китайска Нова Година)</span></h1>
         </header>
         
         <div class="desktop-board-container board-container" id="boardScrollContainer">
@@ -398,8 +400,8 @@
                 <div style="margin-bottom:5px; font-weight:bold; color:var(--color-accent);">格子 <span id="mobileCurGridNum">1</span> (笔画: <span id="mobileCurStroke">0</span>)</div>
                 <div class="mobile-current-grid" id="mobileGridTarget">
                     <div class="grid-bg-layer">
-                        <div class="gl-d1"></div><div class="gl-d2"></div>
-                        <div class="gl-h"></div><div class="gl-v"></div>
+                        <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
+                        <div class="g-line gl-h"></div><div class="g-line gl-v"></div>
                         <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
                         <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                     </div>
@@ -527,10 +529,11 @@
     }
 
     // --- HTML字符串：标准米字格 + L折角 ---
+    // 关键修正：添加 g-line 类，确保 CSS 选择器能选中它们
     function getGridBgHTML() {
         return `<div class="grid-bg-layer">
-                    <div class="gl-d1"></div><div class="gl-d2"></div>
-                    <div class="gl-h"></div><div class="gl-v"></div>
+                    <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
+                    <div class="g-line gl-h"></div><div class="g-line gl-v"></div>
                     <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
                     <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                 </div>`;
@@ -782,7 +785,7 @@
             // --- 头部信息 (位于格子上方) ---
             // 名字 (左上)
             ctx.fillStyle='#C41E3A'; ctx.font='bold 20px KaiTi, serif'; ctx.textAlign='left';
-            ctx.fillText(name ? `书写人: ${name}` : '书写人: ______', padding, startY + padding + 25);
+            ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, startY + padding + 25);
 
             // 右上信息：Page 1/2 | 2026/1/27
             const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); 
@@ -796,6 +799,14 @@
 
             ctx.fillStyle='#8B4513'; ctx.font='16px serif'; ctx.textAlign='right';
             ctx.fillText(infoStr, width - padding, startY + padding + 25);
+            
+            // --- 红色分割线 ---
+            ctx.beginPath();
+            ctx.moveTo(padding, startY + padding + 35);
+            ctx.lineTo(width - padding, startY + padding + 35);
+            ctx.strokeStyle = '#C41E3A';
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
             // --- 绘制 3x3 格子 ---
             for(let i=0; i<9; i++){
