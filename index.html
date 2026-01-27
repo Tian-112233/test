@@ -6,7 +6,7 @@
     <title>汉字书写练习板（中国新年版）</title>
     <style>
         :root {
-            /* --- 基础配色 (恢复清爽风格) --- */
+            /* --- 基础配色 --- */
             --color-bg-body: #FDFCF8;       /* 宣纸白 */
             --color-bg-container: #FFFBF0;  /* 暖米色容器 */
             --color-bg-board: #fff;         /* 纯白书写纸 */
@@ -14,16 +14,15 @@
             --color-text-main: #2c3e50;     /* 深蓝灰文字 */
             --color-text-secondary: #8B4513;/* 檀木色文字 */
             
-            --color-accent: #C41E3A;        /* 中国红/朱砂 (重点色) */
-            --color-accent-gold: #FFD700;   /* 赤金 (装饰色) */
+            --color-accent: #C41E3A;        /* 中国红/朱砂 */
+            --color-accent-gold: #FFD700;   /* 赤金 */
             
             --color-border-main: #8B4513;   /* 檀木边框 */
             --color-border-board: #C41E3A;  /* 红纸边框 */
             
-            /* 网格线颜色：加深一点，确保看得到 */
-            --color-grid-line: rgba(139, 69, 19, 0.3); 
-            --color-active-bg: #FFF5E6;     /* 浅金色激活背景 */
-            --color-mark: #B8860B;          /* 折角颜色 */
+            /* 屏幕上显示的网格线：清晰可见 */
+            --color-grid-line: rgba(139, 69, 19, 0.4); 
+            --color-active-bg: #FFF5E6;     
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,19 +33,19 @@
             color: var(--color-text-main);
             min-height: 100vh;
             touch-action: manipulation;
-            /* 背景纹理：淡淡的宣纸 */
+            /* 背景纹理 */
             background-image: radial-gradient(#E6D0A0 1px, transparent 1px);
             background-position: 0 0;
             background-size: 30px 30px;
             background-attachment: fixed;
             overflow-x: hidden;
-            padding-top: 60px; /* 为灯笼留出空间 */
+            padding-top: 60px;
         }
 
-        /* --- 灯笼样式 (顶部) --- */
+        /* --- 灯笼样式 --- */
         .lantern-container {
             position: fixed; top: -5px; left: 0; width: 100%; 
-            z-index: 9998; pointer-events: none; /* 关键：让鼠标事件穿透，不挡住按钮 */
+            z-index: 9998; pointer-events: none;
             height: 80px; display: flex; justify-content: space-evenly;
         }
         .lantern-box {
@@ -83,7 +82,7 @@
         }
         @keyframes swing { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        /* --- 飘落梅花 (极淡) --- */
+        /* --- 飘落梅花 (屏幕动画用) --- */
         .flower-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 9999;
@@ -103,7 +102,7 @@
             height: 100vh; padding: 15px; overflow: hidden; position: relative; z-index: 1;
         }
 
-        /* --- 侧边栏 (恢复清爽风格) --- */
+        /* --- 侧边栏 --- */
         .sidebar {
             width: 240px; flex-shrink: 0;
             background-color: var(--color-bg-container); 
@@ -183,29 +182,16 @@
             border-color: var(--color-accent-gold); z-index: 2;
         }
 
-        /* --- 核心修改：网格背景 (米字格 + 折角 - 中间加号) --- */
+        /* --- 核心修改：网格背景 (标准米字格) --- */
         .grid-bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
-        /* 米字线 */
+        /* 米字线 - 屏幕显示颜色 */
         .g-line { position: absolute; background-color: var(--color-grid-line); }
         .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
         .gl-v { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
         .gl-d1 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
         .gl-d2 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(-45deg); }
-
-        /* L型折角 (保留，显专业) */
-        .corner-mark {
-            position: absolute; width: 10px; height: 10px;
-            border-color: var(--color-mark); border-style: solid; border-width: 0;
-            opacity: 0.8;
-        }
-        .cm-tl { top: 5px; left: 5px; border-top-width: 2px; border-left-width: 2px; }
-        .cm-tr { top: 5px; right: 5px; border-top-width: 2px; border-right-width: 2px; }
-        .cm-bl { bottom: 5px; left: 5px; border-bottom-width: 2px; border-left-width: 2px; }
-        .cm-br { bottom: 5px; right: 5px; border-bottom-width: 2px; border-right-width: 2px; }
-        
-        /* 删除了 .center-cross */
 
         .grid-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -353,7 +339,7 @@
             <div class="instructions-section" id="instSection">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
                     🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
-                    ⭐ 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
+                    🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
                     🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
             </div>
@@ -368,7 +354,7 @@
             <div class="instructions-section">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
                     🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
-                    ⭐ 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
+                    🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
                     🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
              </div>
@@ -402,8 +388,6 @@
                     <div class="grid-bg-layer">
                         <div class="gl-d1"></div><div class="gl-d2"></div>
                         <div class="gl-h"></div><div class="gl-v"></div>
-                        <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
-                        <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                     </div>
                     <canvas class="grid-canvas" id="mobileCanvas"></canvas>
                 </div>
@@ -451,7 +435,6 @@
 </div>
 
 <script>
-    // --- 国潮五色 ---
     const COLORS = [
         { s: '#C41E3A', e: '#FFCCCC' }, // 朱砂
         { s: '#D4AF37', e: '#FFF8D0' }, // 赤金
@@ -529,13 +512,11 @@
         return `rgb(${r},${g},${b})`;
     }
 
-    // --- HTML字符串：米字格 + L折角 (无加号) ---
+    // --- HTML字符串：标准米字格 ---
     function getGridBgHTML() {
         return `<div class="grid-bg-layer">
                     <div class="gl-d1"></div><div class="gl-d2"></div>
                     <div class="gl-h"></div><div class="gl-v"></div>
-                    <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
-                    <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                 </div>`;
     }
 
@@ -716,103 +697,126 @@
         ctx.restore();
     }
 
-    // --- L型折角 ---
-    function drawCornerMark(ctx, x, y, size, type) {
-        ctx.strokeStyle = '#B8860B'; ctx.lineWidth = 1.5; ctx.beginPath();
-        if(type===0) { ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); }
-        if(type===1) { ctx.moveTo(x-size, y); ctx.lineTo(x, y); ctx.lineTo(x, y+size); }
-        if(type===2) { ctx.moveTo(x, y-size); ctx.lineTo(x, y); ctx.lineTo(x-size, y); }
-        if(type===3) { ctx.moveTo(x+size, y); ctx.lineTo(x, y); ctx.lineTo(x, y-size); }
-        ctx.stroke();
-    }
-
     function doExport() {
         const name=document.getElementById('exportName').value;
-        const cols=3; 
-        let maxIdx = totalGrids - 1;
-        const rows = Math.ceil((maxIdx + 1) / cols);
+        const gridsPerPage = 9;
+        const cols = 3;
+        // 计算总页数
+        let maxFilled = -1;
+        Object.keys(strokesData).forEach(idx => { if(strokesData[idx] && strokesData[idx].length>0) maxFilled=Math.max(maxFilled, parseInt(idx)); });
+        // 导出至少包含所有已写内容的格子，或者当前总格子数
+        let exportTotal = Math.max(totalGrids, maxFilled + 1);
+        const totalPages = Math.ceil(exportTotal / gridsPerPage);
 
         const dpr = 4; // 导出清晰度
         const gridSize = 140; 
-        const gap=15, padding=50, headerH=80, footerH=60;
+        const gap=15, padding=50, headerH=80, footerH=60, pageGap=40;
         
-        const cvs=document.createElement('canvas');
+        const pageHeight = padding*2 + headerH + footerH + 3*(gridSize+gap);
+        const totalHeight = pageHeight * totalPages + (totalPages-1) * pageGap;
         const width = padding*2 + cols*gridSize + (cols-1)*gap;
-        const height = padding*2 + headerH + footerH + rows*(gridSize+gap);
-        
-        cvs.width = width * dpr; cvs.height = height * dpr;
+
+        const cvs=document.createElement('canvas');
+        cvs.width = width * dpr; cvs.height = totalHeight * dpr;
         const ctx=cvs.getContext('2d'); ctx.scale(dpr, dpr);
         
-        // 1. 宣纸背景
-        ctx.fillStyle='#FDFCF8'; ctx.fillRect(0,0,width,height);
-        
-        // 2. 极淡梅花水印 (宣纸暗纹)
-        const watermarkCount = Math.floor(height / 100) * 3;
-        for(let k=0; k<watermarkCount; k++) {
-            const bx = Math.random() * width;
-            const by = Math.random() * height;
-            const bSize = 10 + Math.random() * 20;
-            // 极低透明度
-            drawPlumBlossom(ctx, bx, by, bSize, `rgba(200, 100, 100, ${0.03 + Math.random()*0.05})`);
-        }
-        
-        // 3. 绘制标题和名字
-        ctx.fillStyle='#8B4513'; ctx.font='bold 24px KaiTi, serif'; ctx.textAlign='center';
-        ctx.fillText("汉字书写练习", width/2, padding + 25);
-        
-        // 名字：中国红
-        ctx.fillStyle='#C41E3A'; ctx.font='bold 18px KaiTi, serif'; ctx.textAlign='left';
-        ctx.fillText(name ? `书写人: ${name}` : '书写人: ______', padding, height - padding/2);
-        
-        // 日期和印章
-        const d = new Date();
-        const dateStr = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', year:'numeric', month:'numeric', day:'numeric' });
-        ctx.fillStyle='#8B4513'; ctx.font='14px serif'; ctx.textAlign='right';
-        ctx.fillText(dateStr, width-padding, height - padding/2);
-        
-        const stampSize = 24;
-        const sx = width - padding - 80; 
-        const sy = height - padding/2 - 18;
-        ctx.fillStyle='#C41E3A'; ctx.fillRect(sx, sy, stampSize, stampSize);
-        ctx.fillStyle='#fff'; ctx.font='12px serif'; ctx.textAlign='center'; ctx.fillText("乙巳", sx+stampSize/2, sy+stampSize-6);
+        // 背景色
+        ctx.fillStyle='#FDFCF8'; ctx.fillRect(0,0,width,totalHeight);
 
-        // 4. 绘制网格
-        for(let i=0; i<rows*cols; i++){
-            if(i >= totalGrids) break;
+        // 循环每一页
+        for(let p = 0; p < totalPages; p++) {
+            let startY = p * (pageHeight + pageGap);
             
-            const r=Math.floor(i/cols), c=i%cols;
-            const x=padding+c*(gridSize+gap);
-            const y=padding+headerH+r*(gridSize+gap);
-            
-            // 绘制米字格 (加深颜色)
-            ctx.lineWidth=1;
-            ctx.strokeStyle='#8B4513'; ctx.strokeRect(x,y,gridSize,gridSize);
-            
-            ctx.beginPath();
-            ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); 
-            ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
-            ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); 
-            ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
-            ctx.strokeStyle='rgba(139,69,19,0.3)'; // 导出时也加深线条
-            ctx.stroke();
-            
-            // L型折角
-            const mSize = 8;
-            drawCornerMark(ctx, x+4, y+4, mSize, 0); // TL
-            drawCornerMark(ctx, x+gridSize-4, y+4, mSize, 1); // TR
-            drawCornerMark(ctx, x+gridSize-4, y+gridSize-4, mSize, 2); // BR
-            drawCornerMark(ctx, x+4, y+gridSize-4, mSize, 3); // BL
+            // --- 每一页的背景和边框 ---
+            // 绘制页面的装饰边框
+            ctx.strokeStyle = '#C41E3A'; ctx.lineWidth = 4;
+            ctx.strokeRect(10, startY + 10, width - 20, pageHeight - 20);
+            ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 2;
+            ctx.strokeRect(16, startY + 16, width - 32, pageHeight - 32);
 
-            // 绘制笔画
-            const strokes = strokesData[i]||[];
-            const sc = gridSize / BASE_SIZE;
-            strokes.forEach(s=>{
-                const sp = s.points.map(p=>({x:p.x*sc+x, y:p.y*sc+y}));
-                drawGradientStroke(ctx, sp, s.colorIdx, gridSize * LINE_RATIO);
-            });
+            // --- 绘制随机梅花 (只在格子外部) ---
+            const blossomCount = 12;
+            for(let k=0; k<blossomCount; k++) {
+                let bx = Math.random() * width;
+                let by = startY + Math.random() * pageHeight;
+                
+                // 简单碰撞检测：如果在格子区域内，则重置到边缘
+                // 格子区域大致范围
+                let gridAreaTop = startY + padding + headerH;
+                let gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
+                let gridAreaLeft = padding;
+                let gridAreaRight = width - padding;
+
+                if (bx > gridAreaLeft && bx < gridAreaRight && by > gridAreaTop && by < gridAreaBottom) {
+                    // 如果在中间，强制移到Header或Footer区域
+                    if(Math.random() > 0.5) by = startY + Math.random() * (padding + headerH);
+                    else by = startY + pageHeight - Math.random() * (padding + footerH);
+                }
+
+                const bSize = 10 + Math.random() * 20;
+                // 极低透明度粉色 (用户要求颜色变浅)
+                drawPlumBlossom(ctx, bx, by, bSize, `rgba(255, 192, 203, ${0.15 + Math.random()*0.1})`);
+            }
+
+            // --- 头部文字 ---
+            ctx.fillStyle='#8B4513'; ctx.font='bold 24px KaiTi, serif'; ctx.textAlign='center';
+            ctx.fillText("汉字书写练习", width/2, startY + padding + 25);
             
-            ctx.fillStyle='#C41E3A'; ctx.font='10px serif'; ctx.textAlign='right'; 
-            ctx.fillText(i+1, x+gridSize-3, y+gridSize-3);
+            // --- 底部信息 (名字、日期、页码) ---
+            // 名字 (左下)
+            ctx.fillStyle='#C41E3A'; ctx.font='bold 18px KaiTi, serif'; ctx.textAlign='left';
+            ctx.fillText(name ? `书写人: ${name}` : '书写人: ______', padding, startY + pageHeight - padding/2);
+
+            // 日期 (右下) - 2026/1/27 格式
+            const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); // 获取保加利亚时间字符串
+            const bgObj = new Date(bgDate);
+            const y = bgObj.getFullYear();
+            const m = bgObj.getMonth() + 1;
+            const d = bgObj.getDate();
+            const dateStr = `${y}/${m}/${d}`; // 严格遵循 YYYY/M/D
+
+            ctx.fillStyle='#8B4513'; ctx.font='14px serif'; ctx.textAlign='right';
+            ctx.fillText(dateStr, width - padding, startY + pageHeight - padding/2);
+            
+            // 页码 (右下，日期上方)
+            ctx.fillStyle='#aaa'; ctx.font='12px serif';
+            ctx.fillText(`Page ${p+1}/${totalPages}`, width - padding, startY + pageHeight - padding/2 - 20);
+
+            // --- 绘制 3x3 格子 ---
+            for(let i=0; i<9; i++){
+                let gridIndex = p * 9 + i;
+                if(gridIndex >= exportTotal && gridIndex >= totalGrids) break; // 超出范围
+
+                const r = Math.floor(i/cols); 
+                const c = i%cols;
+                const x = padding + c*(gridSize+gap);
+                const y = startY + padding + headerH + r*(gridSize+gap);
+                
+                // 绘制米字格 (导出时颜色变浅)
+                ctx.lineWidth=1;
+                ctx.strokeStyle='#8B4513'; ctx.strokeRect(x,y,gridSize,gridSize);
+                
+                ctx.beginPath();
+                // 浅色的米字线
+                ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); 
+                ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
+                ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); 
+                ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
+                ctx.strokeStyle='rgba(139,69,19,0.15)'; // 浅色
+                ctx.stroke();
+                
+                // 绘制笔画
+                const strokes = strokesData[gridIndex]||[];
+                const sc = gridSize / BASE_SIZE;
+                strokes.forEach(s=>{
+                    const sp = s.points.map(p=>({x:p.x*sc+x, y:p.y*sc+y}));
+                    drawGradientStroke(ctx, sp, s.colorIdx, gridSize * LINE_RATIO);
+                });
+                
+                // 序号
+                ctx.fillStyle='#C41E3A'; ctx.font='10px serif'; ctx.textAlign='right'; 
+                ctx.fillText(gridIndex+1, x+gridSize-3, y+gridSize-3);
+            }
         }
 
         document.getElementById('exportImgResult').src=cvs.toDataURL();
