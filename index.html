@@ -20,8 +20,9 @@
             --color-border-main: #8B4513;   /* 檀木边框 */
             --color-border-board: #C41E3A;  /* 红纸边框 */
             
-            /* 屏幕上显示的网格线：清晰可见 */
+            /* 网格线颜色：加深确保可见 */
             --color-grid-line: rgba(139, 69, 19, 0.4); 
+            --color-mark: #B8860B;          /* L型折角颜色 */
             --color-active-bg: #FFF5E6;     
         }
 
@@ -82,7 +83,7 @@
         }
         @keyframes swing { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        /* --- 飘落梅花 (屏幕动画用) --- */
+        /* --- 飘落梅花 --- */
         .flower-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 9999;
@@ -182,16 +183,27 @@
             border-color: var(--color-accent-gold); z-index: 2;
         }
 
-        /* --- 核心修改：网格背景 (标准米字格) --- */
+        /* --- 核心修改：网格背景 (标准米字格 + L折角) --- */
         .grid-bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
-        /* 米字线 - 屏幕显示颜色 */
+        /* 米字线 */
         .g-line { position: absolute; background-color: var(--color-grid-line); }
         .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
         .gl-v { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
         .gl-d1 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
         .gl-d2 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(-45deg); }
+
+        /* L型折角 (保留) */
+        .corner-mark {
+            position: absolute; width: 12px; height: 12px;
+            border-color: var(--color-mark); border-style: solid; border-width: 0;
+            opacity: 0.9;
+        }
+        .cm-tl { top: 4px; left: 4px; border-top-width: 2px; border-left-width: 2px; }
+        .cm-tr { top: 4px; right: 4px; border-top-width: 2px; border-right-width: 2px; }
+        .cm-bl { bottom: 4px; left: 4px; border-bottom-width: 2px; border-left-width: 2px; }
+        .cm-br { bottom: 4px; right: 4px; border-bottom-width: 2px; border-right-width: 2px; }
 
         .grid-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -332,7 +344,7 @@
     <div class="main-content">
         <header>
             <h1>汉字书写练习板（中国新年版）<br>
-            <span class="title-translation">Дъска за писане на китайски йероглифи (Коледно издание)</span></h1>
+            <span class="title-translation">Дъска за писане на китайски йероглифи (Издание за Китайската Нова година)</span></h1>
         </header>
         
         <div class="desktop-board-container board-container" id="boardScrollContainer">
@@ -388,6 +400,8 @@
                     <div class="grid-bg-layer">
                         <div class="gl-d1"></div><div class="gl-d2"></div>
                         <div class="gl-h"></div><div class="gl-v"></div>
+                        <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
+                        <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                     </div>
                     <canvas class="grid-canvas" id="mobileCanvas"></canvas>
                 </div>
@@ -512,11 +526,13 @@
         return `rgb(${r},${g},${b})`;
     }
 
-    // --- HTML字符串：标准米字格 ---
+    // --- HTML字符串：标准米字格 + L折角 ---
     function getGridBgHTML() {
         return `<div class="grid-bg-layer">
                     <div class="gl-d1"></div><div class="gl-d2"></div>
                     <div class="gl-h"></div><div class="gl-v"></div>
+                    <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
+                    <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                 </div>`;
     }
 
@@ -697,6 +713,16 @@
         ctx.restore();
     }
 
+    // --- L型折角 ---
+    function drawCornerMark(ctx, x, y, size, type) {
+        ctx.strokeStyle = '#B8860B'; ctx.lineWidth = 1.5; ctx.beginPath();
+        if(type===0) { ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); }
+        if(type===1) { ctx.moveTo(x-size, y); ctx.lineTo(x, y); ctx.lineTo(x, y+size); }
+        if(type===2) { ctx.moveTo(x, y-size); ctx.lineTo(x, y); ctx.lineTo(x-size, y); }
+        if(type===3) { ctx.moveTo(x+size, y); ctx.lineTo(x, y); ctx.lineTo(x, y-size); }
+        ctx.stroke();
+    }
+
     function doExport() {
         const name=document.getElementById('exportName').value;
         const gridsPerPage = 9;
@@ -704,13 +730,12 @@
         // 计算总页数
         let maxFilled = -1;
         Object.keys(strokesData).forEach(idx => { if(strokesData[idx] && strokesData[idx].length>0) maxFilled=Math.max(maxFilled, parseInt(idx)); });
-        // 导出至少包含所有已写内容的格子，或者当前总格子数
         let exportTotal = Math.max(totalGrids, maxFilled + 1);
         const totalPages = Math.ceil(exportTotal / gridsPerPage);
 
         const dpr = 4; // 导出清晰度
         const gridSize = 140; 
-        const gap=15, padding=50, headerH=80, footerH=60, pageGap=40;
+        const gap=15, padding=50, headerH=40, footerH=20, pageGap=40;
         
         const pageHeight = padding*2 + headerH + footerH + 3*(gridSize+gap);
         const totalHeight = pageHeight * totalPages + (totalPages-1) * pageGap;
@@ -728,7 +753,6 @@
             let startY = p * (pageHeight + pageGap);
             
             // --- 每一页的背景和边框 ---
-            // 绘制页面的装饰边框
             ctx.strokeStyle = '#C41E3A'; ctx.lineWidth = 4;
             ctx.strokeRect(10, startY + 10, width - 20, pageHeight - 20);
             ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 2;
@@ -740,47 +764,38 @@
                 let bx = Math.random() * width;
                 let by = startY + Math.random() * pageHeight;
                 
-                // 简单碰撞检测：如果在格子区域内，则重置到边缘
-                // 格子区域大致范围
+                // 碰撞检测：如果在格子区域内，则重置到边缘
                 let gridAreaTop = startY + padding + headerH;
                 let gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
                 let gridAreaLeft = padding;
                 let gridAreaRight = width - padding;
 
                 if (bx > gridAreaLeft && bx < gridAreaRight && by > gridAreaTop && by < gridAreaBottom) {
-                    // 如果在中间，强制移到Header或Footer区域
                     if(Math.random() > 0.5) by = startY + Math.random() * (padding + headerH);
                     else by = startY + pageHeight - Math.random() * (padding + footerH);
                 }
 
                 const bSize = 10 + Math.random() * 20;
-                // 极低透明度粉色 (用户要求颜色变浅)
                 drawPlumBlossom(ctx, bx, by, bSize, `rgba(255, 192, 203, ${0.15 + Math.random()*0.1})`);
             }
 
-            // --- 头部文字 ---
-            ctx.fillStyle='#8B4513'; ctx.font='bold 24px KaiTi, serif'; ctx.textAlign='center';
-            ctx.fillText("汉字书写练习", width/2, startY + padding + 25);
-            
-            // --- 底部信息 (名字、日期、页码) ---
-            // 名字 (左下)
-            ctx.fillStyle='#C41E3A'; ctx.font='bold 18px KaiTi, serif'; ctx.textAlign='left';
-            ctx.fillText(name ? `书写人: ${name}` : '书写人: ______', padding, startY + pageHeight - padding/2);
+            // --- 头部信息 (位于格子上方) ---
+            // 名字 (左上)
+            ctx.fillStyle='#C41E3A'; ctx.font='bold 20px KaiTi, serif'; ctx.textAlign='left';
+            ctx.fillText(name ? `书写人: ${name}` : '书写人: ______', padding, startY + padding + 25);
 
-            // 日期 (右下) - 2026/1/27 格式
-            const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); // 获取保加利亚时间字符串
+            // 右上信息：Page 1/2 | 2026/1/27
+            const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); 
             const bgObj = new Date(bgDate);
             const y = bgObj.getFullYear();
             const m = bgObj.getMonth() + 1;
             const d = bgObj.getDate();
-            const dateStr = `${y}/${m}/${d}`; // 严格遵循 YYYY/M/D
-
-            ctx.fillStyle='#8B4513'; ctx.font='14px serif'; ctx.textAlign='right';
-            ctx.fillText(dateStr, width - padding, startY + pageHeight - padding/2);
+            const dateStr = `${y}/${m}/${d}`; 
             
-            // 页码 (右下，日期上方)
-            ctx.fillStyle='#aaa'; ctx.font='12px serif';
-            ctx.fillText(`Page ${p+1}/${totalPages}`, width - padding, startY + pageHeight - padding/2 - 20);
+            const infoStr = `Page ${p+1}/${totalPages} | ${dateStr}`;
+
+            ctx.fillStyle='#8B4513'; ctx.font='16px serif'; ctx.textAlign='right';
+            ctx.fillText(infoStr, width - padding, startY + padding + 25);
 
             // --- 绘制 3x3 格子 ---
             for(let i=0; i<9; i++){
@@ -804,6 +819,13 @@
                 ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
                 ctx.strokeStyle='rgba(139,69,19,0.15)'; // 浅色
                 ctx.stroke();
+
+                // L型折角
+                const mSize = 8;
+                drawCornerMark(ctx, x+4, y+4, mSize, 0); // TL
+                drawCornerMark(ctx, x+gridSize-4, y+4, mSize, 1); // TR
+                drawCornerMark(ctx, x+gridSize-4, y+gridSize-4, mSize, 2); // BR
+                drawCornerMark(ctx, x+4, y+gridSize-4, mSize, 3); // BL
                 
                 // 绘制笔画
                 const strokes = strokesData[gridIndex]||[];
