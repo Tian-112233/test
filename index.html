@@ -6,46 +6,48 @@
     <title>汉字书写练习板（中国新年版）</title>
     <style>
         :root {
-            /* --- 春节国潮配色方案 --- */
-            --color-bg-body: #FDFCF8;       /* 宣纸白背景 */
-            --color-bg-container: #FFFBF0;  /* 容器底色 */
-            --color-bg-sidebar: #C41E3A;    /* 侧边栏：故宫红/中国红 */
-            --color-text-sidebar: #FFD700;  /* 侧边栏文字：赤金 */
+            /* --- 基础配色 (恢复清爽风格) --- */
+            --color-bg-body: #FDFCF8;       /* 宣纸白 */
+            --color-bg-container: #FFFBF0;  /* 暖米色容器 */
+            --color-bg-board: #fff;         /* 纯白书写纸 */
             
-            --color-text-main: #2c3e50;     /* 主黑字 */
-            --color-text-secondary: #8B4513;/* 檀木色辅助字 */
+            --color-text-main: #2c3e50;     /* 深蓝灰文字 */
+            --color-text-secondary: #8B4513;/* 檀木色文字 */
             
-            --color-accent: #C41E3A;        /* 重点红 */
-            --color-accent-gold: #FFD700;   /* 重点金 */
+            --color-accent: #C41E3A;        /* 中国红/朱砂 (重点色) */
+            --color-accent-gold: #FFD700;   /* 赤金 (装饰色) */
             
             --color-border-main: #8B4513;   /* 檀木边框 */
-            --color-border-red: #C41E3A;    /* 红色边框 */
+            --color-border-board: #C41E3A;  /* 红纸边框 */
             
-            --color-grid-line: rgba(139, 69, 19, 0.15); /* 极淡的米字格线 */
-            --color-active-bg: #FFF5E6;     /* 激活状态 */
-            --color-mark: #B8860B;          /* 定位折角颜色：暗金 */
+            /* 网格线颜色：加深一点，确保看得到 */
+            --color-grid-line: rgba(139, 69, 19, 0.3); 
+            --color-active-bg: #FFF5E6;     /* 浅金色激活背景 */
+            --color-mark: #B8860B;          /* 折角颜色 */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: "KaiTi", "STKaiti", "SimSun", serif; /* 优先使用楷体，更显书法韵味 */
+            font-family: 'KaiTi', 'SimSun', serif; /* 楷体 */
             background-color: var(--color-bg-body);
             color: var(--color-text-main);
             min-height: 100vh;
             touch-action: manipulation;
-            /* 背景纹理：淡淡的宣纸噪点 */
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4a017' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            /* 背景纹理：淡淡的宣纸 */
+            background-image: radial-gradient(#E6D0A0 1px, transparent 1px);
+            background-position: 0 0;
+            background-size: 30px 30px;
             background-attachment: fixed;
             overflow-x: hidden;
-            padding-top: 60px; /* 灯笼空间 */
+            padding-top: 60px; /* 为灯笼留出空间 */
         }
 
-        /* --- 灯笼样式 --- */
+        /* --- 灯笼样式 (顶部) --- */
         .lantern-container {
-            position: fixed; top: -5px; left: 0; width: 100%; z-index: 9998;
-            pointer-events: none; height: 80px;
-            display: flex; justify-content: space-evenly;
+            position: fixed; top: -5px; left: 0; width: 100%; 
+            z-index: 9998; pointer-events: none; /* 关键：让鼠标事件穿透，不挡住按钮 */
+            height: 80px; display: flex; justify-content: space-evenly;
         }
         .lantern-box {
             position: relative; width: 60px; height: 100px;
@@ -60,8 +62,7 @@
             position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
             width: 46px; height: 38px;
             background: #C41E3A; border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(196, 30, 58, 0.4);
-            z-index: 2;
+            box-shadow: 0 5px 15px rgba(196, 30, 58, 0.4); z-index: 2;
         }
         .lantern-body::before, .lantern-body::after {
             content: ''; position: absolute; left: 50%; transform: translateX(-50%);
@@ -89,7 +90,7 @@
         }
         .falling-flower {
             position: absolute; top: -50px; background-size: contain; background-repeat: no-repeat;
-            opacity: 0.6; /* 页面飘落的稍微明显一点点，导出的要很淡 */
+            opacity: 0.6; 
             animation-name: fall, sway; animation-timing-function: linear, ease-in-out;
             animation-iteration-count: infinite, infinite;
         }
@@ -98,115 +99,113 @@
 
         /* --- 布局容器 --- */
         .container {
-            max-width: 1600px; margin: 0 auto; display: flex; gap: 20px;
-            height: 100vh; padding: 20px; overflow: hidden; position: relative; z-index: 1;
+            max-width: 1600px; margin: 0 auto; display: flex; gap: 15px;
+            height: 100vh; padding: 15px; overflow: hidden; position: relative; z-index: 1;
         }
 
-        /* --- 侧边栏 (红墙金字风格) --- */
+        /* --- 侧边栏 (恢复清爽风格) --- */
         .sidebar {
-            width: 260px; flex-shrink: 0;
-            background-color: var(--color-bg-sidebar); 
-            color: var(--color-text-sidebar);
-            border: 3px solid #B8860B; /* 暗金边框 */
-            border-radius: 4px; padding: 20px;
-            box-shadow: 0 10px 25px rgba(139, 0, 0, 0.3);
+            width: 240px; flex-shrink: 0;
+            background-color: var(--color-bg-container); 
+            border-radius: 12px; padding: 15px;
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1); 
+            border: 2px solid var(--color-border-main);
             display: flex; flex-direction: column; overflow-y: auto;
         }
+        .left-sidebar { order: 1; }
+        .right-sidebar { order: 3; }
+        
         .sidebar h2 {
-            color: #FFD700; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            margin-bottom: 15px; font-size: 1.2rem; padding-bottom: 8px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.5); 
-            text-align: center; font-weight: bold; letter-spacing: 2px;
+            color: var(--color-text-secondary);
+            margin-bottom: 10px; font-size: 1.1rem; padding-bottom: 6px;
+            border-bottom: 2px solid var(--color-accent-gold); 
+            text-align: center; font-weight: bold;
         }
-        /* 侧边栏内的标签颜色覆盖 */
-        .sidebar .info-label { color: rgba(255, 255, 255, 0.9); }
-        .sidebar .grid-status-text { color: #fff; font-size: 1.1rem; font-weight: bold; }
-        .sidebar .grid-stroke-text { color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; }
 
         /* 主内容区 */
         .main-content {
-            flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%;
+            flex: 1; order: 2; min-width: 0; display: flex; flex-direction: column; height: 100%;
             background-color: var(--color-bg-container); 
-            border: 2px solid var(--color-border-main); border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-radius: 12px; border: 2px solid var(--color-border-main);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);
         }
 
         header {
-            text-align: center; padding: 15px 0 10px 0; border-bottom: 2px solid rgba(139,69,19,0.1);
-            background: linear-gradient(to bottom, #fff, #FFFBF0);
-            border-radius: 8px 8px 0 0;
+            text-align: center; margin-bottom: 5px; padding: 10px 0 5px 0; border-bottom: 2px solid var(--color-border-main);
+            flex-shrink: 0;
+            background-image: linear-gradient(to right, transparent, rgba(196, 30, 58, 0.05), transparent);
         }
         h1 {
             color: var(--color-accent);
-            font-size: 2rem; font-weight: bold; margin-bottom: 5px;
+            font-size: 1.8rem; font-weight: bold; text-shadow: 1px 1px 0 #fff; line-height: 1.2;
             font-family: 'KaiTi', 'SimSun', serif;
-            text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
         }
-        .title-sub { font-size: 1rem; color: #8B4513; margin-top: 5px; font-weight: normal; }
+        .title-translation { 
+            font-size: 0.9rem; color: var(--color-text-secondary); 
+            font-style: italic; display: block; margin-top: 5px; font-family: serif; 
+        }
 
         /* 说明区域 */
         .instructions-section {
-            margin: 10px 20px; padding: 12px;
-            background: #fff; border: 1px solid rgba(139,69,19,0.2);
-            border-left: 5px solid var(--color-accent); border-radius: 4px;
+            margin: 0 15px 10px; background: rgba(255, 255, 255, 0.8); 
+            padding: 10px; border-radius: 8px; 
+            border-left: 4px solid var(--color-accent); flex-shrink: 0;
         }
 
         .board-container {
-            flex: 1; display: flex; flex-direction: column; padding: 0 20px 20px 20px;
+            flex: 1; display: flex; flex-direction: column; padding: 0 15px 15px 15px;
             overflow-y: auto; scroll-behavior: smooth;
         }
+        .board-header { text-align: center; margin-bottom: 10px; flex-shrink: 0; padding-top: 10px; }
+        .board-title { color: var(--color-text-secondary); font-size: 1.3rem; font-weight: bold; }
 
         .board {
             background-color: var(--color-bg-board);
-            border: 8px solid var(--color-border-red); /* 红纸边框 */
-            border-radius: 2px; padding: 20px;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.02);
-            margin-top: 10px;
+            border: 8px solid var(--color-border-board);
+            border-radius: 4px; padding: 20px; flex: 1;
+            box-shadow: inset 0 0 20px rgba(196, 30, 58, 0.05);
         }
 
-        /* 桌面网格 */
+        /* 桌面网格布局 */
         .desktop-grid-wrapper {
             display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 15px; width: 100%; max-width: 700px; margin: 0 auto;
+            gap: 20px; width: 100%; max-width: 700px; margin: 0 auto; align-content: start;
         }
 
         .grid-container {
             position: relative; width: 100%; aspect-ratio: 1 / 1; 
             background-color: #fff;
-            border: 1px solid #8B4513;
+            border: 1px solid var(--color-border-main); border-radius: 2px;
         }
         
         .grid-container.grid-active {
-            box-shadow: 0 0 0 3px var(--color-accent-gold);
+            box-shadow: 0 0 0 3px var(--color-accent-gold), 0 0 10px var(--color-accent-gold);
             border-color: var(--color-accent-gold); z-index: 2;
         }
 
-        /* 米字格线 */
-        .grid-bg-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        /* --- 核心修改：网格背景 (米字格 + 折角 - 中间加号) --- */
+        .grid-bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
+        }
+        /* 米字线 */
         .g-line { position: absolute; background-color: var(--color-grid-line); }
         .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
         .gl-v { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
         .gl-d1 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
         .gl-d2 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(-45deg); }
 
-        /* --- 关键修改：专业折角定位 (Corner Marks) --- */
+        /* L型折角 (保留，显专业) */
         .corner-mark {
-            position: absolute; width: 12px; height: 12px;
+            position: absolute; width: 10px; height: 10px;
             border-color: var(--color-mark); border-style: solid; border-width: 0;
             opacity: 0.8;
         }
-        .cm-tl { top: 4px; left: 4px; border-top-width: 2px; border-left-width: 2px; }
-        .cm-tr { top: 4px; right: 4px; border-top-width: 2px; border-right-width: 2px; }
-        .cm-bl { bottom: 4px; left: 4px; border-bottom-width: 2px; border-left-width: 2px; }
-        .cm-br { bottom: 4px; right: 4px; border-bottom-width: 2px; border-right-width: 2px; }
+        .cm-tl { top: 5px; left: 5px; border-top-width: 2px; border-left-width: 2px; }
+        .cm-tr { top: 5px; right: 5px; border-top-width: 2px; border-right-width: 2px; }
+        .cm-bl { bottom: 5px; left: 5px; border-bottom-width: 2px; border-left-width: 2px; }
+        .cm-br { bottom: 5px; right: 5px; border-bottom-width: 2px; border-right-width: 2px; }
         
-        /* 中心极小的十字 */
-        .center-cross {
-            position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
-            transform: translate(-50%, -50%);
-        }
-        .center-cross::before { content:''; position:absolute; top:0; left:2px; width:2px; height:6px; background:var(--color-mark); }
-        .center-cross::after { content:''; position:absolute; top:2px; left:0; width:6px; height:2px; background:var(--color-mark); }
+        /* 删除了 .center-cross */
 
         .grid-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -214,86 +213,110 @@
         }
 
         .grid-number-label {
-            position: absolute; bottom: 3px; right: 5px; 
-            font-size: 12px; color: #aaa; z-index: 5; pointer-events: none;
+            position: absolute; bottom: 2px; right: 5px; 
+            font-size: 12px; color: var(--color-accent); z-index: 5; pointer-events: none; font-weight: bold;
         }
+        .grid-container.grid-active .grid-number-label { color: var(--color-accent-gold); }
 
         /* 颜色面板 */
         .info-panel-item {
-            background-color: rgba(0,0,0,0.2); /* 半透明黑底 */
-            padding: 10px; border-radius: 6px; margin-bottom: 15px; 
-            border: 1px solid rgba(255,215,0,0.3); text-align: center;
+            background-color: #fff; padding: 10px; border-radius: 8px;
+            margin-bottom: 15px; border: 1px solid var(--color-border-main); text-align: center;
         }
-        .color-sequence { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+        .info-label { font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 5px; font-weight: bold; }
+        .color-sequence { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
         
         .color-dot { 
-            width: 20px; height: 20px; border-radius: 50%; 
+            width: 22px; height: 22px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            color: transparent; border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; font-size: 10px; font-weight: bold;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5); 
+            border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
-        .color-dot.current { transform: scale(1.4); border: 2px solid #FFD700; box-shadow: 0 0 8px #FFD700; z-index: 2; }
-        .color-dot.next { opacity: 0.7; border: 1px dashed #fff; }
+        .color-dot.current { transform: scale(1.3); border-color: var(--color-accent-gold); z-index: 2; }
+        .color-dot.next { border: 1px dashed var(--color-accent); opacity: 0.8; }
+        .color-dot:not(.current):not(.next) { opacity: 0.3; transform: scale(0.9); }
         
-        .small-color-box { width: 30px; height: 30px; border-radius: 4px; border: 2px solid rgba(255,255,255,0.5); }
+        .color-display-row { display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
+        .color-box-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .small-color-box { width: 30px; height: 30px; border-radius: 6px; border: 2px solid var(--color-border-main); }
 
         /* 按钮 */
         .button {
-            padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;
-            display: block; width: 100%; margin-bottom: 10px;
-            color: #fff; font-size: 1rem;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-            font-family: 'KaiTi', serif;
+            padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            width: 100%; margin-bottom: 8px;
+            color: #fff; transition: transform 0.1s, box-shadow 0.1s;
+            font-size: 0.9rem; line-height: 1.2;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
-        .button:active { transform: translateY(2px); }
-        .button span { font-size: 0.8rem; display: block; font-weight: normal; opacity: 0.8; margin-top: 2px; }
+        .button span { font-size: 0.75rem; opacity: 0.9; font-weight: normal; margin-top: 2px; }
+        .button:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         
-        .button-primary { background-color: #bfa46f; color: #3e2723; } /* 雅金 */
-        .button-utility { background-color: #5d4037; border: 1px solid #795548; } /* 深褐 */
-        .button-secondary { background-color: #8d6e63; } 
-        .button-clear-all { background-color: #d84315; } /* 橘红 */
-        .button-success { background-color: #2e7d32; border: 1px solid #66bb6a; } /* 墨绿 */
-
-        .add-grid-control { display: flex; gap: 5px; justify-content: center; margin-bottom: 5px; }
-        .add-grid-control input { 
-            width: 50px; text-align: center; padding: 5px; border-radius: 4px; border: none; 
-            font-size: 1rem; font-weight: bold; color: #333;
-        }
+        .button-primary { background-color: var(--color-accent); } 
+        .button-utility { background-color: #8b4513; } 
+        .button-secondary { background-color: #A52A2A; } 
+        .button-clear-all { background-color: #D2691E; } 
+        .button-success { background-color: #008558; } 
+        .button-warning { background-color: var(--color-accent-gold); color: #8b4513; text-shadow: none; }
+        
+        .add-grid-control { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; align-items: center; }
+        .add-grid-control input { width: 50px; text-align: center; padding: 6px; border-radius: 4px; border: 1px solid var(--color-border-main); font-size: 1rem; color: var(--color-text-secondary); font-weight: bold; }
 
         /* 弹窗 */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.7); backdrop-filter: blur(2px);
+            background-color: rgba(60, 30, 10, 0.4); backdrop-filter: blur(3px);
             display: none; z-index: 500; justify-content: center; align-items: center;
         }
         .modal-content {
-            background-color: #FDFCF8; padding: 25px; border-radius: 8px;
-            width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; 
-            border: 4px solid #C41E3A; text-align: center; position: relative;
+            background-color: #fff; padding: 20px; border-radius: 15px;
+            width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; 
+            border: 3px solid var(--color-accent); text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
         }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 2rem; cursor: pointer; color: #C41E3A; border:none; background:none;}
+        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-accent); }
 
-        /* 手机端隐藏侧边栏 */
+        /* 移动端 */
         .mobile-layout { display: none; }
-        @media (max-width: 1000px) {
-            .sidebar, .desktop-grid-wrapper { display: none !important; }
-            .container { flex-direction: column; padding: 10px; height: auto; }
-            .mobile-layout { display: flex; flex-direction: column; }
-            .mobile-board-area { display: flex; flex-direction: column; align-items: center; margin-top: 10px;}
-            .mobile-current-grid { 
-                width: 300px; height: 300px; position: relative; 
-                border: 4px solid #C41E3A; background: #fff; margin-bottom: 15px;
+        @media (max-width: 1100px) {
+            .sidebar, .desktop-board-container { display: none !important; }
+            .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
+            .main-content { overflow: visible; padding-bottom: 20px; }
+            .mobile-layout { display: flex; flex-direction: column; width: 100%; }
+
+            .mobile-add-grid-section {
+                display: flex; justify-content: center; align-items: center; gap: 10px;
+                margin-bottom: 15px; padding: 10px; 
+                background-color: var(--color-active-bg); border-radius: 8px; border: 1px solid var(--color-border-main);
             }
-            .mobile-nav { display: flex; justify-content: space-between; width: 300px; margin-bottom: 20px; }
+            .mobile-add-grid-section .add-grid-control { margin-bottom: 0; }
+            .mobile-add-grid-section .total-info { font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 10px;}
+            .mobile-function-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px; }
+            .mobile-color-section {
+                margin: 0 15px 15px; background-color: var(--color-active-bg);
+                border: 1px solid var(--color-border-main); border-radius: 8px; padding: 10px;
+            }
+            .mobile-board-area { display: flex; flex-direction: column; align-items: center; }
+            .mobile-current-grid { 
+                width: 280px; height: 280px; position: relative; 
+                border: 6px solid var(--color-border-board); background: #fff;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; border-radius: 4px;
+            }
+            .mobile-nav { display: flex; justify-content: space-between; width: 280px; margin-bottom: 20px; }
             .mobile-preview-bar {
-                background: #fff; border: 1px solid #ddd; padding: 10px; 
-                overflow-x: auto; white-space: nowrap; display: flex; gap: 10px;
+                margin: 0 15px; background: var(--color-active-bg);
+                border: 1px solid var(--color-border-main); border-radius: 8px;
+                padding: 10px; overflow-x: auto; white-space: nowrap; display: flex; gap: 10px; position: relative;
             }
             .mobile-preview-item {
-                display: inline-block; width: 70px; height: 70px; flex-shrink: 0; position: relative;
-                border: 1px solid #ccc;
+                display: inline-block; width: 60px; height: 60px;
+                border: 1px solid var(--color-border-main); background: #fff;
+                flex-shrink: 0; position: relative; border-radius: 4px;
             }
-            .mobile-preview-item.active { border: 2px solid #C41E3A; }
-            .mobile-function-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;}
+            .mobile-preview-item.active { border-color: var(--color-accent-gold); box-shadow: 0 0 0 2px var(--color-accent-gold); }
+            .mobile-preview-item canvas { width: 100%; height: 100%; position: absolute; z-index: 2; top:0; left:0; }
         }
     </style>
 </head>
@@ -304,122 +327,131 @@
 
 <div class="container">
     <div class="sidebar left-sidebar">
-        <h2>状态面板</h2>
+        <h2>状态面板 | Статус</h2>
         <div class="info-panel-item">
-            <div class="info-label">颜色顺序</div>
+            <div class="info-label">颜色顺序 | Цветова последователност</div>
             <div class="color-sequence" id="colorSeqDesktop"></div>
-            <div class="color-display-row" style="margin-top:10px;">
-                <div class="color-box-wrapper"><div class="info-label" style="font-size:0.8rem">当前</div><div id="curColorBox" class="small-color-box"></div></div>
-                <div style="color:#FFD700; font-size:1.5rem">→</div>
-                <div class="color-box-wrapper"><div class="info-label" style="font-size:0.8rem">下一笔</div><div id="nextColorBox" class="small-color-box"></div></div>
+            <div class="color-display-row" style="margin-top:15px;">
+                <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="curColorBox" class="small-color-box"></div></div>
+                <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="nextColorBox" class="small-color-box"></div></div>
             </div>
         </div>
         <div class="info-panel-item">
-            <div class="info-label">当前位置</div>
-            <div class="grid-status-text">第 <span id="curGridNum" style="color:#FFD700; font-size:1.4rem">1</span> 格</div>
-            <div class="grid-stroke-text">笔画数: <span id="curStrokeNum">0</span></div>
+            <div class="info-label">当前位置 | Позиция</div>
+            <div style="font-size:1.1rem; font-weight:bold; color:var(--color-accent); margin-bottom:5px;">格子 <span id="curGridNum">1</span></div>
+            <div style="font-size:0.9rem; color:var(--color-text-secondary);">笔画数: <span id="curStrokeNum">0</span></div>
         </div>
     </div>
 
     <div class="main-content">
         <header>
-            <h1>汉字书写练习板（中国新年版）</h1>
-            <div class="title-sub">Chinese New Year Calligraphy Board</div>
+            <h1>汉字书写练习板（中国新年版）<br>
+            <span class="title-translation">Дъска за писане на китайски йероглифи (Коледно издание)</span></h1>
         </header>
         
-        <div class="board-container" id="boardScrollContainer">
-            <div class="desktop-board-container">
-                <div class="instructions-section">
-                    <div style="font-size: 0.9rem; color: #555; line-height:1.7;">
-                        🧨 <b>节日配色：</b>朱砂→赤金→翡翠→景泰蓝→紫檀<br>
-                        🧧 <b>新春祝福：</b>祝您乙巳蛇年大吉，笔走龙蛇，万事如意！<br>
-                        🖌️ <b>书写提示：</b>每笔都是完整的从浓到淡的墨韵渐变。
-                    </div>
-                </div>
-                <div class="board" id="desktopBoard">
-                    <div class="desktop-grid-wrapper" id="desktopGridWrapper"></div>
+        <div class="desktop-board-container board-container" id="boardScrollContainer">
+            <div class="instructions-section" id="instSection">
+                <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
+                    🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
+                    ⭐ 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
+                    🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
             </div>
 
-            <div class="mobile-layout">
-                <div class="instructions-section">
-                    <div style="font-size: 0.85rem; color: #333;">
-                        🧨 节日配色：朱砂→赤金→翡翠→景泰蓝→紫檀<br>
-                        🧧 祝您乙巳蛇年大吉，笔走龙蛇！
-                    </div>
+            <div class="board-header"><div class="board-title">书写板 | Писмена дъска</div></div>
+            <div class="board" id="desktopBoard"><div class="desktop-grid-wrapper" id="desktopGridWrapper"></div></div>
+        </div>
+
+        <div class="mobile-layout">
+            <div class="board-header"><div class="board-title">书写板</div></div>
+            
+            <div class="instructions-section">
+                <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
+                    🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
+                    ⭐ 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
+                    🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                </div>
+             </div>
+
+            <div class="mobile-add-grid-section">
+                 <div class="add-grid-control">
+                     <span style="font-size:0.9rem; color:var(--color-text-secondary);">添加格子 | Добави:</span>
+                     <input type="number" id="gridCountMobile" value="9" min="1" max="50">
+                     <button class="button button-primary" id="btnGenGridMobile" style="width:auto; margin:0; padding:6px 12px;">+</button>
                  </div>
-
-                <div class="mobile-board-area">
-                    <div class="mobile-current-grid" id="mobileGridTarget">
-                        <div class="grid-bg-lines">
-                             <div class="gl-d1"></div><div class="gl-d2"></div>
-                             <div class="gl-h"></div><div class="gl-v"></div>
-                             <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
-                             <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
-                             <div class="center-cross"></div>
-                        </div>
-                        <canvas class="grid-canvas" id="mobileCanvas"></canvas>
-                    </div>
-                    <div class="mobile-nav">
-                        <button class="button button-primary" id="btnPrevMobile" style="width:45%; margin:0;">上一格</button>
-                        <button class="button button-primary" id="btnNextMobile" style="width:45%; margin:0;">下一格</button>
-                    </div>
-                </div>
-
-                <div class="mobile-add-grid-section" style="background:#f0f0f0; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center;">
-                     <div class="add-grid-control">
-                         <span>添加格子:</span>
-                         <input type="number" id="gridCountMobile" value="9" min="1" max="50">
-                         <button class="button button-primary" id="btnGenGridMobile" style="width:auto; display:inline-block; margin:0; padding:5px 15px;">+</button>
-                     </div>
-                     <div style="font-size:0.8rem; margin-top:5px;">当前总数: <span id="totalGridNumMobile">9</span></div>
-                </div>
-
-                <div class="mobile-function-buttons">
-                    <button id="btnUndoMobile" class="button button-utility">撤销笔画</button>
-                    <button id="btnClearMobile" class="button button-secondary">清空本格</button>
-                    <button id="btnClearAllMobile" class="button button-clear-all">清空全部</button>
-                    <button id="btnExportMobile" class="button button-success">导出作品</button>
-                </div>
-                
-                <div style="margin:0 0 5px; font-weight:bold; color:#888; font-size:0.9rem;">全览预览</div>
-                <div class="mobile-preview-bar" id="mobilePreviewBar"></div>
+                 <div class="total-info">总数: <span id="totalGridNumMobile">9</span></div>
             </div>
+            <div class="mobile-function-buttons">
+                <button id="btnUndoMobile" class="button button-utility">撤销上一笔<span>Отмени</span></button>
+                <button id="btnClearMobile" class="button button-secondary">清空所选格子<span>Изчисти избраното</span></button>
+                <button id="btnClearAllMobile" class="button button-clear-all">清空所有<span>Изчисти всичко</span></button>
+                <button id="btnExportMobile" class="button button-success">导出图片<span>Експорт</span></button>
+            </div>
+            <div class="mobile-color-section">
+                <div class="info-label" style="text-align:center; margin-bottom:5px;">颜色顺序 | Цветова последователност</div>
+                <div class="color-sequence" id="colorSeqMobile" style="margin-bottom:10px;"></div>
+                <div class="color-display-row">
+                    <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="mobileCurColorBox" class="small-color-box"></div></div>
+                    <div style="font-size:1.2rem; color:var(--color-accent-gold);">➔</div>
+                    <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="mobileNextColorBox" class="small-color-box"></div></div>
+                </div>
+            </div>
+            <div class="mobile-board-area">
+                <div style="margin-bottom:5px; font-weight:bold; color:var(--color-accent);">格子 <span id="mobileCurGridNum">1</span> (笔画: <span id="mobileCurStroke">0</span>)</div>
+                <div class="mobile-current-grid" id="mobileGridTarget">
+                    <div class="grid-bg-layer">
+                        <div class="gl-d1"></div><div class="gl-d2"></div>
+                        <div class="gl-h"></div><div class="gl-v"></div>
+                        <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
+                        <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
+                    </div>
+                    <canvas class="grid-canvas" id="mobileCanvas"></canvas>
+                </div>
+                 <div class="mobile-nav">
+                    <button class="button button-primary" id="btnPrevMobile" style="width:48%;">上一格 | Предишна</button>
+                    <button class="button button-primary" id="btnNextMobile" style="width:48%;">下一格 | Следваща</button>
+                </div>
+            </div>
+            <div style="margin:0 15px 5px; font-weight:bold; color:var(--color-text-secondary); font-size:0.9rem;">快速预览 | Бърз преглед</div>
+            <div class="mobile-preview-bar" id="mobilePreviewBar"></div>
         </div>
     </div>
 
-    <div class="sidebar left-sidebar">
-        <h2>工具箱</h2>
-        <div class="info-panel-item">
-            <div class="info-label">添加格子</div>
+    <div class="sidebar right-sidebar">
+        <h2>工具 | Инструменти</h2>
+        <div class="info-panel-item" style="margin-bottom: 20px;">
+            <div class="info-label">添加格子 | Добави</div>
             <div class="add-grid-control">
                 <input type="number" id="gridCount" value="9" min="1" max="50">
-                <button id="btnGenGrid" class="button button-primary" style="width:auto; margin:0; padding:5px 15px;">+</button>
+                <button id="btnGenGrid" class="button button-primary" style="width:auto; margin:0;">+</button>
             </div>
-            <div style="font-size:0.8rem; color:rgba(255,255,255,0.7); margin-top:5px;">总格数: <span id="totalGridNum">9</span></div>
+            <div style="font-size:0.8rem; color:var(--color-text-secondary);">总数 | Общо: <span id="totalGridNum">9</span></div>
         </div>
-        <button id="btnUndo" class="button button-utility">撤销上一笔</button>
-        <button id="btnClear" class="button button-secondary">清空所选格子</button>
-        <button id="btnClearAll" class="button button-clear-all">清空所有内容</button>
-        <button id="btnExport" class="button button-success" style="margin-top:20px; background-color:#2e7d32; border:1px solid #a5d6a7;">导出图片</button>
+        <button id="btnUndo" class="button button-utility">撤销上一笔<span>Отмени</span></button>
+        <button id="btnClear" class="button button-secondary">清空所选格子<span>Изчисти избраното</span></button>
+        <button id="btnClearAll" class="button button-clear-all">清空所有<span>Изчисти всичко</span></button>
+        <button id="btnExport" class="button button-success">导出图片<span>Експорт</span></button>
     </div>
 </div>
 
 <div class="modal" id="exportModal">
     <div class="modal-content">
         <button class="close-btn" onclick="document.getElementById('exportModal').style.display='none'">&times;</button>
-        <h3 style="color:#C41E3A; margin-bottom:15px; font-family:'KaiTi';">作品导出</h3>
-        <input type="text" id="exportName" placeholder="请输入您的署名" style="width:60%; padding:10px; margin:10px 0; border:2px solid #8B4513; border-radius:4px; font-size:1.1rem; text-align:center; font-family:'KaiTi';">
-        <button class="button button-success" id="btnConfirmExport" style="width:40%; margin:10px auto;">生成图片</button>
+        <h3 style="color:var(--color-accent); margin-bottom:15px;">导出图片 | Експортиране</h3>
+        <input type="text" id="exportName" placeholder="请输入姓名 | Въведете име" style="width:80%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:4px; font-size:1rem; text-align:center;">
+        <button class="button button-success" id="btnConfirmExport" style="width:50%; margin:10px auto;">生成 | Генерирай</button>
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
-            <p style="font-size:0.9rem; color:#666; margin-bottom:10px;">长按或右键图片即可保存</p>
-            <img id="exportImgResult" style="max-width:100%; border:4px solid #C41E3A; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+            <p style="font-size:0.9rem; color:#666; margin-bottom:10px; font-weight:bold;">
+                长按或右键图片即可保存<br>
+                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">Натиснете продължително или десен бутон върху снимката за запазване</span>
+            </p>
+            <img id="exportImgResult" style="max-width:100%; border:2px solid var(--color-accent-gold); border-radius:4px;">
         </div>
     </div>
 </div>
 
 <script>
-    // --- 国潮五色 (Cinnabar, Red Gold, Jade, Cloisonne, Sandalwood) ---
+    // --- 国潮五色 ---
     const COLORS = [
         { s: '#C41E3A', e: '#FFCCCC' }, // 朱砂
         { s: '#D4AF37', e: '#FFF8D0' }, // 赤金
@@ -461,7 +493,7 @@
         const size = 64;
         const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
         const ctx = canvas.getContext('2d');
-        // 极淡的粉色，用于导出水印
+        // 极淡的粉色
         drawPlumBlossom(ctx, size/2, size/2, size/2 - 4, 'rgba(255, 183, 197, 0.4)');
         return canvas.toDataURL();
     }
@@ -497,14 +529,13 @@
         return `rgb(${r},${g},${b})`;
     }
 
-    // HTML字符串：生成折角网格背景
+    // --- HTML字符串：米字格 + L折角 (无加号) ---
     function getGridBgHTML() {
-        return `<div class="grid-bg-lines">
+        return `<div class="grid-bg-layer">
                     <div class="gl-d1"></div><div class="gl-d2"></div>
                     <div class="gl-h"></div><div class="gl-v"></div>
                     <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
                     <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
-                    <div class="center-cross"></div>
                 </div>`;
     }
 
@@ -530,7 +561,7 @@
         for(let i=0; i<totalGrids; i++){
             const div=document.createElement('div'); div.className=`mobile-preview-item ${i===currentGridIdx?'active':''}`; div.onclick=()=>switchGrid(i);
             const bg=document.createElement('div'); bg.style.cssText="position:absolute;top:0;left:0;width:100%;height:100%; transform:scale(0.3); transform-origin:0 0; width:333%; height:333%;"; 
-            bg.innerHTML=getGridBgHTML(); // 缩小背景
+            bg.innerHTML=getGridBgHTML(); 
             const cvs=document.createElement('canvas'); 
             const previewSize = 100; cvs.width=previewSize; cvs.height=previewSize;
             
@@ -685,10 +716,9 @@
         ctx.restore();
     }
 
-    // --- 绘制L型折角定位 (Corner Marks) ---
+    // --- L型折角 ---
     function drawCornerMark(ctx, x, y, size, type) {
         ctx.strokeStyle = '#B8860B'; ctx.lineWidth = 1.5; ctx.beginPath();
-        // type: 0=tl, 1=tr, 2=br, 3=bl
         if(type===0) { ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y); }
         if(type===1) { ctx.moveTo(x-size, y); ctx.lineTo(x, y); ctx.lineTo(x, y+size); }
         if(type===2) { ctx.moveTo(x, y-size); ctx.lineTo(x, y); ctx.lineTo(x-size, y); }
@@ -698,11 +728,8 @@
 
     function doExport() {
         const name=document.getElementById('exportName').value;
-        // 计算逻辑：固定3列，行数自适应，无限制高度（长卷模式）
         const cols=3; 
-        // 算出最大有笔画的格子索引，或者直接用totalGrids
         let maxIdx = totalGrids - 1;
-        // 确保至少显示满一行
         const rows = Math.ceil((maxIdx + 1) / cols);
 
         const dpr = 4; // 导出清晰度
@@ -720,13 +747,12 @@
         ctx.fillStyle='#FDFCF8'; ctx.fillRect(0,0,width,height);
         
         // 2. 极淡梅花水印 (宣纸暗纹)
-        // 在整个背景上随机撒一些极淡的花
         const watermarkCount = Math.floor(height / 100) * 3;
         for(let k=0; k<watermarkCount; k++) {
             const bx = Math.random() * width;
             const by = Math.random() * height;
             const bSize = 10 + Math.random() * 20;
-            // 透明度极低 0.03 - 0.08
+            // 极低透明度
             drawPlumBlossom(ctx, bx, by, bSize, `rgba(200, 100, 100, ${0.03 + Math.random()*0.05})`);
         }
         
@@ -744,7 +770,6 @@
         ctx.fillStyle='#8B4513'; ctx.font='14px serif'; ctx.textAlign='right';
         ctx.fillText(dateStr, width-padding, height - padding/2);
         
-        // 模拟印章 "乙巳"
         const stampSize = 24;
         const sx = width - padding - 80; 
         const sy = height - padding/2 - 18;
@@ -753,26 +778,25 @@
 
         // 4. 绘制网格
         for(let i=0; i<rows*cols; i++){
-            // 只画到当前总格数
             if(i >= totalGrids) break;
             
             const r=Math.floor(i/cols), c=i%cols;
             const x=padding+c*(gridSize+gap);
             const y=padding+headerH+r*(gridSize+gap);
             
-            // 绘制米字格
+            // 绘制米字格 (加深颜色)
             ctx.lineWidth=1;
-            // 外框
             ctx.strokeStyle='#8B4513'; ctx.strokeRect(x,y,gridSize,gridSize);
-            // 内部虚线/淡线
+            
             ctx.beginPath();
             ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); 
             ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
             ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); 
             ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
-            ctx.strokeStyle='rgba(139,69,19,0.1)'; ctx.stroke();
+            ctx.strokeStyle='rgba(139,69,19,0.3)'; // 导出时也加深线条
+            ctx.stroke();
             
-            // 绘制 L型 折角
+            // L型折角
             const mSize = 8;
             drawCornerMark(ctx, x+4, y+4, mSize, 0); // TL
             drawCornerMark(ctx, x+gridSize-4, y+4, mSize, 1); // TR
@@ -787,7 +811,6 @@
                 drawGradientStroke(ctx, sp, s.colorIdx, gridSize * LINE_RATIO);
             });
             
-            // 序号
             ctx.fillStyle='#C41E3A'; ctx.font='10px serif'; ctx.textAlign='right'; 
             ctx.fillText(i+1, x+gridSize-3, y+gridSize-3);
         }
