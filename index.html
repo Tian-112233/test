@@ -21,7 +21,7 @@
             --color-border-main: #8B4513;   /* 檀木边框 */
             --color-border-board: #C41E3A;  /* 红纸边框 */
             
-            /* 网格线颜色：淡淡的 */
+            /* 网格线颜色：0.15透明度 */
             --color-grid-line: rgba(139, 69, 19, 0.15); 
             --color-mark: #B8860B;          /* L型折角颜色 */
             --color-active-bg: #FFF5E6;     
@@ -98,6 +98,36 @@
         @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
         @keyframes sway { 0%, 100% { transform: translateX(0px) rotate(0deg); } 50% { transform: translateX(30px) rotate(90deg); } }
 
+        /* --- 动态锦鲤背景 (Plan A) --- */
+        .fish-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; /* 最底层 */
+            overflow: hidden;
+        }
+        .koi-fish {
+            position: absolute;
+            width: 80px; height: 40px;
+            background-size: contain; background-repeat: no-repeat;
+            opacity: 0.15; /* 极淡水印感 */
+            /* 锦鲤 SVG */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M80,25 Q95,25 100,35 Q90,45 80,45 Q60,45 50,35 T20,30 Q10,35 0,25 Q10,15 20,20 Q30,15 50,15 T80,25 Z' fill='%23C41E3A' /%3E%3Ccircle cx='85' cy='20' r='2' fill='white' /%3E%3Cpath d='M60,15 Q65,5 75,10' fill='none' stroke='%23C41E3A' stroke-width='2' /%3E%3C/svg%3E");
+        }
+        /* 游动动画 */
+        @keyframes swim-left-to-right {
+            0% { left: -100px; transform: scaleX(-1) rotate(0deg); } /* scaleX(-1) 翻转让头朝右 */
+            25% { transform: scaleX(-1) rotate(10deg); }
+            50% { transform: scaleX(-1) rotate(-10deg); }
+            75% { transform: scaleX(-1) rotate(10deg); }
+            100% { left: 110%; transform: scaleX(-1) rotate(0deg); }
+        }
+        @keyframes swim-right-to-left {
+            0% { left: 110%; transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+            100% { left: -100px; transform: rotate(0deg); }
+        }
+
         /* --- 烟花特效 --- */
         .firework-particle {
             position: fixed; pointer-events: none; border-radius: 50%; z-index: 10000;
@@ -105,11 +135,15 @@
         }
         @keyframes explode { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
 
-        /* --- 马年剪纸装饰 (Fixed Bottom Right) --- */
+        /* --- 剪纸马装饰 (层级调高，防止被遮挡) --- */
         .zodiac-horse {
-            position: fixed; bottom: 20px; right: 20px; width: 150px; height: 150px;
-            z-index: 1; pointer-events: none; opacity: 0.9;
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+            position: fixed; bottom: 20px; right: 20px; 
+            width: 140px; height: 140px;
+            z-index: 50; /* 提高层级 */
+            pointer-events: none; opacity: 0.9;
+            filter: drop-shadow(2px 2px 4px rgba(255, 255, 255, 0.5)); /* 加点白边增加对比 */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 75 Q30 55 45 60 Q55 50 65 45 Q75 40 80 25 Q70 15 50 20 Q40 30 30 40 Q10 45 10 65 L20 75 M45 60 L45 90 M65 45 L70 80 M80 25 L95 35' fill='none' stroke='%23C41E3A' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20 75 Q30 55 45 60 Q55 50 65 45 Q75 40 80 25 Q70 15 50 20 Q40 30 30 40 Q10 45 10 65 L20 75 M45 60 L45 90 M65 45 L70 80 M80 25 L95 35' fill='%23C41E3A' stroke='none' opacity='0.3'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: center; background-size: contain;
         }
 
         /* --- 布局容器 --- */
@@ -125,37 +159,16 @@
             border-radius: 12px; padding: 0; 
             box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1); 
             border: 2px solid var(--color-border-main);
-            display: flex; flex-direction: column; overflow: visible; /* 允许中国结溢出 */
-            position: relative;
+            display: flex; flex-direction: column; overflow: hidden;
         }
         .sidebar-content { padding: 15px; overflow-y: auto; flex: 1; }
         
         .sidebar h2 {
             background-color: var(--color-accent); /* 红背景 */
             color: var(--color-accent-gold); /* 金文字 */
-            margin: 0; padding: 15px 0;
+            margin: 0; padding: 12px 0;
             font-size: 1.1rem; text-align: center; font-weight: bold;
             border-bottom: 3px solid var(--color-accent-gold-dark);
-            border-radius: 10px 10px 0 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* --- SVG 中国结 (左右悬挂) --- */
-        .knot-decoration {
-            position: absolute; top: 35px; /* 挂在标题栏下方 */
-            width: 40px; height: 100px;
-            z-index: 3;
-            filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
-            transform-origin: top center;
-            animation: gentle-sway 3s ease-in-out infinite alternate;
-        }
-        .knot-left { left: -5px; }
-        .knot-right { right: -5px; animation-delay: 1.5s; } /* 错开摇摆 */
-
-        @keyframes gentle-sway {
-            0% { transform: rotate(-2deg); }
-            100% { transform: rotate(2deg); }
         }
 
         .left-sidebar { order: 1; }
@@ -363,37 +376,13 @@
 <div class="lantern-container" id="lanternContainer"></div>
 <div class="flower-container" id="flowerContainer"></div>
 
-<div class="zodiac-horse">
-    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20,75 C20,75 10,50 30,40 C40,35 50,45 60,35 C70,25 80,20 90,30 C95,35 90,45 80,45 C70,45 60,50 60,60 C60,70 70,80 80,85 L70,95 C60,90 50,80 40,80 C30,80 30,90 20,95 L10,85 C15,80 20,80 20,75 Z M30,40 C35,30 45,25 50,30" 
-              fill="#C41E3A" stroke="#FFD700" stroke-width="1" />
-        <circle cx="75" cy="35" r="2" fill="#FFD700" />
-    </svg>
-</div>
+<div class="fish-container" id="fishContainer"></div>
+
+<div class="zodiac-horse"></div>
 
 <div class="container">
     <div class="sidebar left-sidebar">
-        <h2>
-            <div class="knot-decoration knot-left">
-                <svg viewBox="0 0 40 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20,10 L30,20 L20,30 L10,20 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <path d="M20,30 L30,40 L20,50 L10,40 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <rect x="18" y="50" width="4" height="40" fill="#C41E3A" />
-                    <circle cx="20" cy="20" r="3" fill="#FFD700"/>
-                    <circle cx="20" cy="40" r="3" fill="#FFD700"/>
-                </svg>
-            </div>
-            状态面板 | Статус
-            <div class="knot-decoration knot-right">
-                <svg viewBox="0 0 40 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20,10 L30,20 L20,30 L10,20 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <path d="M20,30 L30,40 L20,50 L10,40 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <rect x="18" y="50" width="4" height="40" fill="#C41E3A" />
-                    <circle cx="20" cy="20" r="3" fill="#FFD700"/>
-                    <circle cx="20" cy="40" r="3" fill="#FFD700"/>
-                </svg>
-            </div>
-        </h2>
+        <h2>状态面板 | Статус</h2>
         <div class="sidebar-content">
             <div class="info-panel-item">
                 <div class="info-label">颜色顺序 | Цветова последователност</div>
@@ -422,7 +411,7 @@
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
                     🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
                     🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
-                    🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                    🐟 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
             </div>
 
@@ -437,7 +426,7 @@
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
                     🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
                     🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
-                    🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                    🐟 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
              </div>
 
@@ -486,27 +475,7 @@
     </div>
 
     <div class="sidebar right-sidebar">
-        <h2>
-            <div class="knot-decoration knot-left">
-                <svg viewBox="0 0 40 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20,10 L30,20 L20,30 L10,20 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <path d="M20,30 L30,40 L20,50 L10,40 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <rect x="18" y="50" width="4" height="40" fill="#C41E3A" />
-                    <circle cx="20" cy="20" r="3" fill="#FFD700"/>
-                    <circle cx="20" cy="40" r="3" fill="#FFD700"/>
-                </svg>
-            </div>
-            工具 | Инструменти
-            <div class="knot-decoration knot-right">
-                <svg viewBox="0 0 40 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20,10 L30,20 L20,30 L10,20 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <path d="M20,30 L30,40 L20,50 L10,40 Z" fill="#C41E3A" stroke="#FFD700" stroke-width="1"/>
-                    <rect x="18" y="50" width="4" height="40" fill="#C41E3A" />
-                    <circle cx="20" cy="20" r="3" fill="#FFD700"/>
-                    <circle cx="20" cy="40" r="3" fill="#FFD700"/>
-                </svg>
-            </div>
-        </h2>
+        <h2>工具 | Инструменти</h2>
         <div class="sidebar-content">
             <div class="info-panel-item" style="margin-bottom: 20px;">
                 <div class="info-label">添加格子 | Добави</div>
@@ -563,6 +532,7 @@
         flowerImgUrl = createPlumBlossomURL();
         initLanterns();
         initFallingFlowers();
+        initKoiBackground(); // 启动锦鲤
         initColorUI('colorSeqDesktop'); initColorUI('colorSeqMobile');
         renderDesktopGrids(); renderMobilePreview(); setupMobileEvents();
         updateUI(); setupButtons();
@@ -582,7 +552,6 @@
         const size = 64;
         const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
         const ctx = canvas.getContext('2d');
-        // 极淡的粉色
         drawPlumBlossom(ctx, size/2, size/2, size/2 - 4, 'rgba(255, 183, 197, 0.4)');
         return canvas.toDataURL();
     }
@@ -598,6 +567,33 @@
             div.style.animationDuration = `${Math.random()*5+8}s, ${Math.random()*3+3}s`;
             div.style.animationDelay = Math.random() * 5 + 's';
             container.appendChild(div);
+        }
+    }
+
+    // --- 动态锦鲤背景 (Plan A) ---
+    function initKoiBackground() {
+        const container = document.getElementById('fishContainer');
+        const fishCount = 6; // 鱼的数量
+        
+        for(let i=0; i<fishCount; i++) {
+            const fish = document.createElement('div');
+            fish.className = 'koi-fish';
+            // 随机垂直位置
+            fish.style.top = (10 + Math.random() * 80) + '%';
+            // 随机大小
+            const size = 60 + Math.random() * 60;
+            fish.style.width = size + 'px';
+            fish.style.height = (size/2) + 'px';
+            
+            // 随机游动方向和速度
+            const duration = 15 + Math.random() * 15;
+            const delay = Math.random() * 10;
+            const direction = Math.random() > 0.5 ? 'swim-left-to-right' : 'swim-right-to-left';
+            
+            fish.style.animation = `${direction} ${duration}s linear infinite`;
+            fish.style.animationDelay = `-${delay}s`; // 负延迟让动画立即处于中间状态
+            
+            container.appendChild(fish);
         }
     }
 
@@ -618,7 +614,6 @@
         return `rgb(${r},${g},${b})`;
     }
 
-    // --- HTML字符串：标准米字格 + L折角 ---
     function getGridBgHTML() {
         return `<div class="grid-bg-layer">
                     <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
