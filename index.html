@@ -21,8 +21,8 @@
             --color-border-main: #8B4513;   /* 檀木边框 */
             --color-border-board: #C41E3A;  /* 红纸边框 */
             
-            /* 网格线颜色：0.15透明度 */
-            --color-grid-line: rgba(139, 69, 19, 0.15); 
+            /* 网格线颜色：统一调整为 0.2 透明度，屏幕与导出一致 */
+            --color-grid-line: rgba(139, 69, 19, 0.2); 
             --color-mark: #B8860B;          /* L型折角颜色 */
             --color-active-bg: #FFF5E6;     
         }
@@ -98,53 +98,12 @@
         @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
         @keyframes sway { 0%, 100% { transform: translateX(0px) rotate(0deg); } 50% { transform: translateX(30px) rotate(90deg); } }
 
-        /* --- 动态锦鲤背景 (Plan A) --- */
-        .fish-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; /* 最底层 */
-            overflow: hidden;
-        }
-        .koi-fish {
-            position: absolute;
-            width: 80px; height: 40px;
-            background-size: contain; background-repeat: no-repeat;
-            opacity: 0.15; /* 极淡水印感 */
-            /* 锦鲤 SVG */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 50' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M80,25 Q95,25 100,35 Q90,45 80,45 Q60,45 50,35 T20,30 Q10,35 0,25 Q10,15 20,20 Q30,15 50,15 T80,25 Z' fill='%23C41E3A' /%3E%3Ccircle cx='85' cy='20' r='2' fill='white' /%3E%3Cpath d='M60,15 Q65,5 75,10' fill='none' stroke='%23C41E3A' stroke-width='2' /%3E%3C/svg%3E");
-        }
-        /* 游动动画 */
-        @keyframes swim-left-to-right {
-            0% { left: -100px; transform: scaleX(-1) rotate(0deg); } /* scaleX(-1) 翻转让头朝右 */
-            25% { transform: scaleX(-1) rotate(10deg); }
-            50% { transform: scaleX(-1) rotate(-10deg); }
-            75% { transform: scaleX(-1) rotate(10deg); }
-            100% { left: 110%; transform: scaleX(-1) rotate(0deg); }
-        }
-        @keyframes swim-right-to-left {
-            0% { left: 110%; transform: rotate(0deg); }
-            25% { transform: rotate(10deg); }
-            50% { transform: rotate(-10deg); }
-            75% { transform: rotate(10deg); }
-            100% { left: -100px; transform: rotate(0deg); }
-        }
-
         /* --- 烟花特效 --- */
         .firework-particle {
             position: fixed; pointer-events: none; border-radius: 50%; z-index: 10000;
             animation: explode 1s ease-out forwards;
         }
         @keyframes explode { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
-
-        /* --- 剪纸马装饰 (层级调高，防止被遮挡) --- */
-        .zodiac-horse {
-            position: fixed; bottom: 20px; right: 20px; 
-            width: 140px; height: 140px;
-            z-index: 50; /* 提高层级 */
-            pointer-events: none; opacity: 0.9;
-            filter: drop-shadow(2px 2px 4px rgba(255, 255, 255, 0.5)); /* 加点白边增加对比 */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 75 Q30 55 45 60 Q55 50 65 45 Q75 40 80 25 Q70 15 50 20 Q40 30 30 40 Q10 45 10 65 L20 75 M45 60 L45 90 M65 45 L70 80 M80 25 L95 35' fill='none' stroke='%23C41E3A' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20 75 Q30 55 45 60 Q55 50 65 45 Q75 40 80 25 Q70 15 50 20 Q40 30 30 40 Q10 45 10 65 L20 75 M45 60 L45 90 M65 45 L70 80 M80 25 L95 35' fill='%23C41E3A' stroke='none' opacity='0.3'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: center; background-size: contain;
-        }
 
         /* --- 布局容器 --- */
         .container {
@@ -163,9 +122,10 @@
         }
         .sidebar-content { padding: 15px; overflow-y: auto; flex: 1; }
         
+        /* 红头金字 */
         .sidebar h2 {
-            background-color: var(--color-accent); /* 红背景 */
-            color: var(--color-accent-gold); /* 金文字 */
+            background-color: var(--color-accent); 
+            color: var(--color-accent-gold); 
             margin: 0; padding: 12px 0;
             font-size: 1.1rem; text-align: center; font-weight: bold;
             border-bottom: 3px solid var(--color-accent-gold-dark);
@@ -240,6 +200,7 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
         
+        /* 这里的CSS必须匹配HTML中的class，颜色设为0.2透明度 */
         .g-line { position: absolute; background-color: var(--color-grid-line); }
         
         .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
@@ -375,10 +336,6 @@
 
 <div class="lantern-container" id="lanternContainer"></div>
 <div class="flower-container" id="flowerContainer"></div>
-
-<div class="fish-container" id="fishContainer"></div>
-
-<div class="zodiac-horse"></div>
 
 <div class="container">
     <div class="sidebar left-sidebar">
@@ -517,7 +474,10 @@
         { s: '#174577', e: '#D0E3FF' }, // 景泰蓝
         { s: '#4B0082', e: '#E6D0FF' }  // 紫檀
     ];
-    let totalGrids = 9; let currentGridIdx = 0; let strokesData = {}; let gridColorState = {}; 
+    let totalGrids = 9; 
+    let currentGridIdx = 0; 
+    let strokesData = {}; 
+    let gridColorState = {}; 
 
     const elDesktopWrapper = document.getElementById('desktopGridWrapper');
     const elMobileCanvas = document.getElementById('mobileCanvas');
@@ -532,7 +492,6 @@
         flowerImgUrl = createPlumBlossomURL();
         initLanterns();
         initFallingFlowers();
-        initKoiBackground(); // 启动锦鲤
         initColorUI('colorSeqDesktop'); initColorUI('colorSeqMobile');
         renderDesktopGrids(); renderMobilePreview(); setupMobileEvents();
         updateUI(); setupButtons();
@@ -570,33 +529,6 @@
         }
     }
 
-    // --- 动态锦鲤背景 (Plan A) ---
-    function initKoiBackground() {
-        const container = document.getElementById('fishContainer');
-        const fishCount = 6; // 鱼的数量
-        
-        for(let i=0; i<fishCount; i++) {
-            const fish = document.createElement('div');
-            fish.className = 'koi-fish';
-            // 随机垂直位置
-            fish.style.top = (10 + Math.random() * 80) + '%';
-            // 随机大小
-            const size = 60 + Math.random() * 60;
-            fish.style.width = size + 'px';
-            fish.style.height = (size/2) + 'px';
-            
-            // 随机游动方向和速度
-            const duration = 15 + Math.random() * 15;
-            const delay = Math.random() * 10;
-            const direction = Math.random() > 0.5 ? 'swim-left-to-right' : 'swim-right-to-left';
-            
-            fish.style.animation = `${direction} ${duration}s linear infinite`;
-            fish.style.animationDelay = `-${delay}s`; // 负延迟让动画立即处于中间状态
-            
-            container.appendChild(fish);
-        }
-    }
-
     function initColorUI(cid) {
         const c = document.getElementById(cid);
         if(c) { c.innerHTML=''; COLORS.forEach((col,i)=>{ const d=document.createElement('div'); d.className='color-dot'; d.style.background=col.s; d.innerText=i+1; d.id=(cid==='colorSeqMobile'?'m-':'')+`c-dot-${i}`; c.appendChild(d); }); }
@@ -614,6 +546,7 @@
         return `rgb(${r},${g},${b})`;
     }
 
+    // --- HTML字符串：标准米字格 + L折角 ---
     function getGridBgHTML() {
         return `<div class="grid-bg-layer">
                     <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
@@ -691,7 +624,11 @@
         const move=(e)=>{
             if(!isDown)return; e.preventDefault();
             const p=getPos(e); points.push(p);
-            const cIdx=gridColorState[gridIdx]||0;
+            
+            // 确保有状态
+            if(gridColorState[gridIdx] === undefined) gridColorState[gridIdx] = 0;
+            const cIdx = gridColorState[gridIdx]; // 当前笔画颜色
+
             ctx.beginPath();
             if(points.length>1) { ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y); }
             else { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y); }
@@ -701,9 +638,15 @@
             if(!isDown)return; isDown=false;
             if(points.length>1) {
                 if(!strokesData[gridIdx]) strokesData[gridIdx]=[];
-                const cIdx=gridColorState[gridIdx]||0;
+                
+                if(gridColorState[gridIdx] === undefined) gridColorState[gridIdx] = 0;
+                const cIdx = gridColorState[gridIdx];
+
                 strokesData[gridIdx].push({points:[...points], colorIdx:cIdx%5});
-                gridColorState[gridIdx]=(cIdx+1);
+                
+                // 笔画结束，颜色计数+1
+                gridColorState[gridIdx] = cIdx + 1;
+                
                 redrawGrid(gridIdx); renderMobilePreview(); updateUI();
             }
         };
@@ -722,7 +665,10 @@
         const move=(e)=>{
             if(!isDown)return; e.preventDefault();
             const p=getPos(e); points.push(p);
-            const cIdx=gridColorState[currentGridIdx]||0;
+            
+            if(gridColorState[currentGridIdx] === undefined) gridColorState[currentGridIdx] = 0;
+            const cIdx = gridColorState[currentGridIdx];
+
             ctx.beginPath();
             if(points.length>1) { ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y); }
             else { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y); }
@@ -732,9 +678,14 @@
             if(!isDown)return; isDown=false;
             if(points.length>1) {
                 if(!strokesData[currentGridIdx]) strokesData[currentGridIdx]=[];
-                const cIdx=gridColorState[currentGridIdx]||0;
+                
+                if(gridColorState[currentGridIdx] === undefined) gridColorState[currentGridIdx] = 0;
+                const cIdx = gridColorState[currentGridIdx];
+
                 strokesData[currentGridIdx].push({points:[...points], colorIdx:cIdx%5});
-                gridColorState[currentGridIdx]=(cIdx+1);
+                
+                gridColorState[currentGridIdx] = cIdx + 1;
+
                 redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();
             }
         };
@@ -764,25 +715,71 @@
     }
 
     function updateUI() {
-        const idx=currentGridIdx, count=(strokesData[idx]||[]).length, nextC=(gridColorState[idx]||0)%5;
-        document.getElementById('curGridNum').innerText=idx+1; document.getElementById('curStrokeNum').innerText=count;
-        document.getElementById('mobileCurGridNum').innerText=idx+1; document.getElementById('mobileCurStroke').innerText=count;
-        const c1=COLORS[nextC].s, c2=COLORS[(nextC+1)%5].s;
-        document.getElementById('curColorBox').style.background=c1; document.getElementById('nextColorBox').style.background=c2;
-        document.getElementById('mobileCurColorBox').style.background=c1; document.getElementById('mobileNextColorBox').style.background=c2;
-        const upd=(pf)=>COLORS.forEach((_,x)=>{const e=document.getElementById(`${pf}c-dot-${x}`);if(e){e.className='color-dot';if(x===nextC)e.classList.add('current');else if(x===(nextC+1)%5)e.classList.add('next');}});
+        const idx = currentGridIdx;
+        const count = (strokesData[idx]||[]).length;
+        
+        // 确保状态存在
+        if(gridColorState[idx] === undefined) gridColorState[idx] = 0;
+        const nextC = gridColorState[idx] % 5;
+
+        document.getElementById('curGridNum').innerText = idx + 1; 
+        document.getElementById('curStrokeNum').innerText = count;
+        document.getElementById('mobileCurGridNum').innerText = idx + 1; 
+        document.getElementById('mobileCurStroke').innerText = count;
+        
+        const c1 = COLORS[nextC].s;
+        const c2 = COLORS[(nextC + 1) % 5].s;
+        
+        document.getElementById('curColorBox').style.background = c1; 
+        document.getElementById('nextColorBox').style.background = c2;
+        document.getElementById('mobileCurColorBox').style.background = c1; 
+        document.getElementById('mobileNextColorBox').style.background = c2;
+        
+        const upd = (pf) => COLORS.forEach((_, x) => {
+            const e = document.getElementById(`${pf}c-dot-${x}`);
+            if (e) {
+                e.className = 'color-dot';
+                if (x === nextC) e.classList.add('current');
+                else if (x === (nextC + 1) % 5) e.classList.add('next');
+            }
+        });
         upd(''); upd('m-');
     }
 
     function setupButtons() {
         const add=(m)=>{ const v=parseInt(document.getElementById(m?'gridCountMobile':'gridCount').value)||1; totalGrids+=v; renderDesktopGrids(); renderMobilePreview(); updateUI(); };
         document.getElementById('btnGenGrid').onclick=()=>add(false); document.getElementById('btnGenGridMobile').onclick=()=>add(true);
-        const undo=()=>{ const s=strokesData[currentGridIdx]; if(s&&s.length){s.pop(); if(gridColorState[currentGridIdx]>0)gridColorState[currentGridIdx]--; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
+        
+        const undo=()=>{ 
+            const s=strokesData[currentGridIdx]; 
+            if(s&&s.length){
+                s.pop(); 
+                if(gridColorState[currentGridIdx]>0) gridColorState[currentGridIdx]--; 
+                redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();
+            } 
+        };
         document.getElementById('btnUndo').onclick=undo; document.getElementById('btnUndoMobile').onclick=undo;
-        const cls=()=>{ if(confirm('清空所选格子?')) {strokesData[currentGridIdx]=[]; gridColorState[currentGridIdx]=0; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
+        
+        const cls=()=>{ 
+            if(confirm('清空所选格子?')) {
+                strokesData[currentGridIdx]=[]; 
+                gridColorState[currentGridIdx]=0; // 重置为红色
+                redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();
+            } 
+        };
         document.getElementById('btnClear').onclick=cls; document.getElementById('btnClearMobile').onclick=cls;
-        const cla=()=>{ if(confirm('清空所有?')) {strokesData={}; gridColorState={}; currentGridIdx=0; renderDesktopGrids(); renderMobilePreview(); updateUI(); switchGrid(0);} };
+        
+        const cla=()=>{ 
+            if(confirm('清空所有?')) {
+                strokesData={}; 
+                gridColorState={}; 
+                currentGridIdx=0; 
+                renderDesktopGrids(); renderMobilePreview(); updateUI(); 
+                switchGrid(0);
+            } 
+        };
         document.getElementById('btnClearAll').onclick=cla; document.getElementById('btnClearAllMobile').onclick=cla;
+        
         document.getElementById('btnPrevMobile').onclick=()=>switchGrid(currentGridIdx-1); document.getElementById('btnNextMobile').onclick=()=>switchGrid(currentGridIdx+1);
         const ex=()=>{document.getElementById('exportModal').style.display='flex'; document.getElementById('exportPreviewArea').style.display='none';};
         document.getElementById('btnExport').onclick=ex; document.getElementById('btnExportMobile').onclick=ex;
@@ -793,11 +790,7 @@
     function launchFireworksSequence() {
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
-        
-        // 1. 立即发射
         createFireworks(centerX, centerY);
-        
-        // 2. 延时发射后续几波，制造此起彼伏的感觉
         setTimeout(() => createFireworks(centerX - 200, centerY - 100), 500);
         setTimeout(() => createFireworks(centerX + 200, centerY - 100), 1000);
         setTimeout(() => createFireworks(centerX - 100, centerY + 150), 1600);
@@ -805,9 +798,8 @@
     }
 
     function createFireworks(x, y) {
-        const count = 30; // 粒子数量
+        const count = 30; 
         const colors = ['#C41E3A', '#FFD700', '#008558', '#FF69B4', '#1E90FF'];
-        
         for (let i = 0; i < count; i++) {
             const p = document.createElement('div');
             p.className = 'firework-particle';
@@ -817,7 +809,6 @@
             p.style.width = Math.random() * 6 + 4 + 'px';
             p.style.height = p.style.width;
             
-            // 随机爆炸方向
             const angle = Math.random() * Math.PI * 2;
             const velocity = Math.random() * 150 + 80;
             const tx = Math.cos(angle) * velocity + 'px';
@@ -853,18 +844,18 @@
     }
 
     function doExport() {
-        launchFireworksSequence(); // 触发连环烟花
+        launchFireworksSequence();
 
         const name=document.getElementById('exportName').value;
         const gridsPerPage = 9;
         const cols = 3;
-        // 计算总页数
+        
         let maxFilled = -1;
         Object.keys(strokesData).forEach(idx => { if(strokesData[idx] && strokesData[idx].length>0) maxFilled=Math.max(maxFilled, parseInt(idx)); });
         let exportTotal = Math.max(totalGrids, maxFilled + 1);
         const totalPages = Math.ceil(exportTotal / gridsPerPage);
 
-        const dpr = 4; // 导出清晰度
+        const dpr = 4;
         const gridSize = 140; 
         const gap=15, padding=50, headerH=70, footerH=20, pageGap=40;
         
@@ -876,26 +867,22 @@
         cvs.width = width * dpr; cvs.height = totalHeight * dpr;
         const ctx=cvs.getContext('2d'); ctx.scale(dpr, dpr);
         
-        // 背景色
         ctx.fillStyle='#FDFCF8'; ctx.fillRect(0,0,width,totalHeight);
 
-        // 循环每一页
         for(let p = 0; p < totalPages; p++) {
             let startY = p * (pageHeight + pageGap);
             
-            // --- 每一页的背景和边框 ---
             ctx.strokeStyle = '#C41E3A'; ctx.lineWidth = 4;
             ctx.strokeRect(10, startY + 10, width - 20, pageHeight - 20);
             ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 2;
             ctx.strokeRect(16, startY + 16, width - 32, pageHeight - 32);
 
-            // --- 绘制随机梅花 (只在格子外部) ---
+            // 梅花
             const blossomCount = 12;
             for(let k=0; k<blossomCount; k++) {
                 let bx = Math.random() * width;
                 let by = startY + Math.random() * pageHeight;
                 
-                // 碰撞检测
                 let gridAreaTop = startY + padding + headerH;
                 let gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
                 let gridAreaLeft = padding;
@@ -910,12 +897,10 @@
                 drawPlumBlossom(ctx, bx, by, bSize, `rgba(255, 192, 203, ${0.15 + Math.random()*0.1})`);
             }
 
-            // --- 头部信息 (位于格子上方) ---
-            // 名字 (左上)
+            // Header
             ctx.fillStyle='#C41E3A'; ctx.font='bold 20px KaiTi, serif'; ctx.textAlign='left';
             ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, startY + padding + 25);
 
-            // 右上信息：Page 1/2 | 2026/1/27
             const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); 
             const bgObj = new Date(bgDate);
             const y = bgObj.getFullYear();
@@ -928,7 +913,7 @@
             ctx.fillStyle='#8B4513'; ctx.font='16px serif'; ctx.textAlign='right';
             ctx.fillText(infoStr, width - padding, startY + padding + 25);
             
-            // --- 红色分割线 ---
+            // Red Line
             ctx.beginPath();
             ctx.moveTo(padding, startY + padding + 40);
             ctx.lineTo(width - padding, startY + padding + 40);
@@ -936,37 +921,33 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // --- 绘制 3x3 格子 ---
+            // Grids
             for(let i=0; i<9; i++){
                 let gridIndex = p * 9 + i;
-                if(gridIndex >= exportTotal && gridIndex >= totalGrids) break; // 超出范围
+                if(gridIndex >= exportTotal && gridIndex >= totalGrids) break;
 
                 const r = Math.floor(i/cols); 
                 const c = i%cols;
                 const x = padding + c*(gridSize+gap);
                 const y = startY + padding + headerH + r*(gridSize+gap);
                 
-                // 绘制米字格 (导出时颜色变浅)
                 ctx.lineWidth=1;
                 ctx.strokeStyle='#8B4513'; ctx.strokeRect(x,y,gridSize,gridSize);
                 
                 ctx.beginPath();
-                // 浅色的米字线 (0.15)
                 ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); 
                 ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
                 ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); 
                 ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
-                ctx.strokeStyle='rgba(139,69,19,0.15)'; 
+                ctx.strokeStyle='rgba(139,69,19,0.2)'; // 0.2 透明度
                 ctx.stroke();
 
-                // L型折角
                 const mSize = 8;
-                drawCornerMark(ctx, x+4, y+4, mSize, 0); // TL
-                drawCornerMark(ctx, x+gridSize-4, y+4, mSize, 1); // TR
-                drawCornerMark(ctx, x+gridSize-4, y+gridSize-4, mSize, 2); // BR
-                drawCornerMark(ctx, x+4, y+gridSize-4, mSize, 3); // BL
+                drawCornerMark(ctx, x+4, y+4, mSize, 0); 
+                drawCornerMark(ctx, x+gridSize-4, y+4, mSize, 1); 
+                drawCornerMark(ctx, x+gridSize-4, y+gridSize-4, mSize, 2); 
+                drawCornerMark(ctx, x+4, y+gridSize-4, mSize, 3); 
                 
-                // 绘制笔画
                 const strokes = strokesData[gridIndex]||[];
                 const sc = gridSize / BASE_SIZE;
                 strokes.forEach(s=>{
@@ -974,7 +955,6 @@
                     drawGradientStroke(ctx, sp, s.colorIdx, gridSize * LINE_RATIO);
                 });
                 
-                // 序号
                 ctx.fillStyle='#C41E3A'; ctx.font='10px serif'; ctx.textAlign='right'; 
                 ctx.fillText(gridIndex+1, x+gridSize-3, y+gridSize-3);
             }
