@@ -21,7 +21,7 @@
             --color-border-main: #8B4513;   /* 檀木边框 */
             --color-border-board: #C41E3A;  /* 红纸边框 */
             
-            /* 网格线颜色：统一调整为 0.2 透明度，屏幕与导出一致 */
+            /* 网格线颜色：0.2透明度 */
             --color-grid-line: rgba(139, 69, 19, 0.2); 
             --color-mark: #B8860B;          /* L型折角颜色 */
             --color-active-bg: #FFF5E6;     
@@ -118,17 +118,37 @@
             border-radius: 12px; padding: 0; 
             box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1); 
             border: 2px solid var(--color-border-main);
-            display: flex; flex-direction: column; overflow: hidden;
+            display: flex; flex-direction: column; overflow: visible; /* 允许中国结溢出 */
+            position: relative;
         }
         .sidebar-content { padding: 15px; overflow-y: auto; flex: 1; }
         
-        /* 红头金字 */
         .sidebar h2 {
-            background-color: var(--color-accent); 
-            color: var(--color-accent-gold); 
-            margin: 0; padding: 12px 0;
+            background-color: var(--color-accent); /* 红背景 */
+            color: var(--color-accent-gold); /* 金文字 */
+            margin: 0; padding: 15px 0;
             font-size: 1.1rem; text-align: center; font-weight: bold;
             border-bottom: 3px solid var(--color-accent-gold-dark);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- SVG 中国结 (左右悬挂 - 更精致版) --- */
+        .knot-decoration {
+            position: absolute; top: 35px; /* 挂在标题栏下方 */
+            width: 46px; height: 110px;
+            z-index: 3;
+            filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.3));
+            transform-origin: top center;
+            animation: gentle-sway 4s ease-in-out infinite alternate;
+        }
+        .knot-left { left: -8px; }
+        .knot-right { right: -8px; animation-delay: 2s; }
+
+        @keyframes gentle-sway {
+            0% { transform: rotate(-2deg); }
+            100% { transform: rotate(2deg); }
         }
 
         .left-sidebar { order: 1; }
@@ -200,7 +220,6 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
         
-        /* 这里的CSS必须匹配HTML中的class，颜色设为0.2透明度 */
         .g-line { position: absolute; background-color: var(--color-grid-line); }
         
         .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
@@ -230,7 +249,7 @@
         }
         .grid-container.grid-active .grid-number-label { color: var(--color-accent-gold); }
 
-        /* 颜色面板 */
+        /* 颜色面板 - 修复动态提示 */
         .info-panel-item {
             background-color: #fff; padding: 10px; border-radius: 8px;
             margin-bottom: 15px; border: 1px solid var(--color-border-main); text-align: center;
@@ -239,15 +258,26 @@
         .color-sequence { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
         
         .color-dot { 
-            width: 22px; height: 22px; border-radius: 50%; 
+            width: 24px; height: 24px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            color: #fff; font-size: 10px; font-weight: bold;
+            color: #fff; font-size: 11px; font-weight: bold;
             text-shadow: 0 0 2px rgba(0,0,0,0.5); 
             border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            opacity: 0.6; /* 默认半透明，而不是完全看不见 */
+            transition: all 0.2s ease;
         }
-        .color-dot.current { transform: scale(1.3); border-color: var(--color-accent-gold); z-index: 2; }
-        .color-dot.next { border: 1px dashed var(--color-accent); opacity: 0.8; }
-        .color-dot:not(.current):not(.next) { opacity: 0.3; transform: scale(0.9); }
+        .color-dot.current { 
+            transform: scale(1.4); 
+            border-color: var(--color-accent-gold); 
+            opacity: 1;
+            z-index: 2; 
+            box-shadow: 0 0 8px var(--color-accent-gold);
+        }
+        .color-dot.next { 
+            opacity: 0.9; 
+            border: 2px dashed var(--color-accent); 
+            transform: scale(1.1);
+        }
         
         .color-display-row { display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
         .color-box-wrapper { display: flex; flex-direction: column; align-items: center; }
@@ -339,7 +369,31 @@
 
 <div class="container">
     <div class="sidebar left-sidebar">
-        <h2>状态面板 | Статус</h2>
+        <h2>
+            <div class="knot-decoration knot-left">
+                <svg viewBox="0 0 60 140" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="30" y1="0" x2="30" y2="20" stroke="#C41E3A" stroke-width="2"/>
+                    <path d="M15,20 L45,20 L45,35 L15,35 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M15,35 L45,35 L45,50 L15,50 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M20,15 L20,55 M40,15 L40,55" stroke="#C41E3A" stroke-width="3"/>
+                    <circle cx="30" cy="35" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+                    <rect x="25" y="55" width="10" height="15" fill="#C41E3A" />
+                    <path d="M25,70 L25,120 M35,70 L35,120 M30,70 L30,125 M20,70 L15,110 M40,70 L45,110" stroke="#C41E3A" stroke-width="2" />
+                </svg>
+            </div>
+            状态面板 | Статус
+            <div class="knot-decoration knot-right">
+                <svg viewBox="0 0 60 140" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="30" y1="0" x2="30" y2="20" stroke="#C41E3A" stroke-width="2"/>
+                    <path d="M15,20 L45,20 L45,35 L15,35 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M15,35 L45,35 L45,50 L15,50 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M20,15 L20,55 M40,15 L40,55" stroke="#C41E3A" stroke-width="3"/>
+                    <circle cx="30" cy="35" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+                    <rect x="25" y="55" width="10" height="15" fill="#C41E3A" />
+                    <path d="M25,70 L25,120 M35,70 L35,120 M30,70 L30,125 M20,70 L15,110 M40,70 L45,110" stroke="#C41E3A" stroke-width="2" />
+                </svg>
+            </div>
+        </h2>
         <div class="sidebar-content">
             <div class="info-panel-item">
                 <div class="info-label">颜色顺序 | Цветова последователност</div>
@@ -432,7 +486,31 @@
     </div>
 
     <div class="sidebar right-sidebar">
-        <h2>工具 | Инструменти</h2>
+        <h2>
+            <div class="knot-decoration knot-left">
+                <svg viewBox="0 0 60 140" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="30" y1="0" x2="30" y2="20" stroke="#C41E3A" stroke-width="2"/>
+                    <path d="M15,20 L45,20 L45,35 L15,35 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M15,35 L45,35 L45,50 L15,50 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M20,15 L20,55 M40,15 L40,55" stroke="#C41E3A" stroke-width="3"/>
+                    <circle cx="30" cy="35" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+                    <rect x="25" y="55" width="10" height="15" fill="#C41E3A" />
+                    <path d="M25,70 L25,120 M35,70 L35,120 M30,70 L30,125 M20,70 L15,110 M40,70 L45,110" stroke="#C41E3A" stroke-width="2" />
+                </svg>
+            </div>
+            工具 | Инструменти
+            <div class="knot-decoration knot-right">
+                <svg viewBox="0 0 60 140" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="30" y1="0" x2="30" y2="20" stroke="#C41E3A" stroke-width="2"/>
+                    <path d="M15,20 L45,20 L45,35 L15,35 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M15,35 L45,35 L45,50 L15,50 Z" fill="none" stroke="#C41E3A" stroke-width="3"/>
+                    <path d="M20,15 L20,55 M40,15 L40,55" stroke="#C41E3A" stroke-width="3"/>
+                    <circle cx="30" cy="35" r="5" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+                    <rect x="25" y="55" width="10" height="15" fill="#C41E3A" />
+                    <path d="M25,70 L25,120 M35,70 L35,120 M30,70 L30,125 M20,70 L15,110 M40,70 L45,110" stroke="#C41E3A" stroke-width="2" />
+                </svg>
+            </div>
+        </h2>
         <div class="sidebar-content">
             <div class="info-panel-item" style="margin-bottom: 20px;">
                 <div class="info-label">添加格子 | Добави</div>
@@ -546,7 +624,6 @@
         return `rgb(${r},${g},${b})`;
     }
 
-    // --- HTML字符串：标准米字格 + L折角 ---
     function getGridBgHTML() {
         return `<div class="grid-bg-layer">
                     <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
@@ -738,6 +815,7 @@
         const upd = (pf) => COLORS.forEach((_, x) => {
             const e = document.getElementById(`${pf}c-dot-${x}`);
             if (e) {
+                // 恢复了类名切换逻辑，确保高亮
                 e.className = 'color-dot';
                 if (x === nextC) e.classList.add('current');
                 else if (x === (nextC + 1) % 5) e.classList.add('next');
