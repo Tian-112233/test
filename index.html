@@ -51,28 +51,35 @@
         .title-translation { font-size: 0.9rem; color: var(--color-accent); font-style: italic;
             display: block; margin-top: 5px; }
 
-        /* --- 修改后的说明区域样式 --- */
+        /* --- 说明区域样式 --- */
         .instructions-section { 
             width: 100%;
-            max-width: 700px; /* 与下方的格子容器对齐 */
-            margin: 0 auto 15px auto; /* 居中 */
+            max-width: 700px; 
+            margin: 0 auto 15px auto; 
             background: rgba(245, 230, 211, 0.6); 
-            padding: 15px; /* 增加内边距 */
+            padding: 15px;
             border-radius: 8px; 
-            border: 1px solid var(--color-border-main); /* 添加边框 */
+            border: 1px solid var(--color-border-main); 
             flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 轻微阴影增加层次感 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        /* ------------------------- */
 
         .board-container { flex: 1; display: flex; flex-direction: column;
             padding: 0 15px 15px 15px; overflow-y: auto; scroll-behavior: smooth; }
-        .board { background-color: var(--color-bg-board);
-            border: 10px solid var(--color-border-board); border-radius: 8px; padding: 20px; flex: 1;
+        
+        /* --- 新增：包裹网格的棕色大框样式 --- */
+        .board { 
+            background-color: var(--color-bg-board);
+            border: 10px solid var(--color-border-board); /* 棕色大框 */
+            border-radius: 8px; 
+            padding: 20px; 
+            width: 100%;
+            max-width: 760px; /* 宽度限制，与上方说明对齐 (700内容+边距) */
+            margin: 0 auto;   /* 居中 */
         }
         
         .desktop-grid-wrapper { display: grid;
-            grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 700px; margin: 0 auto; align-content: start;
+            grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; margin: 0 auto; align-content: start;
         }
 
         .grid-container { position: relative; width: 100%; aspect-ratio: 1/1; background-color: var(--color-bg-container);
@@ -173,7 +180,7 @@
         }
         
         @media (max-width: 1100px) {
-            .sidebar, .desktop-grid-wrapper { display: none !important;
+            .sidebar, .board { display: none !important; /* 隐藏桌面版大框 */
             }
             .container { flex-direction: column; height: auto; min-height: 100vh;
             padding: 10px; overflow-y: auto; }
@@ -265,27 +272,25 @@
         <header><h1>汉字书写练习板<br><span class="title-translation">Дъска за писане на китайски йероглифи</span></h1></header>
         <div class="board-container">
             <div class="instructions-section">
-             
                 <div style="font-size: 0.85rem; line-height:1.6;">
                     • 颜色顺序：红→黄→绿→蓝→紫 (Червено → Жълто → Зелено → Синьо → Лилаво)<br>
                     • 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
                     • 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
-       
                 </div>
             </div>
             
-            <div class="desktop-grid-wrapper" id="desktopGridWrapper"></div>
+            <div class="board">
+                <div class="desktop-grid-wrapper" id="desktopGridWrapper"></div>
+            </div>
 
             <div class="mobile-layout">
                 <div class="mobile-add-grid-section">
                      <div class="add-grid-control">
- 
                         <span>添加格子 |
                         Добави:</span>
                          <input type="number" id="gridCountMobile" value="9" min="1" max="50">
                          <button class="button button-primary" id="btnGenGridMobile" style="width:auto; margin:0; padding:6px 12px;">+</button>
                      </div>
-                 
                     <div class="total-info">总数: <span id="totalGridNumMobile">9</span></div>
                 </div>
 
