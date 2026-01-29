@@ -6,6 +6,7 @@
     <title>汉字书写练习板</title>
     <style>
         :root {
+            /* 采用古朴配色方案 */
             --color-bg-body: #fff8f0;
             --color-bg-container: #fffaf5;
             --color-bg-board: #fff5e6;
@@ -31,7 +32,7 @@
             background-attachment: fixed;
         }
 
-        .container { max-width: 1600px; margin: 0 auto; display: flex; gap: 15px; height: 100vh; padding: 15px; overflow: hidden; position: relative; }
+        .container { max-width: 1600px; margin: 0 auto; display: flex; gap: 15px; height: 100vh; padding: 15px; overflow: hidden; position: relative; z-index: 1; }
 
         .sidebar { width: 240px; background-color: var(--color-bg-container); border-radius: 10px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid var(--color-border-main); flex-shrink: 0; display: flex; flex-direction: column; overflow-y: auto; }
         .sidebar h2 { color: var(--color-accent); margin-bottom: 10px; font-size: 1.1rem; padding-bottom: 6px; border-bottom: 1px solid var(--color-border-main); text-align: center; font-weight: bold; }
@@ -43,7 +44,7 @@
 
         .instructions-section { margin: 0 15px 10px; background: rgba(245, 230, 211, 0.6); padding: 10px; border-radius: 8px; border-left: 4px solid var(--color-accent); flex-shrink: 0; }
 
-        .board-container { flex: 1; display: flex; flex-direction: column; padding: 0 15px 15px 15px; overflow-y: auto; }
+        .board-container { flex: 1; display: flex; flex-direction: column; padding: 0 15px 15px 15px; overflow-y: auto; scroll-behavior: smooth; }
         .board { background-color: var(--color-bg-board); border: 10px solid var(--color-border-board); border-radius: 8px; padding: 20px; flex: 1; }
         .desktop-grid-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 700px; margin: 0 auto; align-content: start; }
 
@@ -87,6 +88,7 @@
         .modal-content { background-color: var(--color-bg-container); padding: 20px; border-radius: 10px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; border: 2px solid var(--color-border-main); text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-accent); }
 
+        .mobile-layout { display: none; }
         @media (max-width: 1100px) {
             .sidebar, .desktop-board-container { display: none !important; }
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
@@ -102,7 +104,7 @@
         }
         
         #exportResultArea { display: flex; flex-direction: column; gap: 20px; align-items: center; margin-top: 20px; }
-        .export-page-wrapper { width: 100%; max-width: 600px; }
+        .export-page-wrapper { width: 100%; max-width: 500px; }
         .export-img-item { width: 100%; border: 1px solid var(--color-border-main); border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     </style>
 </head>
@@ -120,9 +122,9 @@
             </div>
         </div>
         <div class="info-panel-item">
-            <div class="info-label">当前位置 | Позиция</div>
-            <div style="font-weight:bold; color:var(--color-accent); font-size:1.1rem;">格子 <span id="curGridNum">1</span></div>
-            <div style="font-size:0.9rem; color:var(--color-text-secondary);">笔画数: <span id="curStrokeNum">0</span></div>
+            <div class="info-label">位置 | Позиция</div>
+            <div style="font-weight:bold; color:var(--color-accent);">格子 <span id="curGridNum">1</span></div>
+            <div style="font-size:0.9rem;">笔画: <span id="curStrokeNum">0</span></div>
         </div>
     </div>
 
@@ -150,8 +152,8 @@
             </div>
             <div class="mobile-function-buttons">
                 <button id="btnUndoMobile" class="button button-utility">撤销 | Отмени</button>
-                <button id="btnClearMobile" class="button button-secondary">清空 | Изчисти</button>
-                <button id="btnClearAllMobile" class="button button-clear-all">重置 | Нулиране</button>
+                <button id="btnClearMobile" class="button button-secondary">清空格子 | Изчисти</button>
+                <button id="btnClearAllMobile" class="button button-clear-all">重置 | Изчисти всичко</button>
                 <button id="btnExportMobile" class="button button-success">导出 | Експорт</button>
             </div>
             <div class="mobile-board-area">
@@ -180,8 +182,8 @@
             <div style="font-size:0.8rem;">总数 | Общо: <span id="totalGridNum">9</span></div>
         </div>
         <button id="btnUndo" class="button button-utility">撤销 | Отмени</button>
-        <button id="btnClear" class="button button-secondary">清空 | Изчисти</button>
-        <button id="btnClearAll" class="button button-clear-all">重置 | Нулиране</button>
+        <button id="btnClear" class="button button-secondary">清空格子 | Изчисти</button>
+        <button id="btnClearAll" class="button button-clear-all">重置 | Изчисти всичко</button>
         <button id="btnExport" class="button button-success">导出图片 | Експорт</button>
     </div>
 </div>
@@ -193,7 +195,7 @@
         <input type="text" id="exportName" placeholder="请输入姓名 | Въведете име" style="width:80%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:4px; font-size:1rem; text-align:center;">
         <button class="button button-success" id="btnConfirmExport" style="width:50%; margin:10px auto;">生成 | Генерирай</button>
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
-            <p style="font-size:0.9rem; color:#666; margin-bottom:15px; font-weight:bold;">
+            <p style="font-size:0.9rem; color:#666; margin-bottom:10px; font-weight:bold;">
                 长按或右键图片即可保存<br>
                 <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">Натиснете продължително или десен бутон върху изображението, за да го запазите</span>
             </p>
@@ -211,7 +213,7 @@
     const elDesktopWrapper = document.getElementById('desktopGridWrapper');
     const elMobileCanvas = document.getElementById('mobileCanvas');
     const elMobilePreviewBar = document.getElementById('mobilePreviewBar');
-    const BASE_SIZE = 300, BASE_LINE_WIDTH = 12, LINE_RATIO = 12/300;
+    const BASE_SIZE = 300, BASE_LINE_WIDTH = 12, LINE_RATIO = 12 / 300; 
 
     window.onload = function() {
         initColorUI('colorSeqDesktop'); initColorUI('colorSeqMobile');
@@ -289,15 +291,32 @@
     function redrawCanvas(cvs, idx) { const ctx=cvs.getContext('2d'); ctx.clearRect(0,0,300,300); (strokesData[idx]||[]).forEach(s=>drawGradientStroke(ctx, s.points, s.colorIdx, BASE_LINE_WIDTH)); }
     function redrawMobileCanvas() { redrawCanvas(elMobileCanvas, currentGridIdx); }
     
-    // 稳定笔画渐变算法：精细分段线性插值
-    function drawGradientStroke(ctx, points, cIdx, width) {
-        if(points.length<2) return; const cS=hexToRgb(COLORS[cIdx].s), cE=hexToRgb(COLORS[cIdx].e);
-        ctx.lineWidth=width; ctx.lineCap='round'; ctx.lineJoin='round';
-        for(let i=0; i<points.length-1; i++){
-            const p1=points[i], p2=points[i+1], t1=i/(points.length-1), t2=(i+1)/(points.length-1);
-            const g=ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
-            g.addColorStop(0, getGradientColor(t1, cS, cE)); g.addColorStop(1, getGradientColor(t2, cS, cE));
-            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.strokeStyle=g; ctx.stroke();
+    // 强化渐变渲染逻辑
+    function drawGradientStroke(ctx, points, cIdx, strokeWidth) {
+        if(points.length < 2) return;
+        const cStart = hexToRgb(COLORS[cIdx].s);
+        const cEnd = hexToRgb(COLORS[cIdx].e);
+        
+        ctx.lineWidth = strokeWidth;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        // 稳定性核心修复：采用统一的段落渲染，防止因为段落切分导致的闪烁
+        for(let i = 0; i < points.length - 1; i++) {
+            const p1 = points[i];
+            const p2 = points[i+1];
+            const t1 = i / (points.length - 1);
+            const t2 = (i + 1) / (points.length - 1);
+
+            const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+            grad.addColorStop(0, getGradientColor(t1, cStart, cEnd));
+            grad.addColorStop(1, getGradientColor(t2, cStart, cEnd));
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = grad;
+            ctx.stroke();
         }
     }
 
@@ -326,9 +345,10 @@
     }
 
     function doExport() {
-        const name=document.getElementById('exportName').value, resArea=document.getElementById('exportResultArea');
-        resArea.innerHTML='';
-        const totalPages = Math.ceil(totalGrids / 9), dpr=6, gridSize=120, gap=10, padding=30, hH=50, fH=40;
+        const name=document.getElementById('exportName').value, resultArea=document.getElementById('exportResultArea');
+        resultArea.innerHTML='';
+        const totalPages = Math.ceil(totalGrids / 9);
+        const dpr=6, gridSize=120, gap=10, padding=30, hH=50, fH=40;
         const w=padding*2+3*gridSize+2*gap, h=padding*2+hH+fH+3*(gridSize+gap);
 
         for(let p=0; p<totalPages; p++) {
@@ -338,18 +358,22 @@
             ctx.fillStyle='#8b4513'; ctx.font='bold 20px serif'; ctx.textAlign='left';
             ctx.fillText(name?`姓名: ${name}`:'汉字练习', padding, padding+25);
             
-            // 获取保加利亚日期并拼接页码
-            const opt = { timeZone: 'Europe/Sofia', year: 'numeric', month: 'numeric', day: 'numeric' };
-            const dtParts = new Intl.DateTimeFormat('en-US', opt).formatToParts(new Date());
-            const ds = `${dtParts.find(x=>x.type==='year').value}/${dtParts.find(x=>x.type==='month').value}/${dtParts.find(x=>x.type==='day').value}`;
+            // 获取并格式化保加利亚日期
+            const d = new Date();
+            const y = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', year: 'numeric' });
+            const m = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', month: 'numeric' });
+            const da = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', day: 'numeric' });
+            const ds = `${y}/${m}/${da}`;
+            
+            // 绘制页码并排日期
             ctx.fillStyle='#7a5c3c'; ctx.font='bold 14px serif'; ctx.textAlign='right';
             ctx.fillText(`Page ${p+1}/${totalPages} | ${ds}`, w-padding, padding+25);
-
+            
             ctx.beginPath(); ctx.moveTo(padding, padding+40); ctx.lineTo(w-padding, padding+40); ctx.strokeStyle='#d4b483'; ctx.lineWidth=2; ctx.stroke();
             
             for(let i=0; i<9; i++) {
                 const idx = p*9+i; if(idx>=totalGrids) break;
-                const r=Math.floor(i/3), c=i%3, x=padding+c*(gridSize+gap), y=padding+hH+r*(gridSize+gap);
+                const row=Math.floor(i/3), col=i%3, x=padding+col*(gridSize+gap), y=padding+hH+row*(gridSize+gap);
                 ctx.fillStyle='#fffaf5'; ctx.fillRect(x,y,gridSize,gridSize); ctx.strokeStyle='#d4b483'; ctx.lineWidth=1; ctx.strokeRect(x,y,gridSize,gridSize);
                 ctx.beginPath(); ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
                 ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y); ctx.strokeStyle='rgba(139,69,19,0.15)'; ctx.stroke();
@@ -359,7 +383,7 @@
             }
             const wrapper=document.createElement('div'); wrapper.className='export-page-wrapper';
             const img=document.createElement('img'); img.src=cvs.toDataURL(); img.className='export-img-item';
-            wrapper.appendChild(img); resArea.appendChild(wrapper);
+            wrapper.appendChild(img); resultArea.appendChild(wrapper);
         }
         document.getElementById('exportPreviewArea').style.display='block';
     }
