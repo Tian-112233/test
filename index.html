@@ -6,13 +6,12 @@
     <title>汉字书写练习板</title>
     <style>
         :root {
-            /* 保持原有配色（大地色/纸张色系） */
             --color-bg-body: #fff8f0;
             --color-bg-container: #fffaf5;
             --color-bg-board: #fff5e6;
             --color-text-main: #3a2610;
             --color-text-secondary: #7a5c3c;
-            --color-accent: #8b4513; /* 棕色重点色 */
+            --color-accent: #8b4513;
             --color-border-main: #d4b483;
             --color-border-board: #c19a6b;
             --color-grid-line: rgba(139, 69, 19, 0.15);
@@ -108,22 +107,21 @@
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
             .mobile-layout { display: flex; flex-direction: column; width: 100%; }
             
-            /* 修改：强制不换行，优化间距，确保翻译能放下 */
+            /* 修改：居中对齐，紧凑布局 */
             .mobile-add-grid-section { 
                 display: flex; 
-                justify-content: space-between; 
+                justify-content: center;  /* 关键修改：居中 */
                 align-items: center; 
-                gap: 5px; 
+                gap: 20px; /* 紧凑但有间距 */
                 margin-bottom: 15px; 
                 padding: 10px; 
                 background-color: var(--color-active-bg); 
                 border-radius: 8px; 
                 border: 1px solid var(--color-border-main); 
-                flex-wrap: nowrap; /* 关键：不换行 */
+                flex-wrap: nowrap; 
             }
             .mobile-add-grid-section .add-grid-control { margin-bottom: 0; gap: 5px; }
-            /* 字体稍微调小一点防止溢出 */
-            .mobile-add-grid-section .add-grid-control span { font-size: 0.85rem; white-space: nowrap; }
+            .mobile-add-grid-section .add-grid-control span { font-size: 0.9rem; white-space: nowrap; }
             .mobile-add-grid-section .total-info { font-size: 0.9rem; color: var(--color-text-secondary); white-space: nowrap; }
             
             .mobile-function-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px; }
@@ -429,14 +427,12 @@
         gridColorState[currentGridIdx]=0; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
         document.getElementById('btnClear').onclick=cls; document.getElementById('btnClearMobile').onclick=cls;
         
-        // 关键修复：清空所有功能
         const cla=()=>{ 
             if(confirm('清空所有 (Изчисти всичко)?')){
-                // 关键修复1：不清空变量引用，而是清空对象内容，防止事件监听器指向旧对象导致导出不更新
                 for (var key in strokesData) delete strokesData[key];
                 for (var key in gridColorState) delete gridColorState[key];
                 
-                // 关键修复2：重置格子总数回默认值，防止导出空白页
+                // 重置格子总数为默认9个，防止导出时依然渲染之前的空白页
                 totalGrids = 9; 
                 
                 currentGridIdx=0; 
@@ -450,17 +446,27 @@
         
         document.getElementById('btnPrevMobile').onclick=()=>switchGrid(currentGridIdx-1);
         document.getElementById('btnNextMobile').onclick=()=>switchGrid(currentGridIdx+1);
-        document.getElementById('btnExport').onclick=()=>{document.getElementById('exportModal').style.display='flex';};
-        document.getElementById('btnExportMobile').onclick=()=>{document.getElementById('exportModal').style.display='flex';};
+        
+        // 关键修复：打开弹窗时清空旧的结果
+        const openExport=()=>{
+            document.getElementById('exportModal').style.display='flex';
+            document.getElementById('exportResultArea').innerHTML=''; // 清空旧图
+            document.getElementById('exportPreviewArea').style.display='none'; // 隐藏预览区直到再次生成
+        };
+        document.getElementById('btnExport').onclick=openExport;
+        document.getElementById('btnExportMobile').onclick=openExport;
+        
         document.getElementById('btnConfirmExport').onclick=doExport;
     }
 
     function doExport() {
         const name=document.getElementById('exportName').value, resultArea=document.getElementById('exportResultArea');
-        resultArea.innerHTML='';
+        resultArea.innerHTML=''; // 清空当前区域
+        
         const totalPages = Math.ceil(totalGrids / 9);
         const dpr=6, gridSize=120, gap=10, padding=30, hH=50, fH=40;
         const w=padding*2+3*gridSize+2*gap, h=padding*2+hH+fH+3*(gridSize+gap);
+        
         for(let p=0; p<totalPages; p++) {
             const cvs=document.createElement('canvas'); cvs.width=w*dpr; cvs.height=h*dpr;
             const ctx=cvs.getContext('2d'); ctx.scale(dpr, dpr);
