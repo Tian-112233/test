@@ -340,6 +340,7 @@
             .mobile-preview-item.active { border-color: var(--color-accent-gold); box-shadow: 0 0 0 2px var(--color-accent-gold); }
             .mobile-preview-item canvas { width: 100%; height: 100%; position: absolute; z-index: 2; top:0; left:0; }
         }
+
     </style>
 </head>
 <body>
@@ -711,6 +712,13 @@
     function redrawCanvas(canvas, idx) {
         const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
         (strokesData[idx]||[]).forEach(s=>drawGradientStroke(ctx, s.points, s.colorIdx, BASE_LINE_WIDTH));
+    }
+
+    function redrawMobileCanvas() {
+        if(!elMobileCanvas) return;
+        const ctx = elMobileCanvas.getContext('2d');
+        ctx.clearRect(0, 0, elMobileCanvas.width, elMobileCanvas.height);
+        (strokesData[currentGridIdx]||[]).forEach(s=>drawGradientStroke(ctx, s.points, s.colorIdx, BASE_LINE_WIDTH));
     }
     
     function drawGradientStroke(ctx, points, cIdx, lineWidth) {
