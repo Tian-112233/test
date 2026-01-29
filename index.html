@@ -107,12 +107,12 @@
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
             .mobile-layout { display: flex; flex-direction: column; width: 100%; }
             
-            /* 修改：居中对齐，紧凑布局 */
+            /* 修改：居中对齐，紧凑布局，不换行 */
             .mobile-add-grid-section { 
                 display: flex; 
-                justify-content: center;  /* 关键修改：居中 */
+                justify-content: center; /* 关键：整体居中 */
                 align-items: center; 
-                gap: 20px; /* 紧凑但有间距 */
+                gap: 20px; /* 元素之间的紧凑间距 */
                 margin-bottom: 15px; 
                 padding: 10px; 
                 background-color: var(--color-active-bg); 
@@ -432,7 +432,7 @@
                 for (var key in strokesData) delete strokesData[key];
                 for (var key in gridColorState) delete gridColorState[key];
                 
-                // 重置格子总数为默认9个，防止导出时依然渲染之前的空白页
+                // 重置格子总数回默认9个
                 totalGrids = 9; 
                 
                 currentGridIdx=0; 
@@ -447,11 +447,11 @@
         document.getElementById('btnPrevMobile').onclick=()=>switchGrid(currentGridIdx-1);
         document.getElementById('btnNextMobile').onclick=()=>switchGrid(currentGridIdx+1);
         
-        // 关键修复：打开弹窗时清空旧的结果
+        // 关键修复：打开弹窗时清空旧的预览内容
         const openExport=()=>{
             document.getElementById('exportModal').style.display='flex';
-            document.getElementById('exportResultArea').innerHTML=''; // 清空旧图
-            document.getElementById('exportPreviewArea').style.display='none'; // 隐藏预览区直到再次生成
+            document.getElementById('exportResultArea').innerHTML=''; 
+            document.getElementById('exportPreviewArea').style.display='none';
         };
         document.getElementById('btnExport').onclick=openExport;
         document.getElementById('btnExportMobile').onclick=openExport;
@@ -461,9 +461,22 @@
 
     function doExport() {
         const name=document.getElementById('exportName').value, resultArea=document.getElementById('exportResultArea');
-        resultArea.innerHTML=''; // 清空当前区域
+        resultArea.innerHTML=''; // 清空
         
-        const totalPages = Math.ceil(totalGrids / 9);
+        // --- 新增逻辑：根据有内容的格子动态计算导出页数 ---
+        let maxWrittenIndex = -1;
+        Object.keys(strokesData).forEach(key => {
+            if (strokesData[key] && strokesData[key].length > 0) {
+                maxWrittenIndex = Math.max(maxWrittenIndex, parseInt(key));
+            }
+        });
+        
+        // 如果没写字，至少导出1页(9格)；否则导出写了字的格子覆盖的完整页数
+        // 比如写了第15格(index 14)，maxWrittenIndex=14，有效数量15，除以9向上取整=2页
+        let effectiveCount = Math.max(9, maxWrittenIndex + 1);
+        const totalPages = Math.ceil(effectiveCount / 9);
+        // ----------------------------------------------------
+
         const dpr=6, gridSize=120, gap=10, padding=30, hH=50, fH=40;
         const w=padding*2+3*gridSize+2*gap, h=padding*2+hH+fH+3*(gridSize+gap);
         
@@ -485,8 +498,11 @@
             
             ctx.beginPath(); ctx.moveTo(padding, padding+40); ctx.lineTo(w-padding, padding+40); ctx.strokeStyle='#d4b483'; ctx.lineWidth=2; ctx.stroke();
             for(let i=0; i<9; i++) {
+                // 注意这里：虽然导出页数减少了，但页面内的格子渲染逻辑不变
                 const idx = p*9+i;
-                if(idx>=totalGrids) break;
+                // 如果当前格子的索引超过了用户实际添加的总格子数，就不画了（比如最后一页不满9个）
+                if(idx >= totalGrids) break;
+                
                 const row=Math.floor(i/3), col=i%3, x=padding+col*(gridSize+gap), y=padding+hH+row*(gridSize+gap);
                 ctx.fillStyle='#fffaf5'; ctx.fillRect(x,y,gridSize,gridSize); ctx.strokeStyle='#d4b483'; ctx.lineWidth=1; ctx.strokeRect(x,y,gridSize,gridSize);
                 ctx.beginPath(); ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
