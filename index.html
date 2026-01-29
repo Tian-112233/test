@@ -6,7 +6,6 @@
     <title>汉字书写练习板</title>
     <style>
         :root {
-            /* 采用古朴配色方案 */
             --color-bg-body: #fff8f0;
             --color-bg-container: #fffaf5;
             --color-bg-board: #fff5e6;
@@ -122,9 +121,9 @@
             </div>
         </div>
         <div class="info-panel-item">
-            <div class="info-label">位置 | Позиция</div>
-            <div style="font-weight:bold; color:var(--color-accent);">格子 <span id="curGridNum">1</span></div>
-            <div style="font-size:0.9rem;">笔画: <span id="curStrokeNum">0</span></div>
+            <div class="info-label">当前位置 | Позиция</div>
+            <div style="font-weight:bold; color:var(--color-accent); font-size:1.1rem; margin-bottom:5px;">格子 <span id="curGridNum">1</span></div>
+            <div style="font-size:0.9rem; color:var(--color-text-secondary);">笔画数: <span id="curStrokeNum">0</span></div>
         </div>
     </div>
 
@@ -144,17 +143,26 @@
         <div class="mobile-layout">
             <div class="mobile-add-grid-section">
                  <div class="add-grid-control">
-                     <span>添加 | Добави:</span>
+                     <span style="font-size:0.9rem;">添加 | Добави:</span>
                      <input type="number" id="gridCountMobile" value="9" min="1" max="50">
                      <button class="button button-primary" id="btnGenGridMobile" style="width:auto; margin:0; padding:6px 12px;">+</button>
                  </div>
-                 <div>总数 | Общо: <span id="totalGridNumMobile">9</span></div>
+                 <div style="font-size:0.85rem;">总数 | Общо: <span id="totalGridNumMobile">9</span></div>
             </div>
             <div class="mobile-function-buttons">
                 <button id="btnUndoMobile" class="button button-utility">撤销 | Отмени</button>
                 <button id="btnClearMobile" class="button button-secondary">清空格子 | Изчисти</button>
                 <button id="btnClearAllMobile" class="button button-clear-all">重置 | Изчисти всичко</button>
                 <button id="btnExportMobile" class="button button-success">导出 | Експорт</button>
+            </div>
+            <div class="info-panel-item" style="margin: 0 15px 15px;">
+                <div class="info-label">颜色顺序 | Цветова последователност</div>
+                <div class="color-sequence" id="colorSeqMobile"></div>
+                <div class="color-display-row" style="margin-top:10px;">
+                    <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="mobileCurColorBox" class="small-color-box"></div></div>
+                    <div style="font-size:1.2rem; color:var(--color-border-main);">➔</div>
+                    <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="mobileNextColorBox" class="small-color-box"></div></div>
+                </div>
             </div>
             <div class="mobile-board-area">
                 <div style="font-weight:bold; color:var(--color-accent); text-align:center; margin-bottom:5px;">格子 <span id="mobileCurGridNum">1</span> (笔画: <span id="mobileCurStroke">0</span>)</div>
@@ -167,6 +175,7 @@
                     <button class="button button-primary" id="btnNextMobile" style="width:48%;">下一个 | Следваща</button>
                 </div>
             </div>
+            <div style="margin:0 15px 5px; font-weight:bold; color:var(--color-text-secondary); font-size:0.9rem;">快速预览 | Бърз преглед</div>
             <div class="mobile-preview-bar" id="mobilePreviewBar"></div>
         </div>
     </div>
@@ -272,8 +281,22 @@
         let drawing=false, points=[]; const ctx=canvas.getContext('2d');
         const getPos=(e)=>{ const r=canvas.getBoundingClientRect(), t=e.touches?e.touches[0]:e; return {x:(t.clientX-r.left)*(300/r.width), y:(t.clientY-r.top)*(300/r.height)}; };
         const start=(e)=>{ e.preventDefault(); if(idx!==currentGridIdx)switchGrid(idx); drawing=true; points=[getPos(e)]; };
-        const move=(e)=>{ if(!drawing)return; e.preventDefault(); const p=getPos(e); points.push(p); const c=gridColorState[idx]||0; ctx.beginPath(); if(points.length>1){ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y);} ctx.strokeStyle=COLORS[c%5].s; ctx.lineWidth=BASE_LINE_WIDTH; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke(); };
-        const end=()=>{ if(!drawing)return; drawing=false; if(points.length>1){ if(!strokesData[idx])strokesData[idx]=[]; const c=gridColorState[idx]||0; strokesData[idx].push({points:[...points], colorIdx:c%5}); gridColorState[idx]=c+1; redrawGrid(idx); renderMobilePreview(); updateUI(); } };
+        const move=(e)=>{ 
+            if(!drawing)return; e.preventDefault(); const p=getPos(e); points.push(p); 
+            const c=gridColorState[idx]||0; 
+            ctx.beginPath(); 
+            if(points.length>1){ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y);} 
+            ctx.strokeStyle=COLORS[c%5].s; ctx.lineWidth=BASE_LINE_WIDTH; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke(); 
+        };
+        const end=()=>{ 
+            if(!drawing)return; drawing=false; 
+            if(points.length>1){ 
+                if(!strokesData[idx])strokesData[idx]=[]; 
+                const c=gridColorState[idx]||0; 
+                strokesData[idx].push({points:[...points], colorIdx:c%5}); 
+                gridColorState[idx]=c+1; redrawGrid(idx); renderMobilePreview(); updateUI(); 
+            } 
+        };
         canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); canvas.addEventListener('mouseup', end);
         canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false}); canvas.addEventListener('touchend', end);
     }
@@ -296,27 +319,15 @@
         if(points.length < 2) return;
         const cStart = hexToRgb(COLORS[cIdx].s);
         const cEnd = hexToRgb(COLORS[cIdx].e);
-        
-        ctx.lineWidth = strokeWidth;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-
-        // 稳定性核心修复：采用统一的段落渲染，防止因为段落切分导致的闪烁
+        ctx.lineWidth = strokeWidth; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         for(let i = 0; i < points.length - 1; i++) {
-            const p1 = points[i];
-            const p2 = points[i+1];
-            const t1 = i / (points.length - 1);
-            const t2 = (i + 1) / (points.length - 1);
-
+            const p1 = points[i]; const p2 = points[i+1];
+            const t1 = i / (points.length - 1); const t2 = (i + 1) / (points.length - 1);
             const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
             grad.addColorStop(0, getGradientColor(t1, cStart, cEnd));
             grad.addColorStop(1, getGradientColor(t2, cStart, cEnd));
-            
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = grad;
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = grad; ctx.stroke();
         }
     }
 
@@ -325,6 +336,7 @@
         document.getElementById('curGridNum').innerText=idx+1; document.getElementById('curStrokeNum').innerText=c;
         document.getElementById('mobileCurGridNum').innerText=idx+1; document.getElementById('mobileCurStroke').innerText=c;
         document.getElementById('curColorBox').style.background=COLORS[n].s; document.getElementById('nextColorBox').style.background=COLORS[(n+1)%5].s;
+        document.getElementById('mobileCurColorBox').style.background=COLORS[n].s; document.getElementById('mobileNextColorBox').style.background=COLORS[(n+1)%5].s;
         const upd=(pf)=>COLORS.forEach((_,x)=>{const e=document.getElementById(`${pf}c-dot-${x}`);if(e){e.className='color-dot';if(x===n)e.classList.add('current');else if(x===(n+1)%5)e.classList.add('next');}});
         upd(''); upd('m-');
     }
@@ -358,14 +370,12 @@
             ctx.fillStyle='#8b4513'; ctx.font='bold 20px serif'; ctx.textAlign='left';
             ctx.fillText(name?`姓名: ${name}`:'汉字练习', padding, padding+25);
             
-            // 获取并格式化保加利亚日期
             const d = new Date();
             const y = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', year: 'numeric' });
             const m = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', month: 'numeric' });
             const da = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', day: 'numeric' });
             const ds = `${y}/${m}/${da}`;
             
-            // 绘制页码并排日期
             ctx.fillStyle='#7a5c3c'; ctx.font='bold 14px serif'; ctx.textAlign='right';
             ctx.fillText(`Page ${p+1}/${totalPages} | ${ds}`, w-padding, padding+25);
             
