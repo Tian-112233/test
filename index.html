@@ -110,8 +110,21 @@
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
             .mobile-layout { display: flex; flex-direction: column; width: 100%; }
             
-            .mobile-add-grid-section { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; padding: 10px; background-color: var(--color-active-bg); border-radius: 8px; border: 1px solid var(--color-border-main); }
-            .mobile-add-grid-section .total-info { font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 10px; }
+            /* 修改这里：强制不换行，优化布局 */
+            .mobile-add-grid-section { 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                gap: 5px; 
+                margin-bottom: 15px; 
+                padding: 10px; 
+                background-color: var(--color-active-bg); 
+                border-radius: 8px; 
+                border: 1px solid var(--color-border-main); 
+                flex-wrap: nowrap; /* 强制不换行 */
+            }
+            .mobile-add-grid-section .add-grid-control { margin-bottom: 0; gap: 5px; }
+            .mobile-add-grid-section .total-info { font-size: 0.9rem; color: var(--color-text-secondary); white-space: nowrap; }
             
             /* 功能按钮改为2x2网格 */
             .mobile-function-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px; }
@@ -172,18 +185,18 @@
             <div class="mobile-layout">
                 <div class="mobile-add-grid-section">
                      <div class="add-grid-control">
-                         <span style="font-size:0.9rem;">添加 | Добави:</span>
+                         <span style="font-size:0.9rem;">添加格子:</span>
                          <input type="number" id="gridCountMobile" value="9" min="1" max="50">
                          <button class="button button-primary" id="btnGenGridMobile" style="width:auto; margin:0; padding:6px 12px;">+</button>
                      </div>
-                     <div class="total-info">总数 | Общо: <span id="totalGridNumMobile">9</span></div>
+                     <div class="total-info">总数: <span id="totalGridNumMobile">9</span></div>
                 </div>
 
                 <div class="mobile-function-buttons">
-                    <button id="btnUndoMobile" class="button button-utility">撤销 | <span>Отмени</span></button>
-                    <button id="btnClearMobile" class="button button-secondary">清空格子 | <span>Изчисти</span></button>
-                    <button id="btnClearAllMobile" class="button button-clear-all">重置 | <span>Изчисти всичко</span></button>
-                    <button id="btnExportMobile" class="button button-success">导出 | <span>Експорт</span></button>
+                    <button id="btnUndoMobile" class="button button-utility">撤销上一笔 | <span>Отмени</span></button>
+                    <button id="btnClearMobile" class="button button-secondary">清空所选格子 | <span>Изчисти избраното</span></button>
+                    <button id="btnClearAllMobile" class="button button-clear-all">清空所有 | <span>Изчисти всичко</span></button>
+                    <button id="btnExportMobile" class="button button-success">导出图片 | <span>Експорт</span></button>
                 </div>
 
                 <div class="mobile-color-section">
@@ -224,9 +237,9 @@
             </div>
             <div style="font-size:0.8rem;">总数 | Общо: <span id="totalGridNum">9</span></div>
         </div>
-        <button id="btnUndo" class="button button-utility">撤销 | Отмени</button>
-        <button id="btnClear" class="button button-secondary">清空格子 | Изчисти</button>
-        <button id="btnClearAll" class="button button-clear-all">重置 | Изчисти всичко</button>
+        <button id="btnUndo" class="button button-utility">撤销上一笔 | Отмени</button>
+        <button id="btnClear" class="button button-secondary">清空所选格子 | Изчисти избраното</button>
+        <button id="btnClearAll" class="button button-clear-all">清空所有 | Изчисти всичко</button>
         <button id="btnExport" class="button button-success">导出图片 | Експорт</button>
     </div>
 </div>
@@ -431,10 +444,10 @@
         document.getElementById('btnGenGrid').onclick=()=>add(false); document.getElementById('btnGenGridMobile').onclick=()=>add(true);
         const undo=()=>{ const s=strokesData[currentGridIdx]; if(s&&s.length){s.pop(); if(gridColorState[currentGridIdx]>0)gridColorState[currentGridIdx]--; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
         document.getElementById('btnUndo').onclick=undo; document.getElementById('btnUndoMobile').onclick=undo;
-        const cls=()=>{ if(confirm('清空当前格子?')){strokesData[currentGridIdx]=[];
+        const cls=()=>{ if(confirm('清空所选格子?')){strokesData[currentGridIdx]=[];
         gridColorState[currentGridIdx]=0; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
         document.getElementById('btnClear').onclick=cls; document.getElementById('btnClearMobile').onclick=cls;
-        const cla=()=>{ if(confirm('重置所有?')){strokesData={}; gridColorState={}; currentGridIdx=0; renderDesktopGrids(); renderMobilePreview(); updateUI(); switchGrid(0);} };
+        const cla=()=>{ if(confirm('清空所有?')){strokesData={}; gridColorState={}; currentGridIdx=0; renderDesktopGrids(); renderMobilePreview(); updateUI(); switchGrid(0);} };
         document.getElementById('btnClearAll').onclick=cla; document.getElementById('btnClearAllMobile').onclick=cla;
         document.getElementById('btnPrevMobile').onclick=()=>switchGrid(currentGridIdx-1);
         document.getElementById('btnNextMobile').onclick=()=>switchGrid(currentGridIdx+1);
