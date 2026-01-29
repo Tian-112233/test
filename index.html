@@ -6,7 +6,7 @@
     <title>汉字书写练习板</title>
     <style>
         :root {
-            /* 保持文档1的原有配色（大地色/纸张色系） */
+            /* 保持原有配色（大地色/纸张色系） */
             --color-bg-body: #fff8f0;
             --color-bg-container: #fffaf5;
             --color-bg-board: #fff5e6;
@@ -69,7 +69,6 @@
         .info-panel-item { background-color: var(--color-active-bg); padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--color-border-main); text-align: center; }
         .info-label { font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 5px; font-weight: bold; }
         
-        /* 颜色指示器优化 */
         .color-sequence { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
         .color-dot { 
             width: 22px; height: 22px; border-radius: 50%; 
@@ -82,7 +81,6 @@
         .color-dot.next { border: 1px dashed var(--color-accent); opacity: 0.8; }
         .color-dot:not(.current):not(.next) { opacity: 0.3; transform: scale(0.9); }
         
-        /* 颜色显示行布局优化 */
         .color-display-row { display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
         .color-box-wrapper { display: flex; flex-direction: column; align-items: center; }
         .small-color-box { width: 30px; height: 30px; border-radius: 6px; border: 2px solid var(--color-border-main); }
@@ -110,7 +108,7 @@
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
             .mobile-layout { display: flex; flex-direction: column; width: 100%; }
             
-            /* 修改这里：强制不换行，优化布局 */
+            /* 修改：强制不换行，优化间距，确保翻译能放下 */
             .mobile-add-grid-section { 
                 display: flex; 
                 justify-content: space-between; 
@@ -121,15 +119,14 @@
                 background-color: var(--color-active-bg); 
                 border-radius: 8px; 
                 border: 1px solid var(--color-border-main); 
-                flex-wrap: nowrap; /* 强制不换行 */
+                flex-wrap: nowrap; /* 关键：不换行 */
             }
             .mobile-add-grid-section .add-grid-control { margin-bottom: 0; gap: 5px; }
+            /* 字体稍微调小一点防止溢出 */
+            .mobile-add-grid-section .add-grid-control span { font-size: 0.85rem; white-space: nowrap; }
             .mobile-add-grid-section .total-info { font-size: 0.9rem; color: var(--color-text-secondary); white-space: nowrap; }
             
-            /* 功能按钮改为2x2网格 */
             .mobile-function-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px; }
-            
-            /* 移动端颜色区块样式 */
             .mobile-color-section { margin: 0 15px 15px; background-color: var(--color-active-bg); border: 1px solid var(--color-border-main); border-radius: 8px; padding: 10px; }
             
             .mobile-board-area { display: flex; flex-direction: column; align-items: center; }
@@ -185,7 +182,7 @@
             <div class="mobile-layout">
                 <div class="mobile-add-grid-section">
                      <div class="add-grid-control">
-                         <span style="font-size:0.9rem;">添加格子:</span>
+                         <span>添加格子 | Добави:</span>
                          <input type="number" id="gridCountMobile" value="9" min="1" max="50">
                          <button class="button button-primary" id="btnGenGridMobile" style="width:auto; margin:0; padding:6px 12px;">+</button>
                      </div>
@@ -303,7 +300,6 @@
             const bg=document.createElement('div'); bg.className='grid-background'; bg.innerHTML=getGridBgHTML();
             const lbl=document.createElement('div'); lbl.className='grid-number-label'; lbl.innerText=i+1;
             const cvs=document.createElement('canvas'); cvs.width=BASE_SIZE; cvs.height=BASE_SIZE; cvs.className='grid-canvas'; cvs.id=`d-canvas-${i}`;
-            // 确保JS也设置touch-action
             cvs.style.touchAction = 'none';
             setupCanvasEvents(cvs, i); div.appendChild(bg); div.appendChild(lbl); div.appendChild(cvs); elDesktopWrapper.appendChild(div);
             redrawCanvas(cvs, i);
@@ -329,8 +325,6 @@
     function switchGrid(idx) {
         if(idx<0||idx>=totalGrids)return; currentGridIdx=idx;
         document.querySelectorAll('.grid-container').forEach((e,i)=>e.classList.toggle('grid-active', i===idx));
-        
-        // 移动端预览条联动
         const previewContainer = document.getElementById('mobilePreviewBar');
         document.querySelectorAll('.mobile-preview-item').forEach((e,i)=>{ 
             e.classList.toggle('active', i===idx); 
@@ -339,7 +333,6 @@
                 previewContainer.scrollTo({ left: scrollLeft, behavior: 'smooth' });
             }
         });
-
         redrawMobileCanvas(); updateUI(); renderMobilePreview();
     }
 
@@ -351,7 +344,6 @@
         const move=(e)=>{ 
             if(!drawing)return; e.preventDefault(); const p=getPos(e); points.push(p);
             const c=gridColorState[idx]||0; 
-            // 实时绘制暂用纯色，松手后重绘为完美渐变
             ctx.beginPath(); 
             if(points.length>1){ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y);} 
             else {ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y);}
@@ -397,34 +389,22 @@
     function redrawCanvas(cvs, idx) { const ctx=cvs.getContext('2d'); ctx.clearRect(0,0,300,300); (strokesData[idx]||[]).forEach(s=>drawGradientStroke(ctx, s.points, s.colorIdx, BASE_LINE_WIDTH)); }
     function redrawMobileCanvas() { redrawCanvas(elMobileCanvas, currentGridIdx); }
     
-    // --- 核心修复：完美线性渐变算法 (参考文档2) ---
-    // 解决电脑端和手机端渐变不明显的问题
     function drawGradientStroke(ctx, points, cIdx, lineWidth) {
         if(points.length < 2) return;
         const cStart = hexToRgb(COLORS[cIdx].s);
         const cEnd = hexToRgb(COLORS[cIdx].e);
-        
         ctx.lineWidth = lineWidth; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.shadowBlur = 0;
-        
         const totalPoints = points.length - 1;
         for(let i=0; i<totalPoints; i++) {
             const p1 = points[i];
             const p2 = points[i+1];
-            
-            // 计算进度
             const t1 = i / totalPoints;
             const t2 = (i + 1) / totalPoints;
-
-            // 为每一小段创建独立的渐变
             const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
             grad.addColorStop(0, getGradientColor(t1, cStart, cEnd));
             grad.addColorStop(1, getGradientColor(t2, cStart, cEnd));
-            
-            ctx.beginPath(); 
-            ctx.moveTo(p1.x, p1.y); 
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = grad; 
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = grad; ctx.stroke();
         }
     }
 
@@ -444,11 +424,30 @@
         document.getElementById('btnGenGrid').onclick=()=>add(false); document.getElementById('btnGenGridMobile').onclick=()=>add(true);
         const undo=()=>{ const s=strokesData[currentGridIdx]; if(s&&s.length){s.pop(); if(gridColorState[currentGridIdx]>0)gridColorState[currentGridIdx]--; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
         document.getElementById('btnUndo').onclick=undo; document.getElementById('btnUndoMobile').onclick=undo;
-        const cls=()=>{ if(confirm('清空所选格子?')){strokesData[currentGridIdx]=[];
+        
+        const cls=()=>{ if(confirm('清空所选格子 (Изчисти избраното)?')){strokesData[currentGridIdx]=[];
         gridColorState[currentGridIdx]=0; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
         document.getElementById('btnClear').onclick=cls; document.getElementById('btnClearMobile').onclick=cls;
-        const cla=()=>{ if(confirm('清空所有?')){strokesData={}; gridColorState={}; currentGridIdx=0; renderDesktopGrids(); renderMobilePreview(); updateUI(); switchGrid(0);} };
+        
+        // 关键修复：清空所有功能
+        const cla=()=>{ 
+            if(confirm('清空所有 (Изчисти всичко)?')){
+                // 关键修复1：不清空变量引用，而是清空对象内容，防止事件监听器指向旧对象导致导出不更新
+                for (var key in strokesData) delete strokesData[key];
+                for (var key in gridColorState) delete gridColorState[key];
+                
+                // 关键修复2：重置格子总数回默认值，防止导出空白页
+                totalGrids = 9; 
+                
+                currentGridIdx=0; 
+                renderDesktopGrids(); 
+                renderMobilePreview(); 
+                updateUI(); 
+                switchGrid(0);
+            } 
+        };
         document.getElementById('btnClearAll').onclick=cla; document.getElementById('btnClearAllMobile').onclick=cla;
+        
         document.getElementById('btnPrevMobile').onclick=()=>switchGrid(currentGridIdx-1);
         document.getElementById('btnNextMobile').onclick=()=>switchGrid(currentGridIdx+1);
         document.getElementById('btnExport').onclick=()=>{document.getElementById('exportModal').style.display='flex';};
