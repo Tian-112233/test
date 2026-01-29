@@ -3,236 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>汉字书写练习（圣诞版）</title>
+    <title>汉字书写练习板（中国新年版）</title>
     <style>
         :root {
-            /* --- 圣诞配色方案 --- */
-            --color-bg-body: #fdfcf8; /* 雪白色背景 */
-            --color-bg-container: #fffbf0; /* 暖白 */
+            /* --- 基础配色 --- */
+            --color-bg-body: #FDFCF8; /* 宣纸白 */
+            --color-bg-container: #FFFBF0; /* 暖米色容器 */
             --color-bg-board: #fff; /* 纯白书写纸 */
             
             --color-text-main: #2c3e50; /* 深蓝灰文字 */
-            --color-text-secondary: #5a6e65; /* 松绿色文字 */
+            --color-text-secondary: #8B4513;/* 檀木色文字 */
             
-            --color-accent: #D42426; /* 圣诞红 (重点色) */
-            --color-accent-green: #146B3A; /* 松叶绿 (辅助色) */
-            --color-accent-gold: #F8B229; /* 铃铛金 (装饰色) */
+            --color-accent: #C41E3A; /* 中国红/朱砂 */
+            --color-accent-gold: #FFD700; /* 赤金 */
+            --color-accent-gold-dark: #B8860B; /* 暗金 */
             
-            --color-border-main: #146B3A; /* 绿色边框 */
-            --color-border-board: #D42426; /* 红色书写板框 */
+            --color-border-main: #8B4513; /* 檀木边框 */
+            --color-border-board: #C41E3A; /* 红纸边框 */
             
-            --color-grid-line: rgba(20, 107, 58, 0.15); /* 淡淡的绿色网格 */
-            --color-active-bg: #E8F5E9; /* 浅绿色激活背景 */
-            --color-grid-dot: #F8B229; /* 金色星星点 */
+            /* 网格线颜色：0.2透明度 */
+            --color-grid-line: rgba(139, 69, 19, 0.2);
+            --color-mark: #B8860B;          /* L型折角颜色 */
+            --color-active-bg: #FFF5E6;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'SimSun', 'STSong', serif;
+            font-family: 'KaiTi', 'SimSun', serif; /* 楷体 */
             background-color: var(--color-bg-body);
             color: var(--color-text-main);
             min-height: 100vh;
             touch-action: manipulation;
-            /* 背景纹理：淡淡的圆点雪花 */
-            background-image: radial-gradient(#e6e6e6 1px, transparent 1px), radial-gradient(#e6e6e6 1px, transparent 1px);
-            background-position: 0 0, 25px 25px;
-            background-size: 50px 50px;
-            /* 背景固定 */
+            /* 背景纹理 */
+            background-image: radial-gradient(#E6D0A0 1px, transparent 1px);
+            background-position: 0 0;
+            background-size: 30px 30px;
             background-attachment: fixed;
             overflow-x: hidden;
-            padding-top: 50px; /* 为彩灯留出空间 */
+            padding-top: 60px;
         }
 
-        /* --- 提亮版素雅彩灯 --- */
-        .light-rope-container {
-            position: fixed; top: -10px; left: 0;
-            width: 100%; z-index: 9998; pointer-events: none; overflow: hidden; height: 60px;
+        /* --- 灯笼样式 --- */
+        .lantern-container {
+            position: fixed; top: -5px; left: 0; width: 100%; 
+            z-index: 9998; pointer-events: none;
+            height: 80px; display: flex; justify-content: space-evenly;
         }
+        .lantern-box {
+            position: relative; width: 60px; height: 100px;
+            transform-origin: top center;
+            animation: swing 4s ease-in-out infinite alternate;
+        }
+        .lantern-line {
+            position: absolute; top: 0; left: 50%; width: 2px; height: 20px;
+            background: #333; transform: translateX(-50%);
+        }
+        .lantern-body {
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            width: 46px; height: 38px;
+            background: #C41E3A; border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(196, 30, 58, 0.4); z-index: 2;
+        }
+        .lantern-body::before, .lantern-body::after {
+            content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+            width: 26px; height: 4px; background: #FFD700; border-radius: 2px;
+        }
+        .lantern-body::before { top: -2px; } .lantern-body::after { bottom: -2px; }
+        .lantern-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 70%; height: 70%; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
+        }
+        .lantern-tassel {
+            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 25px; background: #C41E3A;
+        }
+        .lantern-tassel::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 8px; height: 8px; border-radius: 50%; background: #FFD700;
+        }
+        @keyframes swing { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        .light-rope {
-            display: flex; justify-content: space-evenly;
-            width: 120%; margin-left: -10%; padding: 0; list-style: none;
+        /* --- 飘落梅花 --- */
+        .flower-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999;
         }
-
-        .light-rope li {
-            position: relative; margin: 0 15px; flex: 1; display: flex; justify-content: center;
-        }
-        
-        /* 电线 (墨绿色细线) */
-        .light-rope li:before {
-            content: ""; position: absolute; top: 0; left: -50%; width: 200%; height: 35px;
-            border-top: 2px solid #2e4033; border-radius: 50%; z-index: -1;
-        }
-
-        /* 灯泡主体 */
-        .bulb {
-            width: 10px; height: 16px; border-radius: 50%; background: #fff;
-            position: relative; top: 14px; z-index: 1;
-            border-top: 2px solid #666; opacity: 0.9;
-        }
-
-        /* --- 颜色定义：暖亮素雅系 --- */
-        .bulb.red { background: #ff8a80; animation: flash-red 3s infinite ease-in-out; }
-        .bulb.green { background: #a5d6a7; animation: flash-green 4s infinite ease-in-out; }
-        .bulb.gold { background: #fff59d; animation: flash-gold 3.5s infinite ease-in-out; }
-
-        @keyframes flash-red { 
-            0%, 100% { opacity: 0.6; box-shadow: 0 0 5px rgba(255, 138, 128, 0.5); } 
-            50% { opacity: 1; box-shadow: 0 0 20px rgba(255, 138, 128, 0.9); } 
-        }
-        @keyframes flash-green { 
-            0%, 100% { opacity: 0.6; box-shadow: 0 0 5px rgba(165, 214, 167, 0.5); } 
-            50% { opacity: 1; box-shadow: 0 0 20px rgba(165, 214, 167, 0.9); } 
-        }
-        @keyframes flash-gold { 
-            0%, 100% { opacity: 0.6; box-shadow: 0 0 5px rgba(255, 245, 157, 0.5); } 
-            50% { opacity: 1; box-shadow: 0 0 20px rgba(255, 245, 157, 0.9); } 
-        }
-
-
-        /* --- 升级版下雪动画 (真·冰晶图片版) --- */
-        .snow-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;
-            background: transparent;
-        }
-        .snowflake {
-            position: absolute; top: -50px; 
-            background-size: contain; background-repeat: no-repeat; opacity: 0.9;
+        .falling-flower {
+            position: absolute; top: -50px; background-size: contain; background-repeat: no-repeat;
+            opacity: 0.6; 
             animation-name: fall, sway; animation-timing-function: linear, ease-in-out;
             animation-iteration-count: infinite, infinite;
         }
-        @keyframes fall {
-            0% { top: -10%; }
-            100% { top: 110%; }
-        }
-        @keyframes sway {
-            0%, 100% { transform: translateX(0px) rotate(0deg); }
-            50% { transform: translateX(30px) rotate(180deg); }
-        }
+        @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
+        @keyframes sway { 0%, 100% { transform: translateX(0px) rotate(0deg); } 50% { transform: translateX(30px) rotate(90deg); } }
 
+        /* --- 烟花特效 --- */
+        .firework-particle {
+            position: fixed; pointer-events: none; border-radius: 50%; z-index: 10000;
+            animation: explode 1s ease-out forwards;
+        }
+        @keyframes explode { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+
+        /* --- 布局容器 --- */
         .container {
-            max-width: 1600px; margin: 0 auto; display: flex; gap: 15px; height: 100vh; padding: 15px;
-            overflow: hidden; position: relative; z-index: 1;
+            max-width: 1600px; margin: 0 auto; display: flex; gap: 15px;
+            height: 100vh; padding: 15px; overflow: hidden; position: relative; z-index: 2;
         }
 
-        /* 侧边栏通用 */
+        /* --- 侧边栏 --- */
         .sidebar {
-            width: 240px; background-color: var(--color-bg-container); border-radius: 12px; padding: 15px;
-            box-shadow: 0 4px 15px rgba(20, 107, 58, 0.15); border: 2px solid var(--color-border-main);
-            flex-shrink: 0; display: flex; flex-direction: column; overflow-y: auto;
+            width: 240px; flex-shrink: 0;
+            background-color: var(--color-bg-container); 
+            border-radius: 12px; padding: 0; 
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1); 
+            border: 2px solid var(--color-border-main);
+            display: flex; flex-direction: column; overflow: visible;
+            position: relative;
         }
+        .sidebar-content { padding: 15px; overflow-y: auto; flex: 1; }
+        
+        .sidebar h2 {
+            background-color: var(--color-accent); /* 红背景 */
+            color: var(--color-accent-gold); /* 金文字 */
+            margin: 0; padding: 15px 0;
+            font-size: 1.1rem; text-align: center; font-weight: bold;
+            border-bottom: 3px solid var(--color-accent-gold-dark);
+            border-radius: 10px 10px 0 0;
+            position: relative; z-index: 2;
+        }
+
         .left-sidebar { order: 1; }
         .right-sidebar { order: 3; }
-        .sidebar h2 {
-            color: var(--color-accent-green); margin-bottom: 10px; font-size: 1.1rem; padding-bottom: 6px;
-            border-bottom: 2px dashed var(--color-accent-gold); text-align: center; font-weight: bold;
-        }
 
         /* 主内容区 */
         .main-content {
             flex: 1; order: 2; min-width: 0; display: flex; flex-direction: column; height: 100%;
-            background-color: var(--color-bg-container); border-radius: 12px; border: 2px solid var(--color-border-main);
-            box-shadow: 0 4px 15px rgba(20, 107, 58, 0.1);
+            background-color: var(--color-bg-container); 
+            border-radius: 12px; border: 2px solid var(--color-border-main);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);
         }
 
         header {
             text-align: center; margin-bottom: 5px; padding: 10px 0 5px 0; border-bottom: 2px solid var(--color-border-main);
             flex-shrink: 0;
-            background-image: linear-gradient(to right, transparent, rgba(212, 36, 38, 0.05), transparent);
+            background-image: linear-gradient(to right, transparent, rgba(196, 30, 58, 0.05), transparent);
         }
         h1 {
             color: var(--color-accent); font-size: 1.8rem; font-weight: bold; text-shadow: 1px 1px 0 #fff; line-height: 1.2;
-            font-family: 'Microsoft YaHei', sans-serif;
+            font-family: 'KaiTi', 'SimSun', serif;
         }
-        .title-translation { font-size: 0.9rem; color: var(--color-accent-green); font-style: italic; display: block; margin-top: 5px; font-family: serif; }
+        .title-translation { 
+            font-size: 0.9rem; color: var(--color-text-secondary); 
+            font-style: italic; display: block; margin-top: 5px; font-family: serif;
+        }
 
-        /* --- 说明区域 --- */
+        /* 说明区域 */
         .instructions-section {
-            /* 修改：去除左右Margin（变为0），使宽度与下方书写板对齐 */
-            margin: 0 0 10px 0;
-            background: rgba(255, 255, 255, 0.8); 
+            margin: 0 15px 10px; background: rgba(255, 255, 255, 0.8); 
             padding: 10px; border-radius: 8px; 
-            /* 修改：去除左侧绿边 */
-            /* border-left: 4px solid var(--color-accent-green); */
-            flex-shrink: 0;
+            border-left: 4px solid var(--color-accent); flex-shrink: 0;
         }
 
-        /* 滚动容器 */
         .board-container {
-            flex: 1; display: flex; flex-direction: column; padding: 0 15px 15px 15px; overflow-y: auto;
-            scroll-behavior: smooth;
+            flex: 1; display: flex; flex-direction: column; padding: 0 15px 15px 15px;
+            overflow-y: auto; scroll-behavior: smooth; z-index: 2;
         }
-        .board-header {
-            text-align: center; margin-bottom: 10px; flex-shrink: 0; padding-top: 10px;
-        }
-        .board-title { color: var(--color-accent-green); font-size: 1.3rem; font-weight: bold; }
+        .board-header { text-align: center; margin-bottom: 10px; flex-shrink: 0; padding-top: 10px; }
+        .board-title { color: var(--color-text-secondary); font-size: 1.3rem; font-weight: bold; }
 
         .board {
             background-color: var(--color-bg-board); border: 8px solid var(--color-border-board);
-            border-radius: 12px; padding: 20px; flex: 1;
-            box-shadow: inset 0 0 20px rgba(212, 36, 38, 0.05); /* 内发光 */
+            border-radius: 4px; padding: 20px; flex: 1;
+            box-shadow: inset 0 0 20px rgba(196, 30, 58, 0.05);
         }
 
         /* 桌面网格布局 */
         .desktop-grid-wrapper {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-            width: 100%; max-width: 700px; margin: 0 auto; align-content: start;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 20px; width: 100%; max-width: 700px; margin: 0 auto; align-content: start;
         }
 
-        /* 格子容器 */
         .grid-container {
             position: relative; width: 100%; aspect-ratio: 1 / 1; 
-            background-color: #fff; border: 1px solid var(--color-border-main); border-radius: 4px;
+            background-color: #fff;
+            border: 1px solid var(--color-border-main); border-radius: 2px;
         }
         
-        /* 激活格子高亮 - 金色光环 */
         .grid-container.grid-active {
             box-shadow: 0 0 0 3px var(--color-accent-gold), 0 0 10px var(--color-accent-gold);
             border-color: var(--color-accent-gold); z-index: 2;
         }
 
-        /* 米字格背景 */
-        .grid-background {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none;
+        /* --- 网格背景 --- */
+        .grid-bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;
         }
-        .grid-background::before, .grid-background::after, .diagonal-1, .diagonal-2 {
-            content: ''; position: absolute; background-color: var(--color-grid-line);
-        }
-        .grid-background::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
-        .grid-background::after { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
-        .diagonal-1 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
-        .diagonal-2 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(-45deg); }
         
-        /* 星星点装饰 */
-        .grid-dot { 
-            position: absolute; width: 8px; height: 8px; 
-            background-color: var(--color-grid-dot); 
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-        }
-        .dot-tl { top: 8%; left: 8%; } .dot-tr { top: 8%; right: 8%; }
-        .dot-bl { bottom: 8%; left: 8%; } .dot-br { bottom: 8%; right: 8%; }
+        .g-line { position: absolute; background-color: var(--color-grid-line); }
+        
+        .gl-h { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+        .gl-v { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
+        .gl-d1 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(45deg); }
+        .gl-d2 { width: 100%; height: 1px; top: 50%; left: 0; transform: translateY(-50%) rotate(-45deg); }
 
-        /* 画布 - 关键修改：强制禁止触摸动作，防止滚动 */
+        /* L型折角 */
+        .corner-mark {
+            position: absolute; width: 12px; height: 12px;
+            border-color: var(--color-mark); border-style: solid; border-width: 0;
+            opacity: 0.9;
+        }
+        .cm-tl { top: 4px; left: 4px; border-top-width: 2px; border-left-width: 2px; }
+        .cm-tr { top: 4px; right: 4px; border-top-width: 2px; border-right-width: 2px; }
+        .cm-bl { bottom: 4px; left: 4px; border-bottom-width: 2px; border-left-width: 2px; }
+        .cm-br { bottom: 4px; right: 4px; border-bottom-width: 2px; border-right-width: 2px; }
+
         .grid-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; cursor: crosshair;
-            touch-action: none !important;
-            -webkit-user-select: none;
-            user-select: none;
+            z-index: 10; cursor: crosshair; touch-action: none !important;
         }
 
-        /* 序号 */
         .grid-number-label {
             position: absolute; bottom: 2px; right: 5px; 
-            font-size: 12px; color: var(--color-accent-green); z-index: 5; pointer-events: none; font-weight: bold;
+            font-size: 12px; color: var(--color-accent); z-index: 5; pointer-events: none; font-weight: bold;
         }
-        .grid-container.grid-active .grid-number-label {
-            color: var(--color-accent);
-        }
+        .grid-container.grid-active .grid-number-label { color: var(--color-accent-gold); }
 
-        /* 信息面板组件 */
+        /* 颜色面板 - 使用圣诞版逻辑 */
         .info-panel-item {
             background-color: #fff; padding: 10px; border-radius: 8px;
             margin-bottom: 15px; border: 1px solid var(--color-border-main); text-align: center;
@@ -243,114 +240,97 @@
         .color-dot { 
             width: 22px; height: 22px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            color: #fff; font-size: 10px; font-weight: bold; text-shadow: 0 0 2px rgba(0,0,0,0.5); 
+            color: #fff; font-size: 10px; font-weight: bold;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5); 
             border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            /* 默认非激活状态，参照圣诞版 */
+            opacity: 0.3; transform: scale(0.9);
+            transition: all 0.2s ease;
         }
-        .color-dot.current { transform: scale(1.3); border-color: var(--color-accent-gold); z-index: 2; }
-        .color-dot.next { border: 1px dashed var(--color-accent); opacity: 0.8; }
-        .color-dot:not(.current):not(.next) { opacity: 0.3; transform: scale(0.9); }
+        .color-dot.current { 
+            transform: scale(1.3);
+            border-color: var(--color-accent-gold); 
+            z-index: 2; 
+            opacity: 1; 
+        }
+        .color-dot.next { 
+            border: 1px dashed var(--color-accent);
+            opacity: 0.8; 
+            transform: scale(1);
+        }
         
         .color-display-row { display: flex; justify-content: space-around; align-items: center; margin-top: 5px; }
         .color-box-wrapper { display: flex; flex-direction: column; align-items: center; }
         .small-color-box { width: 30px; height: 30px; border-radius: 6px; border: 2px solid var(--color-border-main); }
 
-        /* 按钮通用样式 - 圣诞风格 */
+        /* 按钮 */
         .button {
             padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             width: 100%; margin-bottom: 8px;
             color: #fff; transition: transform 0.1s, box-shadow 0.1s;
             font-size: 0.9rem; line-height: 1.2;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
         .button span { font-size: 0.75rem; opacity: 0.9; font-weight: normal; margin-top: 2px; }
         .button:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         
         .button-primary { background-color: var(--color-accent); } 
         .button-utility { background-color: #8b4513; } 
-        .button-secondary { background-color: #c0392b; } 
-        .button-clear-all { background-color: #d35400; } 
-        .button-success { background-color: var(--color-accent-green); }   
-        .button-warning { background-color: var(--color-accent-gold); color: #8b4513; text-shadow: none; }   
+        .button-secondary { background-color: #A52A2A; } 
+        .button-clear-all { background-color: #D2691E; } 
+        .button-success { background-color: #008558; } 
+        .button-warning { background-color: var(--color-accent-gold); color: #8b4513; text-shadow: none; }
         
         .add-grid-control { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; align-items: center; }
-        .add-grid-control input { width: 50px; text-align: center; padding: 6px; border-radius: 4px; border: 1px solid var(--color-border-main); font-size: 1rem; color: var(--color-accent-green); font-weight: bold; }
+        .add-grid-control input { width: 50px; text-align: center; padding: 6px; border-radius: 4px; border: 1px solid var(--color-border-main); font-size: 1rem; color: var(--color-text-secondary); font-weight: bold; }
 
         /* 弹窗 */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(20, 107, 58, 0.3); backdrop-filter: blur(3px);
+            background-color: rgba(60, 30, 10, 0.4); backdrop-filter: blur(3px);
             display: none; z-index: 500; justify-content: center; align-items: center;
         }
         .modal-content {
             background-color: #fff; padding: 20px; border-radius: 15px;
-            width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border: 3px solid var(--color-accent);
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
+            width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; 
+            border: 3px solid var(--color-accent); text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
         }
         .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-accent); }
-        
-        /* 导出图片容器 */
-        .export-images-list {
-            display: flex; flex-direction: column;
-            gap: 20px; align-items: center;
-            margin-top: 15px; width: 100%;
-        }
-        .export-images-list img {
-            max-width: 100%; border: 2px solid var(--color-accent-gold);
-            border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
 
-        /* 手机端独有样式 */
+        /* 移动端 */
         .mobile-layout { display: none; }
-        
-        /* --- 强制手机布局断点 1100px --- */
         @media (max-width: 1100px) {
             .sidebar, .desktop-board-container { display: none !important; }
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
             .main-content { overflow: visible; padding-bottom: 20px; }
             .mobile-layout { display: flex; flex-direction: column; width: 100%; }
 
-            /* 手机端特定样式修改 */
-            .instructions-section {
-                /* 恢复手机端的边距，避免贴边 */
-                margin: 0 15px 10px;
-            }
-
             .mobile-add-grid-section {
                 display: flex; justify-content: center; align-items: center; gap: 10px;
-                /* 修改：添加 margin: 0 15px 15px; 使其宽度与上方的说明栏对齐 */
-                margin: 0 15px 15px; 
-                padding: 10px; 
+                margin-bottom: 15px; padding: 10px; 
                 background-color: var(--color-active-bg); border-radius: 8px; border: 1px solid var(--color-border-main);
             }
             .mobile-add-grid-section .add-grid-control { margin-bottom: 0; }
             .mobile-add-grid-section .total-info { font-size: 0.85rem; color: var(--color-text-secondary); margin-left: 10px;}
-
-            .mobile-function-buttons {
-                display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px;
-            }
-
+            .mobile-function-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 15px 15px 15px; }
             .mobile-color-section {
                 margin: 0 15px 15px; background-color: var(--color-active-bg);
                 border: 1px solid var(--color-border-main); border-radius: 8px; padding: 10px;
             }
-
-            .mobile-board-area {
-                display: flex; flex-direction: column; align-items: center;
-            }
+            .mobile-board-area { display: flex; flex-direction: column; align-items: center; }
             .mobile-current-grid { 
                 width: 280px; height: 280px; position: relative; 
                 border: 6px solid var(--color-border-board); background: #fff;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; border-radius: 4px;
             }
-
             .mobile-nav { display: flex; justify-content: space-between; width: 280px; margin-bottom: 20px; }
-            
             .mobile-preview-bar {
                 margin: 0 15px; background: var(--color-active-bg);
                 border: 1px solid var(--color-border-main); border-radius: 8px;
-                padding: 10px; overflow-x: auto; white-space: nowrap; display: flex; gap: 10px;
-                position: relative;
+                padding: 10px; overflow-x: auto; white-space: nowrap; display: flex; gap: 10px; position: relative;
             }
             .mobile-preview-item {
                 display: inline-block; width: 60px; height: 60px;
@@ -364,40 +344,41 @@
 </head>
 <body>
 
-<div class="light-rope-container">
-    <ul class="light-rope" id="lightRope"></ul>
-</div>
-
-<div class="snow-container" id="snowContainer"></div>
+<div class="lantern-container" id="lanternContainer"></div>
+<div class="flower-container" id="flowerContainer"></div>
 
 <div class="container">
     <div class="sidebar left-sidebar">
         <h2>状态面板 | Статус</h2>
-        <div class="info-panel-item">
-            <div class="info-label">颜色顺序 | Цветова последователност</div>
-            <div class="color-sequence" id="colorSeqDesktop"></div>
-            <div class="color-display-row" style="margin-top:15px;">
-                <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="curColorBox" class="small-color-box"></div></div>
-                <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="nextColorBox" class="small-color-box"></div></div>
+        <div class="sidebar-content">
+            <div class="info-panel-item">
+                <div class="info-label">颜色顺序 | Цветова последователност</div>
+                <div class="color-sequence" id="colorSeqDesktop"></div>
+                <div class="color-display-row" style="margin-top:15px;">
+                    <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="curColorBox" class="small-color-box"></div></div>
+                    <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="nextColorBox" class="small-color-box"></div></div>
+                </div>
             </div>
-        </div>
-        <div class="info-panel-item">
-            <div class="info-label">当前位置 | Позиция</div>
-            <div style="font-size:1.1rem; font-weight:bold; color:var(--color-accent); margin-bottom:5px;">格子 <span id="curGridNum">1</span></div>
-            <div style="font-size:0.9rem; color:var(--color-text-secondary);">笔画数: <span id="curStrokeNum">0</span></div>
+            <div class="info-panel-item">
+                <div class="info-label">当前位置 | Позиция</div>
+                <div style="font-size:1.1rem; font-weight:bold; color:var(--color-accent); margin-bottom:5px;">格子 <span id="curGridNum">1</span></div>
+                <div style="font-size:0.9rem; color:var(--color-text-secondary);">笔画数: <span id="curStrokeNum">0</span></div>
+            </div>
         </div>
     </div>
 
     <div class="main-content">
-        <header><h1>汉字书写练习（圣诞版）<br><span class="title-translation">Дъска за писане на китайски йероглифи (Коледно издание)</span></h1></header>
+        <header>
+            <h1>汉字书写练习板（中国新年版）<br>
+            <span class="title-translation">Дъска за писане на китайски йероглифи (Версия за Китайската нова година)</span></h1>
+        </header>
         
         <div class="desktop-board-container board-container" id="boardScrollContainer">
-            
             <div class="instructions-section" id="instSection">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
-                    🎄 节日渐变：红→金→绿→蓝→紫 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
-                    ⭐ 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
-                    🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                    🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
+                    🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
+                    🐟 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
             </div>
 
@@ -410,11 +391,11 @@
             
             <div class="instructions-section">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
-                    🎄 节日渐变：红→金→绿→蓝→紫 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
-                    ⭐ 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
-                    🖌️ 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                    🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
+                    🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
+                    🐟 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
-            </div>
+             </div>
 
             <div class="mobile-add-grid-section">
                  <div class="add-grid-control">
@@ -435,17 +416,21 @@
                 <div class="color-sequence" id="colorSeqMobile" style="margin-bottom:10px;"></div>
                 <div class="color-display-row">
                     <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="mobileCurColorBox" class="small-color-box"></div></div>
-                    <div style="font-size:1.2rem; color:var(--color-accent-gold);">➔</div>
                     <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="mobileNextColorBox" class="small-color-box"></div></div>
                 </div>
             </div>
             <div class="mobile-board-area">
                 <div style="margin-bottom:5px; font-weight:bold; color:var(--color-accent);">格子 <span id="mobileCurGridNum">1</span> (笔画: <span id="mobileCurStroke">0</span>)</div>
                 <div class="mobile-current-grid" id="mobileGridTarget">
-                    <div class="grid-background"><div class="diagonal-1"></div><div class="diagonal-2"></div><div class="grid-dot dot-tl"></div><div class="grid-dot dot-tr"></div><div class="grid-dot dot-bl"></div><div class="grid-dot dot-br"></div></div>
+                    <div class="grid-bg-layer">
+                        <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
+                        <div class="g-line gl-h"></div><div class="g-line gl-v"></div>
+                        <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
+                        <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
+                    </div>
                     <canvas class="grid-canvas" id="mobileCanvas"></canvas>
                 </div>
-                <div class="mobile-nav">
+                 <div class="mobile-nav">
                     <button class="button button-primary" id="btnPrevMobile" style="width:48%;">上一格 | Предишна</button>
                     <button class="button button-primary" id="btnNextMobile" style="width:48%;">下一格 | Следваща</button>
                 </div>
@@ -457,18 +442,20 @@
 
     <div class="sidebar right-sidebar">
         <h2>工具 | Инструменти</h2>
-        <div class="info-panel-item" style="margin-bottom: 20px;">
-            <div class="info-label">添加格子 | Добави</div>
-            <div class="add-grid-control">
-                <input type="number" id="gridCount" value="9" min="1" max="50">
-                <button id="btnGenGrid" class="button button-primary" style="width:auto; margin:0;">+</button>
+        <div class="sidebar-content">
+            <div class="info-panel-item" style="margin-bottom: 20px;">
+                <div class="info-label">添加格子 | Добави</div>
+                <div class="add-grid-control">
+                    <input type="number" id="gridCount" value="9" min="1" max="50">
+                    <button id="btnGenGrid" class="button button-primary" style="width:auto; margin:0;">+</button>
+                </div>
+                <div style="font-size:0.8rem; color:var(--color-text-secondary);">总数 | Общо: <span id="totalGridNum">9</span></div>
             </div>
-            <div style="font-size:0.8rem; color:var(--color-text-secondary);">总数 | Общо: <span id="totalGridNum">9</span></div>
+            <button id="btnUndo" class="button button-utility">撤销上一笔<span>Отмени</span></button>
+            <button id="btnClear" class="button button-secondary">清空所选格子<span>Изчисти избраното</span></button>
+            <button id="btnClearAll" class="button button-clear-all">清空所有<span>Изчисти всичко</span></button>
+            <button id="btnExport" class="button button-success">导出图片<span>Експорт</span></button>
         </div>
-        <button id="btnUndo" class="button button-utility">撤销上一笔<span>Отмени</span></button>
-        <button id="btnClear" class="button button-secondary">清空所选格子<span>Изчисти избраното</span></button>
-        <button id="btnClearAll" class="button button-clear-all">清空所有<span>Изчисти всичко</span></button>
-        <button id="btnExport" class="button button-success">导出图片<span>Експорт</span></button>
     </div>
 </div>
 
@@ -478,99 +465,77 @@
         <h3 style="color:var(--color-accent); margin-bottom:15px;">导出图片 | Експортиране</h3>
         <input type="text" id="exportName" placeholder="请输入姓名 | Въведете име" style="width:80%; padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:4px; font-size:1rem; text-align:center;">
         <button class="button button-success" id="btnConfirmExport" style="width:50%; margin:10px auto;">生成 | Генерирай</button>
-        
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
             <p style="font-size:0.9rem; color:#666; margin-bottom:10px; font-weight:bold;">
                 长按或右键图片即可保存<br>
                 <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">Натиснете продължително или десен бутон върху снимката за запазване</span>
             </p>
-            <div id="exportImagesContainer" class="export-images-list"></div>
+            <img id="exportImgResult" style="max-width:100%; border:2px solid var(--color-accent-gold); border-radius:4px;">
         </div>
     </div>
 </div>
 
 <script>
-    // --- 圣诞五色方案 (高对比度) ---
     const COLORS = [
-        { s: '#D42426', e: '#FFCCCC' }, // 圣诞红 -> 极淡粉
-        { s: '#F8B229', e: '#FFF8E0' }, // 铃铛金 -> 极淡黄
-        { s: '#146B3A', e: '#D0F0D0' }, // 松叶绿 -> 极淡绿
-        { s: '#1E90FF', e: '#D0E8FF' }, // 冰雪蓝 -> 极淡蓝
-        { s: '#800080', e: '#E6CCFF' }  // 浆果紫 -> 极淡紫
+        { s: '#C41E3A', e: '#FFCCCC' }, // 朱砂
+        { s: '#D4AF37', e: '#FFF8D0' }, // 赤金
+        { s: '#008558', e: '#C0EBD7' }, // 翡翠
+        { s: '#174577', e: '#D0E3FF' }, // 景泰蓝
+        { s: '#4B0082', e: '#E6D0FF' }  // 紫檀
     ];
-    let totalGrids = 9; let currentGridIdx = 0; let strokesData = {}; let gridColorState = {}; 
+    let totalGrids = 9; 
+    let currentGridIdx = 0; 
+    let strokesData = {}; 
+    let gridColorState = {}; 
 
     const elDesktopWrapper = document.getElementById('desktopGridWrapper');
     const elMobileCanvas = document.getElementById('mobileCanvas');
     const elMobilePreviewBar = document.getElementById('mobilePreviewBar');
     
-    // 基础尺寸
     const BASE_SIZE = 300;
     const BASE_LINE_WIDTH = 12;
-    const LINE_RATIO = BASE_LINE_WIDTH / BASE_SIZE;
-    
-    // --- 全局雪花图片 URL (避免重复生成) ---
-    let snowflakeImgUrl = null;
+    const LINE_RATIO = BASE_LINE_WIDTH / BASE_SIZE; 
+    let flowerImgUrl = null;
 
     window.onload = function() {
-        // 先生成雪花图片
-        snowflakeImgUrl = createSnowflakeURL();
-        
-        initLights(); // 初始化彩灯
-        initSnow();   // 启动雪花
+        flowerImgUrl = createPlumBlossomURL();
+        initLanterns();
+        initFallingFlowers();
         initColorUI('colorSeqDesktop'); initColorUI('colorSeqMobile');
-        renderDesktopGrids(); renderMobilePreview(); setupMobileEvents();
+        renderDesktopGrids(); renderMobilePreview();
+        setupMobileEvents();
         updateUI(); setupButtons();
     };
 
-    // 初始化素雅小彩灯
-    function initLights() {
-        const rope = document.getElementById('lightRope');
-        const colors = ['red', 'green', 'gold'];
-        for(let i=0; i<20; i++) {
-            const li = document.createElement('li');
-            const bulb = document.createElement('div');
-            bulb.className = `bulb ${colors[i % 3]}`;
-            bulb.style.animationDelay = `${Math.random() * 2}s`;
-            li.appendChild(bulb);
-            rope.appendChild(li);
+    function initLanterns() {
+        const container = document.getElementById('lanternContainer');
+        for(let i=0; i<6; i++) {
+            const box = document.createElement('div');
+            box.className = 'lantern-box';
+            box.style.animationDelay = `${Math.random() * 2}s`;
+            box.innerHTML = `<div class="lantern-line"></div><div class="lantern-body"><div class="lantern-center"></div></div><div class="lantern-tassel"></div>`;
+            container.appendChild(box);
         }
     }
 
-    // --- 核心：创建通用雪花图片的函数 (Canvas -> DataURL) ---
-    function createSnowflakeURL() {
-        const size = 64; // 高清雪花
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
+    function createPlumBlossomURL() {
+        const size = 64;
+        const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
         const ctx = canvas.getContext('2d');
-        
-        // 绘制单个精致雪花 (居中)
-        drawCrystallineFlake(ctx, size/2, size/2, size/2 - 2);
+        drawPlumBlossom(ctx, size/2, size/2, size/2 - 4, 'rgba(255, 183, 197, 0.4)');
         return canvas.toDataURL();
     }
 
-    // 初始化美观版雪花 (使用图片而非文字)
-    function initSnow() {
-        const container = document.getElementById('snowContainer');
-        const snowCount = 40; 
-        
-        for(let i=0; i<snowCount; i++) {
+    function initFallingFlowers() {
+        const container = document.getElementById('flowerContainer');
+        for(let i=0; i<25; i++) {
             const div = document.createElement('div');
-            div.className = 'snowflake';
-            
-            // 关键修改：使用生成的图片作为背景
-            div.style.backgroundImage = `url(${snowflakeImgUrl})`;
+            div.className = 'falling-flower';
+            div.style.backgroundImage = `url(${flowerImgUrl})`;
             div.style.left = Math.random() * 100 + 'vw';
-            
-            // 随机大小 (20px - 40px)
-            const sizePx = Math.floor(Math.random() * 20 + 20);
-            div.style.width = sizePx + 'px';
-            div.style.height = sizePx + 'px';
-            
-            // 随机动画持续时间
-            const duration = Math.random() * 5 + 8 + 's';
-            div.style.animationDuration = `${duration}, ${Math.random() * 3 + 3}s`; // 下落时长, 摇摆时长
+            const size = Math.random() * 15 + 10;
+            div.style.width = size + 'px'; div.style.height = size + 'px';
+            div.style.animationDuration = `${Math.random()*5+8}s, ${Math.random()*3+3}s`;
             div.style.animationDelay = Math.random() * 5 + 's';
             container.appendChild(div);
         }
@@ -582,13 +547,11 @@
         }
     }
     
-    // 16进制转RGB
     function hexToRgb(hex) {
         const bigint = parseInt(hex.slice(1), 16);
         return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
     }
 
-    // 辅助函数：计算两个颜色之间的插值颜色
     function getGradientColor(t, c1, c2) {
         const r = Math.round(c1.r + (c2.r - c1.r) * t);
         const g = Math.round(c1.g + (c2.g - c1.g) * t);
@@ -596,33 +559,28 @@
         return `rgb(${r},${g},${b})`;
     }
 
-    function calculateVisualTotal() {
-        let maxFilled = -1;
-        Object.keys(strokesData).forEach(idx => { if(strokesData[idx] && strokesData[idx].length>0) maxFilled=Math.max(maxFilled, parseInt(idx)); });
-        return Math.ceil(Math.max(9, maxFilled+1)/3)*3;
-    }
-    
+    // --- HTML字符串：标准米字格 + L折角 ---
     function getGridBgHTML() {
-        return `<div class="diagonal-1"></div><div class="diagonal-2"></div>
-                <div class="grid-dot dot-tl"></div><div class="grid-dot dot-tr"></div>
-                <div class="grid-dot dot-bl"></div><div class="grid-dot dot-br"></div>
-                <div style="position:absolute;top:50%;left:0;width:100%;height:1px;background:rgba(20,107,58,0.15);transform:translateY(-50%)"></div>
-                <div style="position:absolute;left:50%;top:0;width:1px;height:100%;background:rgba(20,107,58,0.15);transform:translateX(-50%)"></div>`;
+        return `<div class="grid-bg-layer">
+                    <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
+                    <div class="g-line gl-h"></div><div class="g-line gl-v"></div>
+                    <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
+                    <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
+                </div>`;
     }
 
     function renderDesktopGrids() {
         elDesktopWrapper.innerHTML='';
         for(let i=0; i<totalGrids; i++){
             const div=document.createElement('div'); div.className=`grid-container ${i===currentGridIdx?'grid-active':''}`; div.onclick=()=>switchGrid(i);
-            const bg=document.createElement('div'); bg.className='grid-background'; bg.innerHTML=getGridBgHTML();
+            div.innerHTML = getGridBgHTML();
             const lbl=document.createElement('div'); lbl.className='grid-number-label'; lbl.innerText=i+1;
             const cvs=document.createElement('canvas'); 
             cvs.width=BASE_SIZE; cvs.height=BASE_SIZE; cvs.id=`d-canvas-${i}`;
-            cvs.className='grid-canvas';
-            // 确保JS也设置touch-action
-            cvs.style.touchAction = 'none';
-            setupCanvasEvents(cvs, i); div.appendChild(bg); div.appendChild(lbl);
-            div.appendChild(cvs); elDesktopWrapper.appendChild(div);
+            cvs.className='grid-canvas'; cvs.style.touchAction = 'none';
+            setupCanvasEvents(cvs, i); 
+            div.appendChild(lbl); div.appendChild(cvs);
+            elDesktopWrapper.appendChild(div);
             redrawCanvas(cvs, i);
         }
         document.getElementById('totalGridNum').innerText=totalGrids; document.getElementById('totalGridNumMobile').innerText=totalGrids;
@@ -632,20 +590,20 @@
         elMobilePreviewBar.innerHTML='';
         for(let i=0; i<totalGrids; i++){
             const div=document.createElement('div'); div.className=`mobile-preview-item ${i===currentGridIdx?'active':''}`; div.onclick=()=>switchGrid(i);
-            const bg=document.createElement('div'); bg.style.cssText="position:absolute;top:0;left:0;width:100%;height:100%;"; bg.innerHTML=getGridBgHTML();
+            const bg=document.createElement('div'); bg.style.cssText="position:absolute;top:0;left:0;width:100%;height:100%; transform:scale(0.3); transform-origin:0 0; width:333%; height:333%;"; 
+            bg.innerHTML=getGridBgHTML(); 
             const cvs=document.createElement('canvas'); 
             const previewSize = 100; cvs.width=previewSize; cvs.height=previewSize;
             
-            const ctx=cvs.getContext('2d'); 
+            const ctx=cvs.getContext('2d');
             const s=strokesData[i]||[]; 
             const scale=previewSize/BASE_SIZE;
             const previewLineWidth = previewSize * LINE_RATIO;
-
             s.forEach(st => {
                 const sp = st.points.map(p => ({x:p.x*scale, y:p.y*scale}));
                 drawGradientStroke(ctx, sp, st.colorIdx, previewLineWidth);
             });
-            const lbl=document.createElement('div'); lbl.className='mobile-preview-label'; lbl.innerText=i+1;
+            const lbl=document.createElement('div'); lbl.style.cssText="position:absolute;bottom:2px;right:2px;font-size:10px;color:#999;"; lbl.innerText=i+1;
             div.appendChild(bg); div.appendChild(cvs); div.appendChild(lbl); elMobilePreviewBar.appendChild(div);
         }
     }
@@ -653,116 +611,99 @@
     function switchGrid(idx) {
         if(idx<0||idx>=totalGrids)return;
         currentGridIdx=idx;
-        
-        // 桌面端高亮更新
         document.querySelectorAll('.grid-container').forEach((e,i)=>e.classList.toggle('grid-active', i===idx));
-        // 移动端预览条更新
         const previewContainer = document.getElementById('mobilePreviewBar');
         document.querySelectorAll('.mobile-preview-item').forEach((e,i)=>{ 
             e.classList.toggle('active', i===idx); 
             if(i===idx) {
-                // 计算需要滚动的距离，使选中的元素在容器内居中
                 const scrollLeft = e.offsetLeft - (previewContainer.clientWidth / 2) + (e.clientWidth / 2);
-                previewContainer.scrollTo({
-                    left: scrollLeft,
-                    behavior: 'smooth'
-                });
+                previewContainer.scrollTo({ left: scrollLeft, behavior: 'smooth' });
             }
         });
         redrawMobileCanvas(); updateUI();
     }
 
-    // --- 核心修复：增强版桌面事件处理 (解决大屏竖向书写问题) ---
     function setupCanvasEvents(canvas, gridIdx) {
         let isDown=false;
         let points=[]; const ctx=canvas.getContext('2d');
         const getPos=(e)=>{
             const r=canvas.getBoundingClientRect();
-            // 兼容 MouseEvent 和 TouchEvent
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {x:(clientX-r.left)*(canvas.width/r.width), y:(clientY-r.top)*(canvas.height/r.height)};
+            const t=e.touches?e.touches[0]:e;
+            return {x:(t.clientX-r.left)*(canvas.width/r.width), y:(t.clientY-r.top)*(canvas.height/r.height)};
         };
         const start=(e)=>{ 
-            // 关键：强制阻止默认行为(滚动)
-            if(e.cancelable) e.preventDefault();
+            e.preventDefault();
             if(gridIdx!==currentGridIdx)switchGrid(gridIdx); 
             isDown=true; points=[getPos(e)]; 
         };
         const move=(e)=>{
-            if(!isDown)return;
-            // 关键：移动时也强制阻止，防止浏览器接管
-            if(e.cancelable) e.preventDefault();
+            if(!isDown)return; e.preventDefault();
             const p=getPos(e); points.push(p);
-            const cIdx=gridColorState[gridIdx]||0;
+            
+            // 确保有状态
+            if(gridColorState[gridIdx] === undefined) gridColorState[gridIdx] = 0;
+            const cIdx = gridColorState[gridIdx]; // 当前笔画颜色
+
             ctx.beginPath();
             if(points.length>1) { ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y); }
-            else { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y); }
-            ctx.strokeStyle=COLORS[cIdx%5].s; 
-            ctx.lineWidth=BASE_LINE_WIDTH; 
-            ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
+            else { ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x, p.y); }
+            ctx.strokeStyle=COLORS[cIdx%5].s; ctx.lineWidth=BASE_LINE_WIDTH; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
         };
         const end=(e)=>{
             if(!isDown)return; isDown=false;
             if(points.length>1) {
                 if(!strokesData[gridIdx]) strokesData[gridIdx]=[];
-                const cIdx=gridColorState[gridIdx]||0;
+                if(gridColorState[gridIdx] === undefined) gridColorState[gridIdx] = 0;
+                const cIdx = gridColorState[gridIdx];
+
                 strokesData[gridIdx].push({points:[...points], colorIdx:cIdx%5});
-                gridColorState[gridIdx]=(cIdx+1);
+                // 笔画结束，颜色计数+1
+                gridColorState[gridIdx] = cIdx + 1;
                 redrawGrid(gridIdx); renderMobilePreview(); updateUI();
             }
         };
-        // 鼠标事件
-        canvas.addEventListener('mousedown', start);
-        canvas.addEventListener('mousemove', move); 
-        canvas.addEventListener('mouseup', end); 
-        canvas.addEventListener('mouseleave', end);
-        // --- 关键：为桌面版也添加触摸事件 (修复iPad/触摸屏笔记本) ---
-        canvas.addEventListener('touchstart', start, {passive: false});
-        canvas.addEventListener('touchmove', move, {passive: false});
-        canvas.addEventListener('touchend', end);
+        canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); canvas.addEventListener('mouseup', end); canvas.addEventListener('mouseleave', end);
+        canvas.addEventListener('touchstart', start, {passive: false}); canvas.addEventListener('touchmove', move, {passive: false}); canvas.addEventListener('touchend', end);
     }
 
     function setupMobileEvents() {
-        elMobileCanvas.width=BASE_SIZE;
-        elMobileCanvas.height=BASE_SIZE;
-        // 确保JS动态创建的mobile canvas也有样式
-        elMobileCanvas.style.touchAction = 'none';
-        
-        let isDown=false; let points=[];
-        const ctx=elMobileCanvas.getContext('2d');
+        elMobileCanvas.width=BASE_SIZE; elMobileCanvas.height=BASE_SIZE; elMobileCanvas.style.touchAction = 'none';
+        let isDown=false; let points=[]; const ctx=elMobileCanvas.getContext('2d');
         const getPos=(e)=>{
-            const r=elMobileCanvas.getBoundingClientRect(); const t=e.touches?e.touches[0]:e;
+            const r=elMobileCanvas.getBoundingClientRect();
+            const t=e.touches?e.touches[0]:e;
             return {x:(t.clientX-r.left)*(BASE_SIZE/r.width), y:(t.clientY-r.top)*(BASE_SIZE/r.height)};
         };
-        const start=(e)=>{ 
-            // 关键：手机端也加强防抖
-            if(e.cancelable) e.preventDefault();
-            isDown=true; points=[getPos(e)]; 
-        };
+        const start=(e)=>{ e.preventDefault(); isDown=true; points=[getPos(e)]; };
         const move=(e)=>{
-            if(!isDown)return; 
-            if(e.cancelable) e.preventDefault();
+            if(!isDown)return; e.preventDefault();
             const p=getPos(e); points.push(p);
-            const cIdx=gridColorState[currentGridIdx]||0;
+            if(gridColorState[currentGridIdx] === undefined) gridColorState[currentGridIdx] = 0;
+            const cIdx = gridColorState[currentGridIdx];
+
             ctx.beginPath();
-            if(points.length>1) { ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y); }
-            else { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y); }
+            if(points.length>1) { ctx.moveTo(points[points.length-2].x, points[points.length-2].y); ctx.lineTo(p.x, p.y);
+            }
+            else { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y);
+            }
             ctx.strokeStyle=COLORS[cIdx%5].s; ctx.lineWidth=BASE_LINE_WIDTH; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
         };
         const end=(e)=>{
             if(!isDown)return; isDown=false;
             if(points.length>1) {
                 if(!strokesData[currentGridIdx]) strokesData[currentGridIdx]=[];
-                const cIdx=gridColorState[currentGridIdx]||0;
+                if(gridColorState[currentGridIdx] === undefined) gridColorState[currentGridIdx] = 0;
+                const cIdx = gridColorState[currentGridIdx];
+
                 strokesData[currentGridIdx].push({points:[...points], colorIdx:cIdx%5});
-                gridColorState[currentGridIdx]=(cIdx+1);
+                
+                gridColorState[currentGridIdx] = cIdx + 1;
+
                 redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();
             }
         };
-        elMobileCanvas.addEventListener('touchstart', start, {passive:false});
-        elMobileCanvas.addEventListener('touchmove', move, {passive:false}); 
-        elMobileCanvas.addEventListener('touchend', end);
+        elMobileCanvas.addEventListener('touchstart', start, {passive:false}); elMobileCanvas.addEventListener('touchmove', move, {passive:false}); elMobileCanvas.addEventListener('touchend', end);
     }
 
     function redrawGrid(idx) { const d=document.getElementById(`d-canvas-${idx}`); if(d) redrawCanvas(d, idx); if(idx===currentGridIdx) redrawMobileCanvas();
@@ -771,241 +712,280 @@
         const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
         (strokesData[idx]||[]).forEach(s=>drawGradientStroke(ctx, s.points, s.colorIdx, BASE_LINE_WIDTH));
     }
-    function redrawMobileCanvas() { redrawCanvas(elMobileCanvas, currentGridIdx);
-    }
     
-    // --- 核心修复：完美线性渐变算法 ---
     function drawGradientStroke(ctx, points, cIdx, lineWidth) {
         if(points.length < 2) return;
-        const cStart = hexToRgb(COLORS[cIdx].s);
-        const cEnd = hexToRgb(COLORS[cIdx].e);
-        
-        ctx.lineWidth = lineWidth;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.shadowBlur = 0;
-        // 关闭阴影，让渐变更清晰
-
+        const cStart = hexToRgb(COLORS[cIdx].s); const cEnd = hexToRgb(COLORS[cIdx].e);
+        ctx.lineWidth = lineWidth; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.shadowBlur = 0;
         const totalPoints = points.length - 1;
         for(let i=0; i<totalPoints; i++) {
             const p1 = points[i];
             const p2 = points[i+1];
-            
-            // 计算这一小段在整个笔画中的进度 (0.0 - 1.0)
-            const t1 = i / totalPoints;
-            const t2 = (i + 1) / totalPoints;
-
-            // 关键：对每一微小线段都创建线性渐变
+            const t1 = i / totalPoints; const t2 = (i + 1) / totalPoints;
             const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
             grad.addColorStop(0, getGradientColor(t1, cStart, cEnd));
             grad.addColorStop(1, getGradientColor(t2, cStart, cEnd));
-            
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = grad;
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = grad; ctx.stroke();
         }
     }
 
+    // --- 核心修改：使用圣诞版UI更新逻辑 ---
     function updateUI() {
-        const idx=currentGridIdx, count=(strokesData[idx]||[]).length, nextC=(gridColorState[idx]||0)%5;
-        document.getElementById('curGridNum').innerText=idx+1; document.getElementById('curStrokeNum').innerText=count;
-        document.getElementById('mobileCurGridNum').innerText=idx+1; document.getElementById('mobileCurStroke').innerText=count;
-        const c1=COLORS[nextC].s, c2=COLORS[(nextC+1)%5].s;
-        document.getElementById('curColorBox').style.background=c1; document.getElementById('nextColorBox').style.background=c2;
-        document.getElementById('mobileCurColorBox').style.background=c1; document.getElementById('mobileNextColorBox').style.background=c2;
-        const upd=(pf)=>COLORS.forEach((_,x)=>{const e=document.getElementById(`${pf}c-dot-${x}`);if(e){e.className='color-dot';if(x===nextC)e.classList.add('current');else if(x===(nextC+1)%5)e.classList.add('next');}});
+        const idx = currentGridIdx;
+        const count = (strokesData[idx]||[]).length;
+        
+        // 确保状态存在
+        if(gridColorState[idx] === undefined) gridColorState[idx] = 0;
+        const nextC = gridColorState[idx] % 5;
+
+        // 更新文字
+        document.getElementById('curGridNum').innerText = idx + 1; 
+        document.getElementById('curStrokeNum').innerText = count;
+        document.getElementById('mobileCurGridNum').innerText = idx + 1;
+        document.getElementById('mobileCurStroke').innerText = count;
+        
+        // 更新底部色块 (即时反应)
+        const c1 = COLORS[nextC].s;
+        const c2 = COLORS[(nextC + 1) % 5].s;
+        
+        document.getElementById('curColorBox').style.background = c1;
+        document.getElementById('nextColorBox').style.background = c2;
+        document.getElementById('mobileCurColorBox').style.background = c1; 
+        document.getElementById('mobileNextColorBox').style.background = c2;
+        
+        // 核心修改：恢复圣诞版的逻辑，准确控制class切换
+        const upd = (pf) => COLORS.forEach((_, x) => {
+            const e = document.getElementById(`${pf}c-dot-${x}`);
+            if (e) {
+                // 重置类名
+                e.className = 'color-dot'; 
+                // 判断逻辑：当前颜色 vs 下一颜色
+                if (x === nextC) e.classList.add('current');
+                else if (x === (nextC + 1) % 5) e.classList.add('next');
+            }
+        });
         upd(''); upd('m-');
     }
 
     function setupButtons() {
-        const add=(m)=>{ const v=parseInt(document.getElementById(m?'gridCountMobile':'gridCount').value)||1; totalGrids+=v; renderDesktopGrids();
-        renderMobilePreview(); updateUI(); };
+        const add=(m)=>{ const v=parseInt(document.getElementById(m?'gridCountMobile':'gridCount').value)||1;
+        totalGrids+=v; renderDesktopGrids(); renderMobilePreview(); updateUI(); };
         document.getElementById('btnGenGrid').onclick=()=>add(false); document.getElementById('btnGenGridMobile').onclick=()=>add(true);
-        const undo=()=>{ const s=strokesData[currentGridIdx]; if(s&&s.length){s.pop(); if(gridColorState[currentGridIdx]>0)gridColorState[currentGridIdx]--; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
+        
+        const undo=()=>{ 
+            const s=strokesData[currentGridIdx];
+            if(s&&s.length){
+                s.pop(); 
+                if(gridColorState[currentGridIdx]>0) gridColorState[currentGridIdx]--; 
+                redrawGrid(currentGridIdx);
+                renderMobilePreview(); updateUI();
+            } 
+        };
         document.getElementById('btnUndo').onclick=undo; document.getElementById('btnUndoMobile').onclick=undo;
-        const cls=()=>{ if(confirm('清空所选格子?')) {strokesData[currentGridIdx]=[]; gridColorState[currentGridIdx]=0; redrawGrid(currentGridIdx); renderMobilePreview(); updateUI();} };
+        const cls=()=>{ 
+            if(confirm('清空所选格子?')) {
+                strokesData[currentGridIdx]=[];
+                gridColorState[currentGridIdx]=0; // 重置为红色
+                redrawGrid(currentGridIdx); renderMobilePreview();
+                updateUI();
+            } 
+        };
         document.getElementById('btnClear').onclick=cls; document.getElementById('btnClearMobile').onclick=cls;
-        const cla=()=>{ if(confirm('清空所有?')) {strokesData={}; gridColorState={}; currentGridIdx=0; renderDesktopGrids(); renderMobilePreview(); updateUI();
-        switchGrid(0);} };
+        const cla=()=>{ 
+            if(confirm('清空所有?')) {
+                strokesData={};
+                gridColorState={}; 
+                currentGridIdx=0; 
+                renderDesktopGrids(); renderMobilePreview(); updateUI(); 
+                switchGrid(0);
+            } 
+        };
         document.getElementById('btnClearAll').onclick=cla; document.getElementById('btnClearAllMobile').onclick=cla;
+        
         document.getElementById('btnPrevMobile').onclick=()=>switchGrid(currentGridIdx-1); document.getElementById('btnNextMobile').onclick=()=>switchGrid(currentGridIdx+1);
         const ex=()=>{document.getElementById('exportModal').style.display='flex'; document.getElementById('exportPreviewArea').style.display='none';};
         document.getElementById('btnExport').onclick=ex; document.getElementById('btnExportMobile').onclick=ex;
-        
         document.getElementById('btnConfirmExport').onclick=doExport;
     }
 
-    // 画星星的辅助函数
-    function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
-      let rot=Math.PI/2*3;
-      let x=cx; let y=cy; let step=Math.PI/spikes;
-      ctx.beginPath();
-      ctx.moveTo(cx,cy-outerRadius);
-      for(let i=0;i<spikes;i++){
-        x=cx+Math.cos(rot)*outerRadius; y=cy+Math.sin(rot)*outerRadius; ctx.lineTo(x,y);
-        rot+=step;
-        x=cx+Math.cos(rot)*innerRadius; y=cy+Math.sin(rot)*innerRadius; ctx.lineTo(x,y); rot+=step;
-      }
-      ctx.lineTo(cx,cy-outerRadius); ctx.closePath(); ctx.fill();
+    // --- 连环烟花效果 (5波) ---
+    function launchFireworksSequence() {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        createFireworks(centerX, centerY);
+        setTimeout(() => createFireworks(centerX - 200, centerY - 100), 500);
+        setTimeout(() => createFireworks(centerX + 200, centerY - 100), 1000);
+        setTimeout(() => createFireworks(centerX - 100, centerY + 150), 1600);
+        setTimeout(() => createFireworks(centerX + 100, centerY + 150), 2200);
     }
 
-    // --- 新增：绘制精致冰晶雪花的函数 (用于导出 + 页面背景动画) ---
-    function drawCrystallineFlake(ctx, x, y, size) {
-        ctx.save();
-        ctx.translate(x, y);
-        let grd = ctx.createRadialGradient(0, 0, 0, 0, 0, size);
-        grd.addColorStop(0, "rgba(255, 255, 255, 0.95)");
-        grd.addColorStop(0.7, "rgba(220, 238, 251, 0.6)");
-        grd.addColorStop(1, "rgba(220, 238, 251, 0)");
-
-        ctx.strokeStyle = grd;
-        ctx.fillStyle = grd;
-        ctx.lineWidth = size * 0.08; 
-        ctx.lineCap = 'round';
-
-        for (let i = 0; i < 6; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, 0); ctx.lineTo(0, size);
-            ctx.moveTo(0, size * 0.5); ctx.lineTo(size * 0.25, size * 0.7);
-            ctx.moveTo(0, size * 0.5);
-            ctx.lineTo(-size * 0.25, size * 0.7);
-            ctx.moveTo(0, size * 0.8); ctx.lineTo(size * 0.15, size * 0.9);
-            ctx.moveTo(0, size * 0.8);
-            ctx.lineTo(-size * 0.15, size * 0.9);
-            ctx.stroke();
-            ctx.rotate(Math.PI / 3);
+    function createFireworks(x, y) {
+        const count = 30;
+        const colors = ['#C41E3A', '#FFD700', '#008558', '#FF69B4', '#1E90FF'];
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'firework-particle';
+            p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.width = Math.random() * 6 + 4 + 'px';
+            p.style.height = p.style.width;
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 150 + 80;
+            const tx = Math.cos(angle) * velocity + 'px';
+            const ty = Math.sin(angle) * velocity + 'px';
+            
+            p.style.setProperty('--tx', tx);
+            p.style.setProperty('--ty', ty);
+            
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1000);
         }
+    }
+
+    function drawPlumBlossom(ctx, x, y, size, color) {
+        ctx.save();
+        ctx.translate(x, y); ctx.fillStyle = color || 'rgba(255, 183, 197, 0.4)';
+        const petalSize = size * 0.5;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -size*0.4, petalSize*0.6, petalSize, 0, 0, Math.PI * 2);
+            ctx.fill(); ctx.rotate((Math.PI * 2) / 5);
+        }
+        ctx.beginPath(); ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.5)'; ctx.fill();
         ctx.restore();
     }
 
-    // --- 分页导出逻辑 (修改版：强制每页9个格子) ---
+    // --- L型折角 ---
+    function drawCornerMark(ctx, x, y, size, type) {
+        ctx.strokeStyle = '#B8860B';
+        ctx.lineWidth = 1.5; ctx.beginPath();
+        if(type===0) { ctx.moveTo(x, y+size); ctx.lineTo(x, y); ctx.lineTo(x+size, y);
+        }
+        if(type===1) { ctx.moveTo(x-size, y); ctx.lineTo(x, y); ctx.lineTo(x, y+size);
+        }
+        if(type===2) { ctx.moveTo(x, y-size); ctx.lineTo(x, y); ctx.lineTo(x-size, y);
+        }
+        if(type===3) { ctx.moveTo(x+size, y); ctx.lineTo(x, y); ctx.lineTo(x, y-size);
+        }
+        ctx.stroke();
+    }
+
     function doExport() {
-        const container = document.getElementById('exportImagesContainer');
-        container.innerHTML = ''; // 清空旧图片
-        
-        const name = document.getElementById('exportName').value;
-        const visualTotal = calculateVisualTotal(); // 实际有字或者需要展示的总数
-        
-        // --- 核心修改：每页 9 个格子 (3行 x 3列) ---
-        const ITEMS_PER_PAGE = 9;
-        const totalPages = Math.ceil(visualTotal / ITEMS_PER_PAGE);
-        
-        // 降低清晰度倍数，防止内存溢出。3倍对于打印已经足够清晰 (相当于300-400 DPI)
-        const dpr = 3;
+        launchFireworksSequence();
+        const name=document.getElementById('exportName').value;
+        const gridsPerPage = 9;
         const cols = 3;
-        const gridSize = 120;
-        const gap = 10;
-        const padding = 40;
-        const hH = 60;
-        // Header Height
-        const fH = 40;
-        // Footer Height
-        const exportLineWidth = gridSize * LINE_RATIO;
-        // 获取日期 (保加利亚时间)
-        const d = new Date();
-        const yStr = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', year: 'numeric' });
-        const mStr = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', month: 'numeric' });
-        const dStr = d.toLocaleDateString('en-US', { timeZone: 'Europe/Sofia', day: 'numeric' });
-        const bgDateStr = `${yStr}/${mStr}/${dStr}`;
-        // 分页循环生成
+        
+        let maxFilled = -1;
+        Object.keys(strokesData).forEach(idx => { if(strokesData[idx] && strokesData[idx].length>0) maxFilled=Math.max(maxFilled, parseInt(idx)); });
+        let exportTotal = Math.max(totalGrids, maxFilled + 1);
+        const totalPages = Math.ceil(exportTotal / gridsPerPage);
+
+        const dpr = 4;
+        const gridSize = 140; 
+        const gap=15, padding=50, headerH=70, footerH=20, pageGap=40;
+        const pageHeight = padding*2 + headerH + footerH + 3*(gridSize+gap);
+        const totalHeight = pageHeight * totalPages + (totalPages-1) * pageGap;
+        const width = padding*2 + cols*gridSize + (cols-1)*gap;
+
+        const cvs=document.createElement('canvas');
+        cvs.width = width * dpr; cvs.height = totalHeight * dpr;
+        const ctx=cvs.getContext('2d'); ctx.scale(dpr, dpr);
+        
+        ctx.fillStyle='#FDFCF8'; ctx.fillRect(0,0,width,totalHeight);
+
         for(let p = 0; p < totalPages; p++) {
-            const startGrid = p * ITEMS_PER_PAGE;
-            // 核心逻辑：无论是否有内容，强制绘制满一页的 3x3 布局 (rows=3)
-            const rows = 3;
-            // 创建 Canvas
-            const cvs = document.createElement('canvas');
-            const width = padding * 2 + cols * gridSize + (cols - 1) * gap;
-            const height = padding * 2 + hH + fH + rows * (gridSize + gap);
-            cvs.width = width * dpr;
-            cvs.height = height * dpr;
-            const ctx = cvs.getContext('2d');
-            ctx.scale(dpr, dpr);
-            // 1. 背景色
-            ctx.fillStyle = '#fdfcf8';
-            ctx.fillRect(0, 0, width, height);
-
-            // 2. 绘制背景真实雪花 (适量减少数量以优化性能)
-            const snowCount = 30;
-            for(let i = 0; i < snowCount; i++) {
-                 const sx = Math.random() * width;
-                 const sy = Math.random() * height;
-                 const size = 8 + Math.random() * 12; 
-                 drawCrystallineFlake(ctx, sx, sy, size);
-            }
-            
-            // 3. 双层节日边框
-            ctx.strokeStyle = '#D42426';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(10, 10, width-20, height-20);
-            ctx.strokeStyle = '#F8B229'; ctx.lineWidth = 2;
-            ctx.strokeRect(16, 16, width-32, height-32);
-            // 4. 头部信息
-            ctx.fillStyle = '#146B3A';
-            ctx.font = 'bold 20px serif'; ctx.textAlign = 'left';
-            ctx.fillText(name ? `姓名: ${name}` : 'Merry Christmas!', padding, padding + 25);
-            ctx.fillStyle = '#D42426'; ctx.font = '14px serif'; ctx.textAlign = 'right';
-            // 页码 + 日期
-            const pageInfo = `Page ${p + 1} / ${totalPages}  | ${bgDateStr}`;
-            ctx.fillText(pageInfo, width - padding, padding + 25);
-            
-            // 装饰线
-            ctx.beginPath();
-            ctx.moveTo(padding, padding + 40); ctx.lineTo(width - padding, padding + 40); 
-            ctx.strokeStyle = '#F8B229'; ctx.lineWidth = 2; ctx.stroke();
-            // 5. 绘制格子 (强制循环9次)
-            for(let i = 0; i < 9; i++) {
-                const globalIndex = startGrid + i;
-                const r = Math.floor(i / cols); // 行 (0,1,2)
-                const c = i % cols;
-                // 列 (0,1,2)
-                const x = padding + c * (gridSize + gap);
-                const y = padding + hH + r * (gridSize + gap);
-                // 绘制白底 + 边框
-                ctx.fillStyle = '#fff';
-                ctx.fillRect(x, y, gridSize, gridSize); 
-                ctx.strokeStyle = '#146B3A'; ctx.lineWidth = 1; ctx.strokeRect(x, y, gridSize, gridSize);
-                // 绘制米字格
-                ctx.beginPath();
-                ctx.moveTo(x, y + gridSize / 2); ctx.lineTo(x + gridSize, y + gridSize / 2); 
-                ctx.moveTo(x + gridSize / 2, y);
-                ctx.lineTo(x + gridSize / 2, y + gridSize);
-                ctx.moveTo(x, y); ctx.lineTo(x + gridSize, y + gridSize); 
-                ctx.moveTo(x, y + gridSize);
-                ctx.lineTo(x + gridSize, y);
-                ctx.strokeStyle = 'rgba(20,107,58,0.15)'; ctx.stroke();
+            let startY = p * (pageHeight + pageGap);
+            ctx.strokeStyle = '#C41E3A'; ctx.lineWidth = 4;
+            ctx.strokeRect(10, startY + 10, width - 20, pageHeight - 20);
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(16, startY + 16, width - 32, pageHeight - 32);
+            // 梅花
+            const blossomCount = 12;
+            for(let k=0; k<blossomCount; k++) {
+                let bx = Math.random() * width;
+                let by = startY + Math.random() * pageHeight;
                 
-                // 绘制星星
-                ctx.fillStyle = '#F8B229';
-                drawStar(ctx, x+10, y+10, 5, 2, 1);
-                drawStar(ctx, x+gridSize-10, y+10, 5, 2, 1);
-                drawStar(ctx, x+10, y+gridSize-10, 5, 2, 1);
-                drawStar(ctx, x+gridSize-10, y+gridSize-10, 5, 2, 1);
-
-                // 只有在数据存在的范围内才绘制笔画和序号
-                if(globalIndex < totalGrids) {
-                    const strokes = strokesData[globalIndex] ||
-                    [];
-                    const sc = gridSize / BASE_SIZE;
-                    strokes.forEach(s => {
-                        const sp = s.points.map(p => ({ x: p.x * sc + x, y: p.y * sc + y }));
-                        drawGradientStroke(ctx, sp, s.colorIdx, exportLineWidth);
-                    });
-                    // 序号
-                    ctx.fillStyle = '#D42426';
-                    ctx.font = '10px serif'; ctx.textAlign = 'right'; 
-                    ctx.fillText(globalIndex + 1, x + gridSize - 3, y + gridSize - 3);
+                let gridAreaTop = startY + padding + headerH;
+                let gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
+                let gridAreaLeft = padding;
+                let gridAreaRight = width - padding;
+                if (bx > gridAreaLeft && bx < gridAreaRight && by > gridAreaTop && by < gridAreaBottom) {
+                    if(Math.random() > 0.5) by = startY + Math.random() * (padding + headerH);
+                    else by = startY + pageHeight - Math.random() * (padding + footerH);
                 }
+
+                const bSize = 10 + Math.random() * 20;
+                drawPlumBlossom(ctx, bx, by, bSize, `rgba(255, 192, 203, ${0.15 + Math.random()*0.1})`);
             }
+
+            // Header
+            ctx.fillStyle='#C41E3A';
+            ctx.font='bold 20px KaiTi, serif'; ctx.textAlign='left';
+            ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, startY + padding + 25);
+            const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); 
+            const bgObj = new Date(bgDate);
+            const y = bgObj.getFullYear();
+            const m = bgObj.getMonth() + 1;
+            const d = bgObj.getDate();
+            const dateStr = `${y}/${m}/${d}`; 
             
-            // 生成图片并添加到DOM
-            const img = document.createElement('img');
-            img.src = cvs.toDataURL('image/jpeg', 0.85); // 使用JPEG进一步减小体积，质量0.85足够
-            container.appendChild(img);
+            const infoStr = `Page ${p+1}/${totalPages} | ${dateStr}`;
+
+            ctx.fillStyle='#8B4513'; ctx.font='16px serif'; ctx.textAlign='right';
+            ctx.fillText(infoStr, width - padding, startY + padding + 25);
+            // Red Line
+            ctx.beginPath();
+            ctx.moveTo(padding, startY + padding + 40);
+            ctx.lineTo(width - padding, startY + padding + 40);
+            ctx.strokeStyle = '#C41E3A';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Grids
+            for(let i=0; i<9; i++){
+                let gridIndex = p * 9 + i;
+                if(gridIndex >= exportTotal && gridIndex >= totalGrids) break;
+
+                const r = Math.floor(i/cols); 
+                const c = i%cols;
+                const x = padding + c*(gridSize+gap);
+                const y = startY + padding + headerH + r*(gridSize+gap);
+                
+                ctx.lineWidth=1;
+                ctx.strokeStyle='#8B4513'; ctx.strokeRect(x,y,gridSize,gridSize);
+                
+                ctx.beginPath();
+                ctx.moveTo(x,y+gridSize/2); ctx.lineTo(x+gridSize,y+gridSize/2); 
+                ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
+                ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); 
+                ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
+                ctx.strokeStyle='rgba(139,69,19,0.2)'; // 0.2 透明度
+                ctx.stroke();
+                const mSize = 8;
+                drawCornerMark(ctx, x+4, y+4, mSize, 0); 
+                drawCornerMark(ctx, x+gridSize-4, y+4, mSize, 1); 
+                drawCornerMark(ctx, x+gridSize-4, y+gridSize-4, mSize, 2);
+                drawCornerMark(ctx, x+4, y+gridSize-4, mSize, 3); 
+                
+                const strokes = strokesData[gridIndex]||[];
+                const sc = gridSize / BASE_SIZE;
+                strokes.forEach(s=>{
+                    const sp = s.points.map(p=>({x:p.x*sc+x, y:p.y*sc+y}));
+                    drawGradientStroke(ctx, sp, s.colorIdx, gridSize * LINE_RATIO);
+                });
+                ctx.fillStyle='#C41E3A'; ctx.font='10px serif'; ctx.textAlign='right'; 
+                ctx.fillText(gridIndex+1, x+gridSize-3, y+gridSize-3);
+            }
         }
 
-        document.getElementById('exportPreviewArea').style.display = 'block';
+        document.getElementById('exportImgResult').src=cvs.toDataURL();
+        document.getElementById('exportPreviewArea').style.display='block';
     }
 </script>
 </body>
