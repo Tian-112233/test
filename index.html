@@ -711,8 +711,8 @@
         <button class="button button-success" id="btnConfirmExport" style="width:50%; margin:10px auto;">生成 | Генерирай</button>
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
             <p style="font-size:0.9rem; color:#666; margin-bottom:10px; font-weight:bold;">
-                多页会分成多张图显示：长按或右键任意一张即可单独保存（清晰度更高）<br>
-                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">При много страници те се показват като отделни изображения</span>
+                长按或右键图片即可保存<br>
+                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">Натиснете продължително или десен бутон върху снимката за запазване</span>
             </p>
             <div id="exportImgList"></div>
         </div>
@@ -1369,7 +1369,7 @@
             const d = bgObj.getDate();
             const dateStr = `${y}/${m}/${d}`; 
             
-            const infoStr = `Page ${p+1}/${totalPages} | ${dateStr}`;
+            const infoStr = `${dateStr}`;
 
             ctx.fillStyle='#8B4513'; ctx.font='16px serif'; ctx.textAlign='right';
             ctx.fillText(infoStr, width - padding, padding + 25);
@@ -1425,23 +1425,11 @@
             const block = document.createElement('div');
             block.style.cssText = 'margin: 0 0 18px 0;';
 
-            const title = document.createElement('div');
-            title.style.cssText = 'font-weight:bold;color:#666;margin:0 0 6px 0;';
-            title.innerText = `第 ${p+1} 页 / Page ${p+1}`;
-
             const img = document.createElement('img');
             img.src = dataUrl;
             img.style.cssText = 'max-width:100%; border:2px solid var(--color-accent-gold); border-radius:4px; display:block;';
 
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = `writing-${name || 'noname'}-page-${p+1}.png`;
-            a.innerText = '下载本页 / Download';
-            a.style.cssText = 'display:inline-block;margin-top:8px;padding:6px 10px;background:var(--color-accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;';
-
-            block.appendChild(title);
             block.appendChild(img);
-            block.appendChild(a);
             list.appendChild(block);
         }
 
