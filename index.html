@@ -326,8 +326,9 @@
             filter: saturate(1.18) contrast(1.12) drop-shadow(0 4px 10px rgba(0,0,0,0.18));
             animation-name: fall, sway; animation-timing-function: linear, ease-in-out;
             animation-iteration-count: infinite, infinite;
-            will-change: transform, top;
+            will-change: transform;
         }
+        body.flowers-paused .falling-flower { animation-play-state: paused; }
         @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
         @keyframes sway {
             0%, 100% { transform: translateX(0px) rotate(var(--rot, 0deg)); }
@@ -544,9 +545,10 @@
         /* 移动端 */
         .mobile-layout { display: none; }
         @media (max-width: 1100px) {
-            body { padding-top: 36px; }
+            body { padding-top: 36px; background-attachment: scroll; }
             .lantern-container { height: 40px; }
             .lantern-box { scale: 0.62; }
+            .falling-flower { filter: none !important; }
 
             .sidebar, .desktop-board-container { display: none !important; }
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
@@ -750,6 +752,7 @@
         plumBlossomImgUrl = createPlumBlossomURL();
         initLanterns();
         initFallingPlumBlossom();
+        setupFlowerScrollOptimization();
         initColorUI('colorSeqDesktop'); initColorUI('colorSeqMobile');
         renderDesktopGrids(); renderMobilePreview();
         setupMobileEvents();
@@ -923,7 +926,8 @@
     function initFallingPlumBlossom() {
         const container = document.getElementById('flowerContainer');
         container.innerHTML = '';
-        const count = 26;
+        const isMobile = window.matchMedia('(max-width: 1100px)').matches;
+        const count = isMobile ? 10 : 26;
         for (let i = 0; i < count; i++) {
             const div = document.createElement('div');
             div.className = 'falling-flower';
@@ -941,12 +945,25 @@
             // 给每朵一个不同的起始旋转角（由CSS keyframes读取）
             div.style.setProperty('--rot', `${Math.random() * 360}deg`);
 
-            // 轻微景深差异（更自然），不影响书写专注
-            const blur = Math.random() * 0.25;
-            div.style.filter = `saturate(1.18) contrast(1.12) blur(${blur.toFixed(2)}px) drop-shadow(0 4px 10px rgba(0,0,0,0.18))`;
+            // 移动端去掉filter（滚动更顺），桌面端保留轻微景深
+            if(isMobile) {
+                div.style.filter = 'none';
+            } else {
+                const blur = Math.random() * 0.25;
+                div.style.filter = `saturate(1.18) contrast(1.12) blur(${blur.toFixed(2)}px) drop-shadow(0 4px 10px rgba(0,0,0,0.18))`;
+            }
 
             container.appendChild(div);
         }
+    }
+
+    function setupFlowerScrollOptimization() {
+        let t = null;
+        window.addEventListener('scroll', () => {
+            document.body.classList.add('flowers-paused');
+            if (t) clearTimeout(t);
+            t = setTimeout(() => document.body.classList.remove('flowers-paused'), 120);
+        }, { passive: true });
     }
 
     function initColorUI(cid) {
