@@ -809,13 +809,22 @@
         ctx.arc(0, 0, 10, 0, Math.PI * 2);
         ctx.fill();
 
-        // 花蕊点点（金色小点）
-        ctx.fillStyle = 'rgba(255, 205, 60, 0.70)';
+        // 花蕊点点（更明显一些：更亮、更大、再加一层深金点）
+        ctx.fillStyle = 'rgba(255, 200, 40, 0.95)';
         for (let i = 0; i < 10; i++) {
             const a = (Math.PI * 2) * (i / 10);
             const r = 9 + Math.random() * 3;
             ctx.beginPath();
-            ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 1.2, 0, Math.PI * 2);
+            ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 1.9, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.fillStyle = 'rgba(180, 105, 0, 0.55)';
+        for (let i = 0; i < 10; i++) {
+            const a = (Math.PI * 2) * (i / 10) + 0.12;
+            const r = 8 + Math.random() * 2;
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 1.1, 0, Math.PI * 2);
             ctx.fill();
         }
 
@@ -873,11 +882,20 @@
         ctx.arc(0, 0, size * 0.32, 0, Math.PI * 2);
         ctx.fill();
 
-        // 花蕊点点
-        ctx.fillStyle = 'rgba(255, 205, 60, 0.70)';
+        // 花蕊点点（更明显一些）
+        ctx.fillStyle = 'rgba(255, 200, 40, 0.92)';
         for (let i = 0; i < 10; i++) {
             const a = (Math.PI * 2) * (i / 10);
             const r = size * (0.30 + Math.random() * 0.12);
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * r, Math.sin(a) * r, Math.max(1.0, size * 0.06), 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.fillStyle = 'rgba(180, 105, 0, 0.45)';
+        for (let i = 0; i < 10; i++) {
+            const a = (Math.PI * 2) * (i / 10) + 0.12;
+            const r = size * (0.27 + Math.random() * 0.08);
             ctx.beginPath();
             ctx.arc(Math.cos(a) * r, Math.sin(a) * r, Math.max(0.8, size * 0.04), 0, Math.PI * 2);
             ctx.fill();
@@ -1293,7 +1311,7 @@
             // 梅花（同飘落效果；且不落到格子区域）
             const blossomCount = 12;
             for(let k=0; k<blossomCount; k++) {
-                const bSize = 10 + Math.random() * 20;
+                const bSize = 6 + Math.random() * 10;
                 const safe = bSize + 10;
 
                 let bx = Math.random() * width;
