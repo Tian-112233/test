@@ -82,7 +82,7 @@
         /* 横批（参考图：红底 + 金边 + 四角花纹） */
         .hengpi {
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 0;
             padding: 10px 28px;
             position: relative;
             
@@ -138,6 +138,15 @@
                 /* 右下 */
                 linear-gradient(315deg, rgba(255,210,77,0.9) 0 2px, transparent 2px 100%) right bottom / 18px 18px no-repeat,
                 linear-gradient(225deg, rgba(255,210,77,0.55) 0 2px, transparent 2px 100%) right bottom / 18px 18px no-repeat;
+        }
+
+        /* 横批 */
+        .hengpi-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            margin-top: 10px;
         }
 
         /* --- 灯笼样式 --- */
@@ -603,7 +612,9 @@
         <header>
             <h1>汉字书写练习板（中国新年版）<br>
             <span class="title-translation">Дъска за писане на китайски йероглифи (Версия за Китайската нова година)</span></h1>
-            <div class="hengpi">恭贺新春</div>
+            <div class="hengpi-row">
+                <div class="hengpi">恭贺新春</div>
+            </div>
         </header>
         
         <div class="desktop-board-container board-container" id="boardScrollContainer">
@@ -700,10 +711,10 @@
         <button class="button button-success" id="btnConfirmExport" style="width:50%; margin:10px auto;">生成 | Генерирай</button>
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
             <p style="font-size:0.9rem; color:#666; margin-bottom:10px; font-weight:bold;">
-                长按或右键图片即可保存<br>
-                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">Натиснете продължително или десен бутон върху снимката за запазване</span>
+                多页会分成多张图显示：长按或右键任意一张即可单独保存（清晰度更高）<br>
+                <span style="font-size:0.8rem; font-style:italic; font-weight:normal;">При много страници те се показват като отделни изображения</span>
             </p>
-            <img id="exportImgResult" style="max-width:100%; border:2px solid var(--color-accent-gold); border-radius:4px;">
+            <div id="exportImgList"></div>
         </div>
     </div>
 </div>
@@ -1290,43 +1301,57 @@
 
         const dpr = 4;
         const gridSize = 140; 
-        const gap=15, padding=50, headerH=70, footerH=20, pageGap=40;
+        const gap=15, padding=50, headerH=70, footerH=20;
         const pageHeight = padding*2 + headerH + footerH + 3*(gridSize+gap);
-        const totalHeight = pageHeight * totalPages + (totalPages-1) * pageGap;
         const width = padding*2 + cols*gridSize + (cols-1)*gap;
 
-        const cvs=document.createElement('canvas');
-        cvs.width = width * dpr; cvs.height = totalHeight * dpr;
-        const ctx=cvs.getContext('2d'); ctx.scale(dpr, dpr);
-        
-        ctx.fillStyle='#FDFCF8'; ctx.fillRect(0,0,width,totalHeight);
+        const list = document.getElementById('exportImgList');
+        list.innerHTML = '';
 
         for(let p = 0; p < totalPages; p++) {
-            let startY = p * (pageHeight + pageGap);
+            const cvs=document.createElement('canvas');
+            cvs.width = width * dpr;
+            cvs.height = pageHeight * dpr;
+            const ctx=cvs.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            ctx.fillStyle='#FDFCF8';
+            ctx.fillRect(0,0,width,pageHeight);
+
+            // 边框
             ctx.strokeStyle = '#C41E3A'; ctx.lineWidth = 4;
-            ctx.strokeRect(10, startY + 10, width - 20, pageHeight - 20);
-            ctx.strokeStyle = '#FFD700';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(16, startY + 16, width - 32, pageHeight - 32);
-            // 梅花（同飘落效果；且不落到格子区域）
+            ctx.strokeRect(10, 10, width - 20, pageHeight - 20);
+            ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 2;
+            ctx.strokeRect(16, 16, width - 32, pageHeight - 32);
+
+            // 梅花：保证“整朵在画布内”，且不落到格子区域
             const blossomCount = 12;
             for(let k=0; k<blossomCount; k++) {
                 const bSize = 6 + Math.random() * 10;
-                const safe = bSize + 10;
+                const safe = bSize * 2.4; // 旋转后也尽量不裁切
 
-                let bx = Math.random() * width;
-                let by = startY + Math.random() * pageHeight;
+                let bx = safe + Math.random() * (width - safe*2);
+                let by = safe + Math.random() * (pageHeight - safe*2);
 
-                let gridAreaTop = startY + padding + headerH;
-                let gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
-                let gridAreaLeft = padding;
-                let gridAreaRight = width - padding;
+                const gridAreaTop = padding + headerH;
+                const gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
+                const gridAreaLeft = padding;
+                const gridAreaRight = width - padding;
 
                 // 如果落在格子区域（包含安全边距），把它挪到头部或底部空白区域
                 if (bx > gridAreaLeft - safe && bx < gridAreaRight + safe && by > gridAreaTop - safe && by < gridAreaBottom + safe) {
-                    if(Math.random() > 0.5) by = startY + Math.random() * (padding + headerH - safe);
-                    else by = startY + pageHeight - Math.random() * (padding + footerH - safe);
+                    if(Math.random() > 0.5) {
+                        const topMax = Math.max(safe, padding + headerH - safe);
+                        by = safe + Math.random() * Math.max(1, topMax - safe);
+                    } else {
+                        const botMin = Math.min(pageHeight - safe, pageHeight - (padding + footerH) + safe);
+                        by = botMin + Math.random() * Math.max(1, (pageHeight - safe) - botMin);
+                    }
                 }
+
+                // 再次夹紧，确保整朵不出界
+                bx = Math.max(safe, Math.min(width - safe, bx));
+                by = Math.max(safe, Math.min(pageHeight - safe, by));
 
                 const rot = Math.random() * Math.PI * 2;
                 const a = 0.18 + Math.random() * 0.10;
@@ -1336,7 +1361,7 @@
             // Header
             ctx.fillStyle='#C41E3A';
             ctx.font='bold 20px KaiTi, serif'; ctx.textAlign='left';
-            ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, startY + padding + 25);
+            ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, padding + 25);
             const bgDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Sofia"}); 
             const bgObj = new Date(bgDate);
             const y = bgObj.getFullYear();
@@ -1347,11 +1372,12 @@
             const infoStr = `Page ${p+1}/${totalPages} | ${dateStr}`;
 
             ctx.fillStyle='#8B4513'; ctx.font='16px serif'; ctx.textAlign='right';
-            ctx.fillText(infoStr, width - padding, startY + padding + 25);
+            ctx.fillText(infoStr, width - padding, padding + 25);
+
             // Red Line
             ctx.beginPath();
-            ctx.moveTo(padding, startY + padding + 40);
-            ctx.lineTo(width - padding, startY + padding + 40);
+            ctx.moveTo(padding, padding + 40);
+            ctx.lineTo(width - padding, padding + 40);
             ctx.strokeStyle = '#C41E3A';
             ctx.lineWidth = 2;
             ctx.stroke();
@@ -1364,7 +1390,7 @@
                 const r = Math.floor(i/cols); 
                 const c = i%cols;
                 const x = padding + c*(gridSize+gap);
-                const y = startY + padding + headerH + r*(gridSize+gap);
+                const y = padding + headerH + r*(gridSize+gap);
                 
                 ctx.lineWidth=1;
                 ctx.strokeStyle='#8B4513'; ctx.strokeRect(x,y,gridSize,gridSize);
@@ -1393,9 +1419,32 @@
                     ctx.fillText(gridIndex+1, x+gridSize-3, y+gridSize-3);
                 }
             }
+
+            const dataUrl = cvs.toDataURL();
+
+            const block = document.createElement('div');
+            block.style.cssText = 'margin: 0 0 18px 0;';
+
+            const title = document.createElement('div');
+            title.style.cssText = 'font-weight:bold;color:#666;margin:0 0 6px 0;';
+            title.innerText = `第 ${p+1} 页 / Page ${p+1}`;
+
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.style.cssText = 'max-width:100%; border:2px solid var(--color-accent-gold); border-radius:4px; display:block;';
+
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = `writing-${name || 'noname'}-page-${p+1}.png`;
+            a.innerText = '下载本页 / Download';
+            a.style.cssText = 'display:inline-block;margin-top:8px;padding:6px 10px;background:var(--color-accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;';
+
+            block.appendChild(title);
+            block.appendChild(img);
+            block.appendChild(a);
+            list.appendChild(block);
         }
 
-        document.getElementById('exportImgResult').src=cvs.toDataURL();
         document.getElementById('exportPreviewArea').style.display='block';
     }
 </script>
