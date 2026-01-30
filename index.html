@@ -1425,10 +1425,15 @@
             const block = document.createElement('div');
             block.style.cssText = 'margin: 0 0 18px 0;';
 
+            const title = document.createElement('div');
+            title.style.cssText = 'font-weight:bold;color:#666;margin:0 0 6px 0;';
+            title.innerText = `Страница ${p+1} от ${totalPages}`;
+
             const img = document.createElement('img');
             img.src = dataUrl;
             img.style.cssText = 'max-width:100%; border:2px solid var(--color-accent-gold); border-radius:4px; display:block;';
 
+            block.appendChild(title);
             block.appendChild(img);
             list.appendChild(block);
         }
