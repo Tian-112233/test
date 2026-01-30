@@ -142,24 +142,24 @@
 
         /* --- 灯笼样式 --- */
         .lantern-container {
-            position: fixed; top: -5px; left: 0; width: 100%; 
+            position: fixed; top: -2px; left: 0; width: 100%; 
             z-index: 9998; pointer-events: none;
-            height: 80px; display: flex; justify-content: space-evenly;
+            height: 56px; display: flex; justify-content: space-evenly;
         }
         .lantern-box {
             position: relative;
-            width: 70px;
-            height: 120px;
+            width: 56px;
+            height: 92px;
             transform-origin: top center;
             animation: swing 4s ease-in-out infinite alternate;
-            filter: drop-shadow(0 8px 10px rgba(139, 69, 19, 0.15));
+            filter: drop-shadow(0 6px 8px rgba(139, 69, 19, 0.14));
         }
         .lantern-line {
             position: absolute;
             top: 0;
             left: 50%;
             width: 2px;
-            height: 22px;
+            height: 16px;
             background: rgba(40, 40, 40, 0.7);
             transform: translateX(-50%);
         }
@@ -167,12 +167,12 @@
         /* 更传统“胖胖灯笼”：中间更鼓、上下略收 */
         .lantern-body {
             position: absolute;
-            top: 14px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 66px;
-            height: 66px;
-            border-radius: 40px / 34px;
+            width: 52px;
+            height: 52px;
+            border-radius: 34px / 28px;
             overflow: hidden;
             background:
                 radial-gradient(ellipse at 50% 52%, rgba(0,0,0,0.16), transparent 62%),
@@ -186,9 +186,9 @@
                 ),
                 linear-gradient(to bottom, #F06A7C 0%, #C41E3A 48%, #7E071A 100%);
             box-shadow:
-                0 14px 18px rgba(196, 30, 58, 0.26),
+                0 10px 14px rgba(196, 30, 58, 0.22),
                 inset 0 0 0 1px rgba(90, 20, 20, 0.26),
-                inset 0 -18px 22px rgba(0, 0, 0, 0.16);
+                inset 0 -14px 18px rgba(0, 0, 0, 0.16);
             z-index: 2;
         }
         /* 顶/底金箍 */
@@ -305,20 +305,24 @@
         }
         @keyframes swing { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
 
-        /* --- 飘落元宝（不遮挡书写：更低层级 + 更低透明度） --- */
+        /* --- 飘落梅花（不遮挡书写：更低层级 + 更低透明度） --- */
         .flower-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1;
+            pointer-events: none; z-index: 4;
         }
         .falling-flower {
             position: absolute; top: -50px; background-size: contain; background-repeat: no-repeat;
-            opacity: 0.75;
-            filter: saturate(1.25) contrast(1.08) drop-shadow(0 4px 10px rgba(0,0,0,0.18));
+            opacity: 0.62;
+            filter: saturate(1.18) contrast(1.12) drop-shadow(0 4px 10px rgba(0,0,0,0.18));
             animation-name: fall, sway; animation-timing-function: linear, ease-in-out;
             animation-iteration-count: infinite, infinite;
+            will-change: transform, top;
         }
         @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
-        @keyframes sway { 0%, 100% { transform: translateX(0px) rotate(0deg); } 50% { transform: translateX(22px) rotate(40deg); } }
+        @keyframes sway {
+            0%, 100% { transform: translateX(0px) rotate(var(--rot, 0deg)); }
+            50% { transform: translateX(22px) rotate(calc(var(--rot, 0deg) + 40deg)); }
+        }
 
         /* --- 烟花特效 --- */
         .firework-particle {
@@ -724,12 +728,12 @@
     const BASE_SIZE = 300;
     const BASE_LINE_WIDTH = 12;
     const LINE_RATIO = BASE_LINE_WIDTH / BASE_SIZE; 
-    let yuanbaoImgUrl = null;
+    let plumBlossomImgUrl = null;
 
     window.onload = function() {
-        yuanbaoImgUrl = createYuanBaoURL();
+        plumBlossomImgUrl = createPlumBlossomURL();
         initLanterns();
-        initFallingYuanbao();
+        initFallingPlumBlossom();
         initColorUI('colorSeqDesktop'); initColorUI('colorSeqMobile');
         renderDesktopGrids(); renderMobilePreview();
         setupMobileEvents();
@@ -747,77 +751,166 @@
         }
     }
 
-    function createYuanBaoURL() {
-        const size = 96;
+    function createPlumBlossomURL() {
+        const size = 128;
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-        ctx.translate(size/2, size/2);
+        ctx.translate(size / 2, size / 2);
 
-        // 主体（金）
-        const gBody = ctx.createLinearGradient(-40, -10, 40, 30);
-        gBody.addColorStop(0, '#FFF2B8');
-        gBody.addColorStop(0.35, '#FFD24D');
-        gBody.addColorStop(0.7, '#FFD700');
-        gBody.addColorStop(1, '#B8860B');
-        ctx.fillStyle = gBody;
+        // 轻微旋转，避免所有花朵角度一致
+        ctx.rotate((Math.random() * 20 - 10) * Math.PI / 180);
 
-        // 元宝外形
+        // 花瓣：更饱和一点（避免太浅看不清）
+        const petalGrad = ctx.createRadialGradient(-10, -20, 6, 0, -10, 60);
+        petalGrad.addColorStop(0, 'rgba(255, 210, 225, 0.98)');
+        petalGrad.addColorStop(0.45, 'rgba(255, 150, 180, 0.94)');
+        petalGrad.addColorStop(1, 'rgba(210, 70, 110, 0.90)');
+
+        // 花瓣阴影层（让花更立体）
+        ctx.save();
+        ctx.fillStyle = 'rgba(120, 30, 55, 0.10)';
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -34, 15, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+        ctx.restore();
+
+        // 主花瓣层
+        ctx.fillStyle = petalGrad;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -36, 16, 32, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+
+        // 细描边（低透明度）
+        ctx.strokeStyle = 'rgba(210, 90, 120, 0.22)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -36, 16, 32, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+
+        // 花心（暖金）
+        const cGrad = ctx.createRadialGradient(0, 0, 1, 0, 0, 14);
+        cGrad.addColorStop(0, 'rgba(255, 248, 210, 0.95)');
+        cGrad.addColorStop(1, 'rgba(255, 215, 0, 0.55)');
+        ctx.fillStyle = cGrad;
         ctx.beginPath();
-        ctx.moveTo(-40, -6);
-        ctx.quadraticCurveTo(-34, -26, -16, -22);
-        ctx.quadraticCurveTo(-6, -34, 0, -34);
-        ctx.quadraticCurveTo(6, -34, 16, -22);
-        ctx.quadraticCurveTo(34, -26, 40, -6);
-        ctx.quadraticCurveTo(44, 26, 26, 34);
-        ctx.quadraticCurveTo(0, 44, -26, 34);
-        ctx.quadraticCurveTo(-44, 26, -40, -6);
-        ctx.closePath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
         ctx.fill();
 
-        // 上沿（更亮）
-        const gRim = ctx.createLinearGradient(-30, -28, 30, -6);
-        gRim.addColorStop(0, 'rgba(255,255,255,0.95)');
-        gRim.addColorStop(0.4, 'rgba(255,242,184,0.9)');
-        gRim.addColorStop(1, 'rgba(255,210,77,0.0)');
-        ctx.fillStyle = gRim;
-        ctx.beginPath();
-        ctx.ellipse(0, -18, 28, 12, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 内凹（阴影）
-        ctx.fillStyle = 'rgba(90, 40, 5, 0.22)';
-        ctx.beginPath();
-        ctx.ellipse(0, -12, 18, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 高光
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-        ctx.beginPath();
-        ctx.ellipse(-14, -4, 10, 18, -0.4, 0, Math.PI * 2);
-        ctx.fill();
+        // 花蕊点点（金色小点）
+        ctx.fillStyle = 'rgba(255, 205, 60, 0.70)';
+        for (let i = 0; i < 10; i++) {
+            const a = (Math.PI * 2) * (i / 10);
+            const r = 9 + Math.random() * 3;
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 1.2, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         return canvas.toDataURL();
     }
 
-    function initFallingYuanbao() {
+    function drawPlumBlossomPretty(ctx, x, y, size, rot, alpha) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot || 0);
+        ctx.globalAlpha = alpha == null ? 1 : alpha;
+
+        // 花瓣渐变（与飘落梅花同风格）
+        const petalGrad = ctx.createRadialGradient(-size*0.3, -size*0.35, size*0.12, 0, -size*0.15, size*1.2);
+        petalGrad.addColorStop(0, 'rgba(255, 210, 225, 0.98)');
+        petalGrad.addColorStop(0.45, 'rgba(255, 150, 180, 0.94)');
+        petalGrad.addColorStop(1, 'rgba(210, 70, 110, 0.90)');
+
+        // 阴影层
+        ctx.save();
+        ctx.fillStyle = 'rgba(120, 30, 55, 0.10)';
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -size*0.95, size*0.42, size*0.80, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+        ctx.restore();
+
+        // 主花瓣层
+        ctx.fillStyle = petalGrad;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -size, size*0.45, size*0.86, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+
+        // 细描边
+        ctx.strokeStyle = 'rgba(210, 90, 120, 0.22)';
+        ctx.lineWidth = Math.max(0.8, size * 0.05);
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.ellipse(0, -size, size*0.45, size*0.86, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.rotate((Math.PI * 2) / 5);
+        }
+
+        // 花心（暖金）
+        const cGrad = ctx.createRadialGradient(0, 0, 1, 0, 0, size * 0.45);
+        cGrad.addColorStop(0, 'rgba(255, 248, 210, 0.95)');
+        cGrad.addColorStop(1, 'rgba(255, 215, 0, 0.55)');
+        ctx.fillStyle = cGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.32, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 花蕊点点
+        ctx.fillStyle = 'rgba(255, 205, 60, 0.70)';
+        for (let i = 0; i < 10; i++) {
+            const a = (Math.PI * 2) * (i / 10);
+            const r = size * (0.30 + Math.random() * 0.12);
+            ctx.beginPath();
+            ctx.arc(Math.cos(a) * r, Math.sin(a) * r, Math.max(0.8, size * 0.04), 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
+    }
+
+    function initFallingPlumBlossom() {
         const container = document.getElementById('flowerContainer');
         container.innerHTML = '';
-        const count = 24;
-        for(let i=0; i<count; i++) {
+        const count = 26;
+        for (let i = 0; i < count; i++) {
             const div = document.createElement('div');
             div.className = 'falling-flower';
-            div.style.backgroundImage = `url(${yuanbaoImgUrl})`;
+            div.style.backgroundImage = `url(${plumBlossomImgUrl})`;
             div.style.left = Math.random() * 100 + 'vw';
-            const size = Math.random() * 16 + 22;
+
+            const size = Math.random() * 14 + 18;
             div.style.width = size + 'px';
             div.style.height = size + 'px';
-            div.style.opacity = (Math.random() * 0.18 + 0.70).toFixed(2);
-            div.style.animationDuration = `${Math.random()*9+10}s, ${Math.random()*3+4}s`;
+
+            div.style.opacity = (Math.random() * 0.20 + 0.48).toFixed(2);
+            div.style.animationDuration = `${Math.random() * 8 + 10}s, ${Math.random() * 3 + 4}s`;
             div.style.animationDelay = Math.random() * 4 + 's';
+
+            // 给每朵一个不同的起始旋转角（由CSS keyframes读取）
+            div.style.setProperty('--rot', `${Math.random() * 360}deg`);
+
+            // 轻微景深差异（更自然），不影响书写专注
+            const blur = Math.random() * 0.25;
+            div.style.filter = `saturate(1.18) contrast(1.12) blur(${blur.toFixed(2)}px) drop-shadow(0 4px 10px rgba(0,0,0,0.18))`;
+
             container.appendChild(div);
         }
     }
@@ -1197,23 +1290,29 @@
             ctx.strokeStyle = '#FFD700';
             ctx.lineWidth = 2;
             ctx.strokeRect(16, startY + 16, width - 32, pageHeight - 32);
-            // 梅花
+            // 梅花（同飘落效果；且不落到格子区域）
             const blossomCount = 12;
             for(let k=0; k<blossomCount; k++) {
+                const bSize = 10 + Math.random() * 20;
+                const safe = bSize + 10;
+
                 let bx = Math.random() * width;
                 let by = startY + Math.random() * pageHeight;
-                
+
                 let gridAreaTop = startY + padding + headerH;
                 let gridAreaBottom = gridAreaTop + 3 * (gridSize+gap);
                 let gridAreaLeft = padding;
                 let gridAreaRight = width - padding;
-                if (bx > gridAreaLeft && bx < gridAreaRight && by > gridAreaTop && by < gridAreaBottom) {
-                    if(Math.random() > 0.5) by = startY + Math.random() * (padding + headerH);
-                    else by = startY + pageHeight - Math.random() * (padding + footerH);
+
+                // 如果落在格子区域（包含安全边距），把它挪到头部或底部空白区域
+                if (bx > gridAreaLeft - safe && bx < gridAreaRight + safe && by > gridAreaTop - safe && by < gridAreaBottom + safe) {
+                    if(Math.random() > 0.5) by = startY + Math.random() * (padding + headerH - safe);
+                    else by = startY + pageHeight - Math.random() * (padding + footerH - safe);
                 }
 
-                const bSize = 10 + Math.random() * 20;
-                drawPlumBlossom(ctx, bx, by, bSize, `rgba(255, 192, 203, ${0.15 + Math.random()*0.1})`);
+                const rot = Math.random() * Math.PI * 2;
+                const a = 0.18 + Math.random() * 0.10;
+                drawPlumBlossomPretty(ctx, bx, by, bSize, rot, a);
             }
 
             // Header
