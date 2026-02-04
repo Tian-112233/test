@@ -238,6 +238,12 @@
             flex-direction: column; gap: 20px; align-items: center; margin-top: 20px; }
         .export-page-wrapper { width: 100%;
             max-width: 500px; }
+        .export-page-label { 
+            font-weight: bold;
+            color: var(--color-text-secondary);
+            margin: 0 0 6px 0;
+            text-align: left;
+        }
         .export-img-item { width: 100%; border: 1px solid var(--color-border-main); border-radius: 4px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     </style>
@@ -625,7 +631,7 @@
             const ds = `${y}/${m}/${da}`;
             
             ctx.fillStyle='#7a5c3c'; ctx.font='bold 14px serif'; ctx.textAlign='right';
-            ctx.fillText(`Page ${p+1}/${totalPages} | ${ds}`, w-padding, padding+25);
+            ctx.fillText(ds, w-padding, padding+25);
             
             ctx.beginPath(); ctx.moveTo(padding, padding+40); ctx.lineTo(w-padding, padding+40);
             ctx.strokeStyle='#d4b483'; ctx.lineWidth=2; ctx.stroke();
@@ -649,7 +655,11 @@
             }
             const wrapper=document.createElement('div');
             wrapper.className='export-page-wrapper';
+            const pageLabel=document.createElement('div');
+            pageLabel.className='export-page-label';
+            pageLabel.innerText=`第 ${p+1} 页 / Страница ${p+1} от ${totalPages}`;
             const img=document.createElement('img'); img.src=cvs.toDataURL(); img.className='export-img-item';
+            wrapper.appendChild(pageLabel);
             wrapper.appendChild(img);
             resultArea.appendChild(wrapper);
         }
