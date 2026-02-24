@@ -6,8 +6,8 @@
     <title>汉字书写练习板（三月节迎春版）</title>
     <style>
         :root {
-            --color-bg-body: #FFFFFF;
-            --color-bg-container: #F1F8E9;
+            --color-bg-body: #F5FAF5;
+            --color-bg-container: #E8F0E6;
             --color-bg-board: #fff;
             
             --color-text-main: #2E7D32;
@@ -22,14 +22,14 @@
             
             --color-grid-line: rgba(129, 199, 132, 0.3);
             --color-mark: #43A047;
-            --color-active-bg: #E8F5E9;
+            --color-active-bg: #DFF0DC;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'KaiTi', 'SimSun', serif;
-            background: linear-gradient(180deg, #E8F5E9 0%, #F1F8E9 50%, #DCEDC8 100%);
+            background: linear-gradient(180deg, #D6EAD8 0%, #E6F0E3 50%, #CCDEC2 100%);
             color: var(--color-text-main);
             min-height: 100vh;
             touch-action: manipulation;
@@ -38,54 +38,34 @@
             position: relative;
         }
 
-        /* Martenitsa 流苏装饰（统一） */
+        /* Martenitsa 装饰条 */
         .martenitsa-bar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 56px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+            height: 54px;
             pointer-events: none;
             z-index: 9999;
-            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(214,38,49,0.08) 0%, transparent 100%);
         }
-        .martenitsa-tassel {
-            flex-shrink: 0;
-            width: 8px;
-            height: 48px;
-            background: linear-gradient(to bottom, #D62631 0%, #D62631 50%, #FFFFFF 50%, #FFFFFF 100%);
-            background-size: 100% 16px;
-            border-radius: 4px;
-            position: relative;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        .martenitsa-bar svg { width: 100%; height: 54px; }
+
+        /* 马尔蒂尼察单元（红白双股绳+球）*/
+        @keyframes mSwing {
+            0%, 100% { transform: rotate(-4deg); }
+            50%       { transform: rotate(4deg); }
         }
-        .martenitsa-tassel::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 16px;
-            height: 16px;
-            background: #D62631;
-            border-radius: 50%;
-            box-shadow: 10px 0 0 #FFFFFF;
+        .m-unit {
+            transform-origin: top center;
+            animation: mSwing 3s ease-in-out infinite;
         }
-        .martenitsa-tassel::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            background: #FFFFFF;
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px #D62631;
-        }
+        .m-unit:nth-child(2n)   { animation-delay: -1s; }
+        .m-unit:nth-child(3n)   { animation-delay: -2s; }
+        .m-unit:nth-child(5n)   { animation-delay: -0.5s; }
 
         /* 飘落迎春花动画 - 满屏飘落 */
         .flowers-container {
@@ -101,65 +81,18 @@
         
         .flower {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            opacity: 0.85;
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
         }
-        
-        .flower-petal {
-            position: absolute;
-            width: 10px;
-            height: 14px;
-            background: linear-gradient(180deg, #FFEB3B 0%, #FDD835 50%, #FBC02D 100%);
-            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-            transform-origin: center bottom;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-            left: 50%;
-            top: 50%;
-            margin-left: -5px;
-            margin-top: -12px;
-        }
-        
-        .flower-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 8px;
-            height: 8px;
-            background: radial-gradient(circle, #FF6F00 0%, #E65100 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-        
-        /* 花蕊 - 细小的点 */
-        .flower-stamen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 2px;
-            height: 2px;
-            background: #FFD54F;
-            border-radius: 50%;
-            z-index: 11;
-        }
+        .flower svg { width: 100%; height: 100%; }
         
         @keyframes fall {
-            0% {
-                transform: translateY(-30px) rotate(0deg);
-                opacity: 0;
-            }
-            5% {
-                opacity: 0.85;
-            }
-            95% {
-                opacity: 0.85;
-            }
-            100% {
-                transform: translateY(110vh) rotate(1080deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(-40px) rotate(0deg); opacity: 0; }
+            8% { opacity: 0.6; }
+            92% { opacity: 0.6; }
+            100% { transform: translateY(110vh) rotate(1080deg); opacity: 0; }
         }
         
         @keyframes sway {
@@ -327,63 +260,45 @@
         .board-header { text-align: center; margin-bottom: 10px; flex-shrink: 0; padding-top: 10px; }
         .board-title { color: var(--color-text-secondary); font-size: 1.3rem; font-weight: bold; }
 
-        /* 藤蔓装饰的大框 */
+        /* 藤蔓大框：全框缠绕 */
         .board-wrapper {
             position: relative;
             padding: 25px;
             background: #fff;
             border-radius: 16px;
         }
-        
         .board-wrapper::before {
             content: '';
             position: absolute;
-            top: -8px;
-            left: -8px;
-            right: -8px;
-            bottom: -8px;
+            top: -8px; left: -8px; right: -8px; bottom: -8px;
             background: linear-gradient(135deg, #81C784 0%, #66BB6A 50%, #4CAF50 100%);
             border-radius: 20px;
             z-index: -2;
         }
-        
-        /* 藤蔓SVG装饰 */
-        .vine-decoration {
+
+        /* 全框缠绕藤蔓SVG覆盖层 - 在内容之后，不遮挡格子 */
+        .vine-frame {
             position: absolute;
+            top: -14px; left: -14px;
+            width: calc(100% + 28px);
+            height: calc(100% + 28px);
             pointer-events: none;
             z-index: -1;
+            overflow: visible;
         }
-        
-        .vine-top-left {
-            top: -15px;
-            left: -15px;
-            width: 120px;
-            height: 120px;
+
+        /* 藤蔓轻微摇曳动画 */
+        @keyframes vineBreeze {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            33% { transform: translateX(0.5px) translateY(-0.5px); }
+            66% { transform: translateX(-0.5px) translateY(0.3px); }
         }
-        
-        .vine-top-right {
-            top: -15px;
-            right: -15px;
-            width: 120px;
-            height: 120px;
-            transform: scaleX(-1);
+        .vine-leaf-group {
+            animation: vineBreeze 4s ease-in-out infinite;
+            transform-origin: center;
         }
-        
-        .vine-bottom-left {
-            bottom: -15px;
-            left: -15px;
-            width: 120px;
-            height: 120px;
-            transform: scaleY(-1);
-        }
-        
-        .vine-bottom-right {
-            bottom: -15px;
-            right: -15px;
-            width: 120px;
-            height: 120px;
-            transform: scale(-1, -1);
-        }
+        .vine-leaf-group:nth-child(odd) { animation-delay: -2s; }
+        .vine-leaf-group:nth-child(3n) { animation-delay: -1.3s; }
 
         .board {
             background-color: var(--color-bg-board);
@@ -414,9 +329,19 @@
             border-radius: 2px;
         }
         .grid-container.grid-active {
-            box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #66BB6A;
+            box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 5px #66BB6A, 0 0 14px rgba(102,187,106,0.4);
             border-color: #43A047;
             z-index: 2;
+            animation: gridPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #66BB6A, 0 0 10px rgba(102,187,106,0.35); }
+            50%       { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 6px #43A047, 0 0 18px rgba(76,175,80,0.55); }
+        }
+
+        .grid-container.spring-burst {
+            animation: gridPulse 2s ease-in-out infinite !important;
         }
 
         .grid-bg-layer {
@@ -608,13 +533,204 @@
 </head>
 <body>
 
-<!-- Martenitsa 装饰条 -->
+<!-- Martenitsa 装饰条：保加利亚传统马尔蒂尼察红白双股绳 + 两端迎春花枝 -->
 <div class="martenitsa-bar">
-    <div class="martenitsa-tassel"></div>
-    <div class="martenitsa-tassel"></div>
-    <div class="martenitsa-tassel"></div>
-    <div class="martenitsa-tassel"></div>
-    <div class="martenitsa-tassel"></div>
+<svg viewBox="0 0 1000 54" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 红绳渐变 -->
+    <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C0152A"/>
+      <stop offset="50%" stop-color="#E8233A"/>
+      <stop offset="100%" stop-color="#C0152A"/>
+    </linearGradient>
+    <!-- 白绳渐变 -->
+    <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E8E0DC"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E8E0DC"/>
+    </linearGradient>
+    <!-- 红球渐变 -->
+    <radialGradient id="rb" cx="35%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#FF4D5E"/>
+      <stop offset="100%" stop-color="#A50F20"/>
+    </radialGradient>
+    <!-- 白球渐变 -->
+    <radialGradient id="wb" cx="35%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C8BEB8"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 横向挂绳（深棕色细线） -->
+  <line x1="0" y1="6" x2="1000" y2="6" stroke="#8B4513" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- 左端迎春花枝束 -->
+  <g transform="translate(8,2)">
+    <path d="M4,50 C10,38 18,28 30,18 C42,8 54,10 68,6" stroke="#558B2F" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M4,50 C8,40 16,31 28,22 C40,13 52,14 66,10" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <!-- 叶片 -->
+    <ellipse cx="16" cy="34" rx="6" ry="2.8" fill="#4CAF50" transform="rotate(-42,16,34)" opacity="0.88"/>
+    <ellipse cx="16" cy="34" rx="3.5" ry="1.4" fill="#A5D6A7" transform="rotate(-42,16,34)" opacity="0.65"/>
+    <ellipse cx="36" cy="17" rx="5.5" ry="2.4" fill="#66BB6A" transform="rotate(-28,36,17)" opacity="0.9"/>
+    <ellipse cx="56" cy="10" rx="5" ry="2.2" fill="#4CAF50" transform="rotate(-18,56,10)" opacity="0.85"/>
+    <!-- 迎春花1 -->
+    <g transform="translate(25,24) scale(0.68)">
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#AED581"/><circle cx="0" cy="0" r="2.1" fill="#FFEE58"/>
+      <line x1="-0.8" y1="0" x2="-1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/>
+      <line x1="0.8" y1="0" x2="1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/>
+      <circle cx="-1.6" cy="-3.5" r="1.1" fill="#FF8F00"/><circle cx="1.6" cy="-3.5" r="1.1" fill="#FF8F00"/>
+    </g>
+    <!-- 迎春花2 -->
+    <g transform="translate(47,13) scale(0.58)">
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF9C4" opacity="0.95"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF176" opacity="0.95" transform="rotate(180,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(240,0,0)"/>
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#AED581"/><circle cx="0" cy="0" r="2.1" fill="#FFEE58"/>
+      <line x1="-0.8" y1="0" x2="-1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/>
+      <line x1="0.8" y1="0" x2="1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/>
+      <circle cx="-1.6" cy="-3.5" r="1.1" fill="#FF8F00"/><circle cx="1.6" cy="-3.5" r="1.1" fill="#FF8F00"/>
+    </g>
+    <!-- 迎春花3 小 -->
+    <g transform="translate(63,8) scale(0.48)">
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92"/>
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFF176" opacity="0.92" transform="rotate(60,0,0)"/>
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92" transform="rotate(120,0,0)"/>
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92" transform="rotate(180,0,0)"/>
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFF9C4" opacity="0.92" transform="rotate(240,0,0)"/>
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92" transform="rotate(300,0,0)"/>
+      <circle cx="0" cy="0" r="2.8" fill="#C5E1A5"/><circle cx="0" cy="0" r="1.8" fill="#FFEE58"/>
+      <line x1="-0.6" y1="0" x2="-1.3" y2="-2.8" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+      <line x1="0.6" y1="0" x2="1.3" y2="-2.8" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+      <circle cx="-1.3" cy="-3" r="0.9" fill="#FF8F00"/><circle cx="1.3" cy="-3" r="0.9" fill="#FF8F00"/>
+    </g>
+  </g>
+
+  <!-- 右端迎春花枝束（镜像） -->
+  <g transform="translate(992,2) scale(-1,1)">
+    <path d="M4,50 C10,38 18,28 30,18 C42,8 54,10 68,6" stroke="#558B2F" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M4,50 C8,40 16,31 28,22 C40,13 52,14 66,10" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <ellipse cx="16" cy="34" rx="6" ry="2.8" fill="#4CAF50" transform="rotate(-42,16,34)" opacity="0.88"/>
+    <ellipse cx="16" cy="34" rx="3.5" ry="1.4" fill="#A5D6A7" transform="rotate(-42,16,34)" opacity="0.65"/>
+    <ellipse cx="36" cy="17" rx="5.5" ry="2.4" fill="#66BB6A" transform="rotate(-28,36,17)" opacity="0.9"/>
+    <ellipse cx="56" cy="10" rx="5" ry="2.2" fill="#4CAF50" transform="rotate(-18,56,10)" opacity="0.85"/>
+    <g transform="translate(25,24) scale(0.68)">
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#AED581"/><circle cx="0" cy="0" r="2.1" fill="#FFEE58"/>
+      <line x1="-0.8" y1="0" x2="-1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/><line x1="0.8" y1="0" x2="1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/>
+      <circle cx="-1.6" cy="-3.5" r="1.1" fill="#FF8F00"/><circle cx="1.6" cy="-3.5" r="1.1" fill="#FF8F00"/>
+    </g>
+    <g transform="translate(47,13) scale(0.58)">
+      <ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF9C4" opacity="0.95"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFF176" opacity="0.95" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5.2" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#AED581"/><circle cx="0" cy="0" r="2.1" fill="#FFEE58"/>
+      <line x1="-0.8" y1="0" x2="-1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/><line x1="0.8" y1="0" x2="1.6" y2="-3.2" stroke="#FDD835" stroke-width="0.9" stroke-linecap="round"/>
+      <circle cx="-1.6" cy="-3.5" r="1.1" fill="#FF8F00"/><circle cx="1.6" cy="-3.5" r="1.1" fill="#FF8F00"/>
+    </g>
+    <g transform="translate(63,8) scale(0.48)">
+      <ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92"/><ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFF176" opacity="0.92" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFF9C4" opacity="0.92" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-6.5" rx="2" ry="4.8" fill="#FFEE58" opacity="0.92" transform="rotate(300,0,0)"/>
+      <circle cx="0" cy="0" r="2.8" fill="#C5E1A5"/><circle cx="0" cy="0" r="1.8" fill="#FFEE58"/>
+      <line x1="-0.6" y1="0" x2="-1.3" y2="-2.8" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/><line x1="0.6" y1="0" x2="1.3" y2="-2.8" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+      <circle cx="-1.3" cy="-3" r="0.9" fill="#FF8F00"/><circle cx="1.3" cy="-3" r="0.9" fill="#FF8F00"/>
+    </g>
+  </g>
+
+  <!-- 马尔蒂尼察：从 x=80 到 x=920，均匀分布12个单元 -->
+  <!-- 每个单元：从挂绳垂下，红白双股螺旋绳 + 底部红白两球 + 微摇摆动画 -->
+  <!-- 单元间距 ~76px，x = 80, 156, 232, 308, 384, 460, 536, 612, 688, 764, 840, 916 -->
+
+  <g class="m-unit" style="transform-origin:80px 6px">
+    <path d="M80,6 C78,14 82,18 80,26 C78,34 82,38 80,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M80,6 C82,14 78,18 80,26 C82,34 78,38 80,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="77" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="83" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="77" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:156px 6px">
+    <path d="M156,6 C154,14 158,18 156,26 C154,34 158,38 156,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M156,6 C158,14 154,18 156,26 C158,34 154,38 156,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="153" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="159" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="153" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:232px 6px">
+    <path d="M232,6 C230,14 234,18 232,26 C230,34 234,38 232,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M232,6 C234,14 230,18 232,26 C234,34 230,38 232,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="229" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="235" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="229" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:308px 6px">
+    <path d="M308,6 C306,14 310,18 308,26 C306,34 310,38 308,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M308,6 C310,14 306,18 308,26 C310,34 306,38 308,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="305" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="311" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="305" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:384px 6px">
+    <path d="M384,6 C382,14 386,18 384,26 C382,34 386,38 384,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M384,6 C386,14 382,18 384,26 C386,34 382,38 384,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="381" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="387" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="381" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:460px 6px">
+    <path d="M460,6 C458,14 462,18 460,26 C458,34 462,38 460,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M460,6 C462,14 458,18 460,26 C462,34 458,38 460,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="457" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="463" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="457" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:536px 6px">
+    <path d="M536,6 C534,14 538,18 536,26 C534,34 538,38 536,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M536,6 C538,14 534,18 536,26 C538,34 534,38 536,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="533" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="539" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="533" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:612px 6px">
+    <path d="M612,6 C610,14 614,18 612,26 C610,34 614,38 612,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M612,6 C614,14 610,18 612,26 C614,34 610,38 612,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="609" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="615" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="609" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:688px 6px">
+    <path d="M688,6 C686,14 690,18 688,26 C686,34 690,38 688,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M688,6 C690,14 686,18 688,26 C690,34 686,38 688,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="685" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="691" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="685" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:764px 6px">
+    <path d="M764,6 C762,14 766,18 764,26 C762,34 766,38 764,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M764,6 C766,14 762,18 764,26 C766,34 762,38 764,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="761" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="767" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="761" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:840px 6px">
+    <path d="M840,6 C838,14 842,18 840,26 C838,34 842,38 840,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M840,6 C842,14 838,18 840,26 C842,34 838,38 840,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="837" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="843" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="837" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+  <g class="m-unit" style="transform-origin:916px 6px">
+    <path d="M916,6 C914,14 918,18 916,26 C914,34 918,38 916,46" stroke="url(#rg)" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M916,6 C918,14 914,18 916,26 C918,34 914,38 916,46" stroke="url(#wg)" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="913" cy="50" r="5" fill="url(#rb)" stroke="#8B0000" stroke-width="0.5"/>
+    <circle cx="919" cy="50" r="4.5" fill="url(#wb)" stroke="#999" stroke-width="0.5"/>
+    <circle cx="913" cy="50" r="1.5" fill="rgba(255,255,255,0.5)"/>
+  </g>
+</svg>
 </div>
 
 <!-- 飘落迎春花 - 满屏飘落（25朵） -->
@@ -661,60 +777,258 @@
                 </div>
             </div>
 
-            <div class="board-header"><div class="board-title">书写板 | Писмена дъска</div></div>
+            <div class="board-header">
+              <div class="board-title" style="display:inline-flex; align-items:center; gap:8px;">
+                <svg width="52" height="28" viewBox="0 0 52 28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                  <path d="M2,26 C8,20 16,15 26,10 C36,5 44,8 50,5" stroke="#558B2F" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                  <path d="M10,20 C8,15 6,13 4,14" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <ellipse cx="3.5" cy="13.5" rx="4" ry="2" fill="#4CAF50" transform="rotate(-35,3.5,13.5)" opacity="0.85"/>
+                  <path d="M28,10 C27,5 25,4 23,5" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <ellipse cx="22" cy="4.5" rx="4" ry="1.8" fill="#66BB6A" transform="rotate(-20,22,4.5)" opacity="0.9"/>
+                  <g transform="translate(18,14) scale(0.44)"><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/><circle cx="0" cy="0" r="3" fill="#AED581"/><circle cx="0" cy="0" r="2" fill="#FFEE58"/><line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/><line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/><circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/><circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/></g>
+                  <g transform="translate(40,7) scale(0.38)"><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.9"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.9" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(300,0,0)"/><circle cx="0" cy="0" r="2.5" fill="#C5E1A5"/><circle cx="0" cy="0" r="1.6" fill="#FFEE58"/><line x1="-0.6" y1="0" x2="-1.2" y2="-2.5" stroke="#FDD835" stroke-width="0.7" stroke-linecap="round"/><line x1="0.6" y1="0" x2="1.2" y2="-2.5" stroke="#FDD835" stroke-width="0.7" stroke-linecap="round"/><circle cx="-1.2" cy="-2.7" r="0.8" fill="#FF8F00"/><circle cx="1.2" cy="-2.7" r="0.8" fill="#FF8F00"/></g>
+                </svg>
+                书写板 | Писмена дъска
+                <svg width="52" height="28" viewBox="0 0 52 28" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0; transform:scaleX(-1);">
+                  <path d="M2,26 C8,20 16,15 26,10 C36,5 44,8 50,5" stroke="#558B2F" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                  <path d="M10,20 C8,15 6,13 4,14" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <ellipse cx="3.5" cy="13.5" rx="4" ry="2" fill="#4CAF50" transform="rotate(-35,3.5,13.5)" opacity="0.85"/>
+                  <path d="M28,10 C27,5 25,4 23,5" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <ellipse cx="22" cy="4.5" rx="4" ry="1.8" fill="#66BB6A" transform="rotate(-20,22,4.5)" opacity="0.9"/>
+                  <g transform="translate(18,14) scale(0.44)"><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/><circle cx="0" cy="0" r="3" fill="#AED581"/><circle cx="0" cy="0" r="2" fill="#FFEE58"/><line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/><line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/><circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/><circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/></g>
+                  <g transform="translate(40,7) scale(0.38)"><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.9"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(60,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(120,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.9" transform="rotate(180,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(240,0,0)"/><ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.9" transform="rotate(300,0,0)"/><circle cx="0" cy="0" r="2.5" fill="#C5E1A5"/><circle cx="0" cy="0" r="1.6" fill="#FFEE58"/><line x1="-0.6" y1="0" x2="-1.2" y2="-2.5" stroke="#FDD835" stroke-width="0.7" stroke-linecap="round"/><line x1="0.6" y1="0" x2="1.2" y2="-2.5" stroke="#FDD835" stroke-width="0.7" stroke-linecap="round"/><circle cx="-1.2" cy="-2.7" r="0.8" fill="#FF8F00"/><circle cx="1.2" cy="-2.7" r="0.8" fill="#FF8F00"/></g>
+                </svg>
+              </div>
+            </div>
             <div class="board-wrapper">
-                <!-- 藤蔓装饰 -->
-                <svg class="vine-decoration vine-top-left" viewBox="0 0 120 120">
-                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
-                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
-                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
-                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
-                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
-                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
-                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
-                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
-                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
-                </svg>
-                <svg class="vine-decoration vine-top-right" viewBox="0 0 120 120">
-                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
-                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
-                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
-                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
-                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
-                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
-                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
-                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
-                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
-                </svg>
-                <svg class="vine-decoration vine-bottom-left" viewBox="0 0 120 120">
-                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
-                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
-                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
-                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
-                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
-                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
-                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
-                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
-                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
-                </svg>
-                <svg class="vine-decoration vine-bottom-right" viewBox="0 0 120 120">
-                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
-                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
-                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
-                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
-                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
-                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
-                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
-                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
-                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
-                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
+                <!-- 全框缠绕藤蔓 -->
+                <svg class="vine-frame" id="vineFrameSVG" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <marker id="vm" markerWidth="0" markerHeight="0" refX="0" refY="0"></marker>
+                  </defs>
+                  <!-- 上边藤蔓主枝 -->
+                  <path d="M8,7 C18,3 28,9 38,5 C48,1 55,8 65,4 C75,0 85,6 93,4" stroke="#558B2F" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                  <path d="M8,7 C18,5 28,10 38,7 C48,4 55,10 65,6 C75,2 85,8 93,6" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+                  <!-- 上边侧枝+叶片 -->
+                  <g class="vine-leaf-group">
+                    <path d="M20,6 C18,2 14,1 12,3" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="11.5" cy="2.2" rx="3.2" ry="1.6" fill="#4CAF50" transform="rotate(-35,11.5,2.2)" opacity="0.9"/>
+                    <ellipse cx="11.5" cy="2.2" rx="2" ry="0.8" fill="#81C784" transform="rotate(-35,11.5,2.2)" opacity="0.7"/>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M35,5 C34,1 31,0 29,1.5" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="28.5" cy="1" rx="3.5" ry="1.5" fill="#66BB6A" transform="rotate(-20,28.5,1)" opacity="0.85"/>
+                    <!-- 迎春花 -->
+                    <g transform="translate(33,2) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M52,6 C50,1 47,0 45,2" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="44" cy="1.5" rx="3.8" ry="1.8" fill="#4CAF50" transform="rotate(-25,44,1.5)" opacity="0.9"/>
+                    <ellipse cx="44" cy="1.5" rx="2.2" ry="0.9" fill="#A5D6A7" transform="rotate(-25,44,1.5)" opacity="0.6"/>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M68,4.5 C67,0 64,-0.5 62,1" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="61" cy="0.8" rx="3.2" ry="1.5" fill="#66BB6A" transform="rotate(-15,61,0.8)" opacity="0.85"/>
+                    <!-- 迎春花 -->
+                    <g transform="translate(70,1.5) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M85,5.5 C84,1.5 81,0.5 79,2" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="78" cy="1.5" rx="3.5" ry="1.6" fill="#4CAF50" transform="rotate(-20,78,1.5)" opacity="0.9"/>
+                  </g>
+
+                  <!-- 下边藤蔓主枝 -->
+                  <path d="M8,93 C18,97 28,91 38,95 C48,99 55,92 65,96 C75,100 85,94 93,96" stroke="#558B2F" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                  <path d="M8,93 C18,95 28,90 38,94 C48,98 55,91 65,95 C75,99 85,93 93,95" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+                  <!-- 下边侧枝+叶片 -->
+                  <g class="vine-leaf-group">
+                    <path d="M22,94 C20,98 17,99 15,97.5" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="14.5" cy="98.5" rx="3.2" ry="1.5" fill="#66BB6A" transform="rotate(25,14.5,98.5)" opacity="0.85"/>
+                    <g transform="translate(20,97) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M50,95 C49,99 46,100 44,98.5" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="43" cy="99.2" rx="3.8" ry="1.8" fill="#4CAF50" transform="rotate(20,43,99.2)" opacity="0.9"/>
+                    <ellipse cx="43" cy="99.2" rx="2.2" ry="0.9" fill="#A5D6A7" transform="rotate(20,43,99.2)" opacity="0.6"/>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M72,96 C71,100 68,100.5 66,99" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="65" cy="99.8" rx="3.2" ry="1.5" fill="#66BB6A" transform="rotate(15,65,99.8)" opacity="0.85"/>
+                    <g transform="translate(71,98) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M88,94.5 C87,98.5 84,99.5 82,98" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="81" cy="98.8" rx="3.5" ry="1.6" fill="#4CAF50" transform="rotate(22,81,98.8)" opacity="0.9"/>
+                  </g>
+
+                  <!-- 左边藤蔓主枝 -->
+                  <path d="M7,8 C3,18 9,28 5,38 C1,48 7,56 4,66 C1,76 6,85 4,93" stroke="#558B2F" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                  <path d="M7,8 C5,18 10,28 7,38 C4,48 8,56 6,66 C3,76 7,85 6,93" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+                  <!-- 左边侧枝+叶片 -->
+                  <g class="vine-leaf-group">
+                    <path d="M6,22 C2,21 0.5,18 1.5,16" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="1" cy="15.5" rx="1.5" ry="3.2" fill="#4CAF50" transform="rotate(70,1,15.5)" opacity="0.9"/>
+                    <ellipse cx="1" cy="15.5" rx="0.8" ry="2" fill="#A5D6A7" transform="rotate(70,1,15.5)" opacity="0.6"/>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M5,40 C1,39 -0.5,36 1,34" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="0.5" cy="33.5" rx="1.5" ry="3.5" fill="#66BB6A" transform="rotate(75,0.5,33.5)" opacity="0.85"/>
+                    <!-- 迎春花 -->
+                    <g transform="translate(2,41) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M5,60 C1,59 -0.5,56 1,54" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="0.5" cy="53.5" rx="1.5" ry="3.2" fill="#4CAF50" transform="rotate(72,0.5,53.5)" opacity="0.9"/>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M4.5,76 C0.5,75.5 -0.8,72.5 0.8,70.5" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="0.3" cy="70" rx="1.5" ry="3.5" fill="#66BB6A" transform="rotate(68,0.3,70)" opacity="0.85"/>
+                    <g transform="translate(2,76) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+
+                  <!-- 右边藤蔓主枝 -->
+                  <path d="M93,8 C97,18 91,28 95,38 C99,48 93,56 96,66 C99,76 94,85 96,93" stroke="#558B2F" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                  <path d="M93,8 C95,18 90,28 93,38 C96,48 91,56 94,66 C97,76 92,85 94,93" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+                  <!-- 右边侧枝+叶片 -->
+                  <g class="vine-leaf-group">
+                    <path d="M94,24 C98,23 99.5,20 98.5,18" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="99" cy="17.5" rx="1.5" ry="3.2" fill="#4CAF50" transform="rotate(-70,99,17.5)" opacity="0.9"/>
+                    <ellipse cx="99" cy="17.5" rx="0.8" ry="2" fill="#A5D6A7" transform="rotate(-70,99,17.5)" opacity="0.6"/>
+                    <g transform="translate(97,24) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M95,44 C99,43 100.5,40 99.5,38" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="100" cy="37.5" rx="1.5" ry="3.5" fill="#66BB6A" transform="rotate(-72,100,37.5)" opacity="0.85"/>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M95,62 C99,61.5 100.8,58.5 99.2,56.5" stroke="#66BB6A" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="99.7" cy="56" rx="1.5" ry="3.2" fill="#4CAF50" transform="rotate(-68,99.7,56)" opacity="0.9"/>
+                    <g transform="translate(97,62) scale(0.22)">
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF9C4" opacity="0.95"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(60,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(120,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(180,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFF176" opacity="0.95" transform="rotate(240,0,0)"/>
+                      <ellipse cx="0" cy="-7" rx="2.2" ry="5" fill="#FFEE58" opacity="0.95" transform="rotate(300,0,0)"/>
+                      <circle cx="0" cy="0" r="3" fill="#AED581"/>
+                      <circle cx="0" cy="0" r="2" fill="#FFEE58"/>
+                      <line x1="-0.8" y1="0" x2="-1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <line x1="0.8" y1="0" x2="1.5" y2="-3" stroke="#FDD835" stroke-width="0.8" stroke-linecap="round"/>
+                      <circle cx="-1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                      <circle cx="1.5" cy="-3.2" r="1" fill="#FF8F00"/>
+                    </g>
+                  </g>
+                  <g class="vine-leaf-group">
+                    <path d="M95.5,79 C99.5,78.5 101,75.5 99.5,73.5" stroke="#558B2F" stroke-width="1" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="99.8" cy="73" rx="1.5" ry="3.5" fill="#66BB6A" transform="rotate(-70,99.8,73)" opacity="0.85"/>
+                  </g>
+
+                  <!-- 四个角卷须 -->
+                  <!-- 左上角 -->
+                  <path d="M8,7 C5,5 6,2 9,3 C11,4 10,7 8,7" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <path d="M8,7 C4,6 3,3 6,2" stroke="#9CCC65" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+                  <!-- 右上角 -->
+                  <path d="M93,6 C96,4 95,1 92,2 C90,3 91,6 93,6" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <!-- 左下角 -->
+                  <path d="M7,93 C4,95 5,98 8,97 C10,96 9,93 7,93" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <!-- 右下角 -->
+                  <path d="M93,94 C96,96 95,99 92,98 C90,97 91,94 93,94" stroke="#7CB342" stroke-width="1" fill="none" stroke-linecap="round"/>
+                  <!-- 角落嫩叶 -->
+                  <ellipse cx="7" cy="4" rx="2.5" ry="1.2" fill="#81C784" transform="rotate(-45,7,4)" opacity="0.8"/>
+                  <ellipse cx="93.5" cy="3.5" rx="2.5" ry="1.2" fill="#66BB6A" transform="rotate(45,93.5,3.5)" opacity="0.8"/>
+                  <ellipse cx="6.5" cy="96.5" rx="2.5" ry="1.2" fill="#4CAF50" transform="rotate(45,6.5,96.5)" opacity="0.8"/>
+                  <ellipse cx="93.5" cy="96.5" rx="2.5" ry="1.2" fill="#81C784" transform="rotate(-45,93.5,96.5)" opacity="0.8"/>
                 </svg>
                 <div class="board" id="desktopBoard"><div class="desktop-grid-wrapper" id="desktopGridWrapper"></div></div>
             </div>
@@ -844,41 +1158,95 @@
         setupButtons();
     };
 
+    // 用SVG生成真实迎春花（6瓣圆润、花筒、2根雄蕊）
+    let _flowerIdCounter = 0;
+    function makeYingchunSVG() {
+        const id = _flowerIdCounter++;
+        const petalColors = [
+            ['#FFF9C4','#F9A825'],
+            ['#FFEE58','#F57F17'],
+            ['#FFF59D','#FBC02D'],
+        ];
+        const pc = petalColors[Math.floor(Math.random() * petalColors.length)];
+        // 花瓣宽窄随机轻微变化
+        const pw = 3.2 + Math.random() * 1.0; // 半宽
+        const ph = 6.8 + Math.random() * 1.8; // 半高
+        const cx = 15, cy = 15;
+        const dist = 5.5; // 花瓣中心离花心距离
+
+        // 圆润鸡蛋形花瓣：底部收窄，顶端完全圆弧，两侧丰满饱满
+        function petalPath(pw, ph) {
+            // 用近似椭圆的四段三阶贝塞尔：顶圆、侧宽、底收
+            const k = 0.5523; // 椭圆近似常数
+            return `M 0,${ph * 0.45}
+                    C ${pw * 0.35},${ph * 0.45}  ${pw * 1.0},${ph * 0.15}  ${pw * 1.0},${-ph * 0.1}
+                    C ${pw * 1.0},${-ph * 0.45}  ${pw * 0.55},${-ph * 0.8}  0,${-ph * 0.82}
+                    C ${-pw * 0.55},${-ph * 0.8}  ${-pw * 1.0},${-ph * 0.45}  ${-pw * 1.0},${-ph * 0.1}
+                    C ${-pw * 1.0},${ph * 0.15}  ${-pw * 0.35},${ph * 0.45}  0,${ph * 0.45}
+                    Z`;
+        }
+
+        const cgId = `cg${id}`, pgId = `pg${id}`;
+        let svg = `<svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="${cgId}" cx="40%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#FFF176"/>
+              <stop offset="100%" stop-color="#F9A825"/>
+            </radialGradient>
+            <linearGradient id="${pgId}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="${pc[0]}"/>
+              <stop offset="100%" stop-color="${pc[1]}"/>
+            </linearGradient>
+          </defs>`;
+
+        // 6片圆润花瓣
+        for (let i = 0; i < 6; i++) {
+            const deg = i * 60;
+            const rad = deg * Math.PI / 180;
+            // 花瓣中心位置
+            const px = cx + Math.sin(rad) * dist;
+            const py = cy - Math.cos(rad) * dist;
+            svg += `<g transform="translate(${px},${py}) rotate(${deg})">
+              <path d="${petalPath(pw, ph)}" fill="url(#${pgId})" opacity="0.96"/>
+            </g>`;
+        }
+
+        // 花筒底座（浅绿色）
+        svg += `<circle cx="${cx}" cy="${cy}" r="3.0" fill="#AED581"/>`;
+        // 花心（黄色径向渐变）
+        svg += `<circle cx="${cx}" cy="${cy}" r="2.0" fill="url(#${cgId})"/>`;
+
+        // 2根短雄蕊，轻微分叉
+        svg += `<line x1="${cx}" y1="${cy}" x2="${cx - 0.8}" y2="${cy - 2.5}" stroke="#FDD835" stroke-width="0.65" stroke-linecap="round"/>`;
+        svg += `<line x1="${cx}" y1="${cy}" x2="${cx + 0.8}" y2="${cy - 2.5}" stroke="#FDD835" stroke-width="0.65" stroke-linecap="round"/>`;
+        // 花药
+        svg += `<circle cx="${cx - 0.8}" cy="${cy - 2.7}" r="0.85" fill="#FF8F00"/>`;
+        svg += `<circle cx="${cx + 0.8}" cy="${cy - 2.7}" r="0.85" fill="#FF8F00"/>`;
+
+        svg += `</svg>`;
+        return svg;
+    }
+
     // 初始化迎春花
     function initFlowers() {
         const container = document.getElementById('flowersContainer');
-        const flowerCount = 25;
+        const flowerCount = 28;
         
         for(let i = 0; i < flowerCount; i++) {
             const flower = document.createElement('div');
             flower.className = 'flower';
             flower.style.left = (2 + Math.random() * 96) + '%';
-            flower.style.animationDuration = (10 + Math.random() * 8) + 's, ' + (3 + Math.random() * 3) + 's';
-            flower.style.animationDelay = (Math.random() * 10) + 's, ' + (Math.random() * 3) + 's';
-            
-            // 5个花瓣
-            for(let j = 0; j < 5; j++) {
-                const petal = document.createElement('div');
-                petal.className = 'flower-petal';
-                petal.style.transform = `rotate(${j * 72}deg) translateY(-8px)`;
-                flower.appendChild(petal);
-            }
-            
-            // 花心
-            const center = document.createElement('div');
-            center.className = 'flower-center';
-            flower.appendChild(center);
-            
-            // 花蕊（小点）
-            for(let k = 0; k < 4; k++) {
-                const stamen = document.createElement('div');
-                stamen.className = 'flower-stamen';
-                const angle = (k * 90) * Math.PI / 180;
-                const dist = 2;
-                stamen.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px))`;
-                flower.appendChild(stamen);
-            }
-            
+            const fallDur = (10 + Math.random() * 9).toFixed(1);
+            const swayDur = (3 + Math.random() * 3).toFixed(1);
+            const fallDelay = (Math.random() * 12).toFixed(1);
+            const swayDelay = (Math.random() * 3).toFixed(1);
+            const size = 22 + Math.floor(Math.random()*12);
+            flower.style.width = size + 'px';
+            flower.style.height = size + 'px';
+            flower.style.animationDuration = `${fallDur}s, ${swayDur}s`;
+            flower.style.animationDelay = `${fallDelay}s, ${swayDelay}s`;
+            flower.style.animation = `fall ${fallDur}s linear ${fallDelay}s infinite, sway ${swayDur}s ease-in-out ${swayDelay}s infinite`;
+            flower.innerHTML = makeYingchunSVG();
             container.appendChild(flower);
         }
     }
@@ -977,10 +1345,24 @@
         }
     }
 
+    function triggerSpringBurst(gridIdx) {
+        const containers = document.querySelectorAll('.grid-container');
+        if(containers[gridIdx]) {
+            containers[gridIdx].classList.remove('spring-burst');
+            void containers[gridIdx].offsetWidth; // reflow
+            containers[gridIdx].classList.add('spring-burst');
+            setTimeout(()=>containers[gridIdx].classList.remove('spring-burst'), 750);
+        }
+    }
+
     function switchGrid(idx) {
         if(idx<0||idx>=totalGrids)return;
         currentGridIdx=idx;
-        document.querySelectorAll('.grid-container').forEach((e,i)=>e.classList.toggle('grid-active', i===idx));
+        document.querySelectorAll('.grid-container').forEach((e,i)=>{
+            e.classList.toggle('grid-active', i===idx);
+            // 选中时触发春光，无跳动
+            if(i===idx) triggerSpringBurst(i);
+        });
         const previewContainer = document.getElementById('mobilePreviewBar');
         document.querySelectorAll('.mobile-preview-item').forEach((e,i)=>{ 
             e.classList.toggle('active', i===idx); 
@@ -1006,7 +1388,7 @@
             e.preventDefault();
             if(gridIdx!==currentGridIdx) switchGrid(gridIdx); 
             isDown=true;
-            points=[getPos(e)]; 
+            points=[getPos(e)];
         };
         const move=(e)=>{
             if(!isDown)return;
@@ -1041,6 +1423,8 @@
 
                 strokesData[gridIdx].push({points:[...points], colorIdx:cIdx%5});
                 gridColorState[gridIdx] = cIdx + 1;
+                // 每笔完成换色，触发春光特效
+                triggerSpringBurst(gridIdx);
                 redrawGrid(gridIdx);
                 renderMobilePreview();
                 updateUI();
@@ -1053,6 +1437,9 @@
         canvas.addEventListener('touchstart', start, {passive: false});
         canvas.addEventListener('touchmove', move, {passive: false});
         canvas.addEventListener('touchend', end);
+        // 防止写字时滚动页面
+        canvas.addEventListener('wheel', e => e.preventDefault(), {passive: false});
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
     }
 
     function setupMobileEvents() {
@@ -1097,6 +1484,8 @@
 
                 strokesData[currentGridIdx].push({points:[...points], colorIdx:cIdx%5});
                 gridColorState[currentGridIdx] = cIdx + 1;
+                // 每笔完成换色，触发春光特效
+                triggerSpringBurst(currentGridIdx);
 
                 redrawGrid(currentGridIdx);
                 renderMobilePreview();
@@ -1279,16 +1668,12 @@
             const ctx=cvs.getContext('2d');
             ctx.scale(dpr, dpr);
 
-            // 春天绿色渐变背景
-            const bgGrad = ctx.createLinearGradient(0, 0, width, pageHeight);
-            bgGrad.addColorStop(0, '#E8F5E9');
-            bgGrad.addColorStop(0.5, '#F1F8E9');
-            bgGrad.addColorStop(1, '#DCEDC8');
-            ctx.fillStyle = bgGrad;
+            // 护眼白背景
+            ctx.fillStyle = '#FAFFF8';
             ctx.fillRect(0,0,width,pageHeight);
 
-            // 绿色边框
-            ctx.strokeStyle = '#66BB6A';
+            // 柔和绿色边框
+            ctx.strokeStyle = '#A5D6A7';
             ctx.lineWidth = 4;
             ctx.strokeRect(10, 10, width - 20, pageHeight - 20);
             ctx.strokeStyle = '#FFFFFF';
@@ -1299,7 +1684,7 @@
             drawRandomFlowers(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols);
 
             // 头部文字
-            ctx.fillStyle='#E91E63';
+            ctx.fillStyle='#2E7D32';
             ctx.font='bold 20px KaiTi, serif';
             ctx.textAlign='left';
             ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, padding + 25);
@@ -1415,7 +1800,12 @@
                 y <= gridEndY + 10
             );
             
-            const size = 6 + Math.random() * 5; // 6-11px
+            // 有大有小：30%大花、40%中花、30%小花
+            let size;
+            const r = Math.random();
+            if (r < 0.3) size = 20 + Math.random() * 12;      // 大花 20-32px
+            else if (r < 0.7) size = 10 + Math.random() * 8;  // 中花 10-18px
+            else size = 5 + Math.random() * 4;                 // 小花 5-9px
             const rotation = Math.random() * Math.PI * 2;
             
             drawFlower(ctx, x, y, size, rotation);
@@ -1426,41 +1816,73 @@
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(rotation);
-        
-        // 绘制5个花瓣
-        for(let i = 0; i < 5; i++) {
+
+        const dist = size * 0.38;  // 花瓣中心离花心距离
+        const pw = size * 0.22;    // 花瓣半宽
+        const ph = size * 0.48;    // 花瓣半高
+
+        // 6片圆润贝塞尔花瓣
+        for (let i = 0; i < 6; i++) {
             ctx.save();
-            ctx.rotate((i * 72) * Math.PI / 180);
+            ctx.rotate((i * 60) * Math.PI / 180);
+            ctx.translate(0, -dist);
+
+            // 圆润鸡蛋形花瓣：底部收窄，顶端完全圆弧，两侧丰满
             ctx.beginPath();
-            ctx.ellipse(size * 0.5, 0, size * 0.4, size * 0.2, 0, 0, Math.PI * 2);
-            const petalGrad = ctx.createLinearGradient(0, -size*0.2, 0, size*0.2);
-            petalGrad.addColorStop(0, '#FFEB3B');
-            petalGrad.addColorStop(0.5, '#FDD835');
-            petalGrad.addColorStop(1, '#FBC02D');
-            ctx.fillStyle = petalGrad;
+            ctx.moveTo(0, ph * 0.45);
+            ctx.bezierCurveTo( pw * 0.35,  ph * 0.45,  pw * 1.0,  ph * 0.15,  pw * 1.0, -ph * 0.1);
+            ctx.bezierCurveTo( pw * 1.0,  -ph * 0.45,  pw * 0.55, -ph * 0.80,  0,        -ph * 0.82);
+            ctx.bezierCurveTo(-pw * 0.55, -ph * 0.80, -pw * 1.0, -ph * 0.45, -pw * 1.0, -ph * 0.1);
+            ctx.bezierCurveTo(-pw * 1.0,   ph * 0.15, -pw * 0.35,  ph * 0.45,  0,         ph * 0.45);
+            ctx.closePath();
+
+            const pg = ctx.createLinearGradient(0, -ph * 0.65, 0, ph * 0.35);
+            pg.addColorStop(0, '#FFF9C4');
+            pg.addColorStop(0.5, '#FFEE58');
+            pg.addColorStop(1, '#F9A825');
+            ctx.fillStyle = pg;
+            ctx.globalAlpha = 0.95;
             ctx.fill();
             ctx.restore();
         }
-        
-        // 花心（橙色渐变）
-        const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.2);
-        centerGrad.addColorStop(0, '#FF6F00');
-        centerGrad.addColorStop(1, '#E65100');
+        ctx.globalAlpha = 1;
+
+        // 花筒底座（浅绿色）
         ctx.beginPath();
-        ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
-        ctx.fillStyle = centerGrad;
+        ctx.arc(0, 0, size * 0.20, 0, Math.PI * 2);
+        ctx.fillStyle = '#C5E1A5';
         ctx.fill();
-        
-        // 花蕊（小点）
-        ctx.fillStyle = '#FFD54F';
-        for(let k = 0; k < 4; k++) {
-            const angle = (k * 90) * Math.PI / 180;
-            const dist = size * 0.08;
-            ctx.beginPath();
-            ctx.arc(Math.cos(angle) * dist, Math.sin(angle) * dist, size * 0.05, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
+
+        // 花心（黄色径向渐变）
+        const cg = ctx.createRadialGradient(-size*0.05, -size*0.05, 0, 0, 0, size * 0.14);
+        cg.addColorStop(0, '#FFF176');
+        cg.addColorStop(1, '#F9A825');
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.14, 0, Math.PI * 2);
+        ctx.fillStyle = cg;
+        ctx.fill();
+
+        // 2根短雄蕊
+        ctx.strokeStyle = '#FDD835';
+        ctx.lineWidth = size * 0.045;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-size * 0.09, -size * 0.28);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(size * 0.09, -size * 0.28);
+        ctx.stroke();
+        // 花药
+        ctx.fillStyle = '#FF8F00';
+        ctx.beginPath();
+        ctx.arc(-size * 0.09, -size * 0.30, size * 0.065, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(size * 0.09, -size * 0.30, size * 0.065, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.restore();
     }
 
