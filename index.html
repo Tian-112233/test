@@ -3,33 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>汉字书写练习板（三月节版）</title>
+    <title>汉字书写练习板（三月节迎春版）</title>
     <style>
         :root {
             --color-bg-body: #FFFFFF;
-            --color-bg-container: #F9F5F0;
+            --color-bg-container: #F1F8E9;
             --color-bg-board: #fff;
             
-            --color-text-main: #AA2F3C;
-            --color-text-secondary: #006B54;
+            --color-text-main: #2E7D32;
+            --color-text-secondary: #388E3C;
             
-            --color-accent: #D62631;
+            --color-accent: #E91E63;
             --color-accent-gold: #FFFFFF;
-            --color-accent-gold-dark: #00966E;
+            --color-accent-gold-dark: #7CB342;
             
-            --color-border-main: #D62631;
-            --color-border-board: #D62631;
+            --color-border-main: #81C784;
+            --color-border-board: #66BB6A;
             
-            --color-grid-line: rgba(214, 38, 49, 0.2);
-            --color-mark: #D62631;
-            --color-active-bg: #FFF0E6;
+            --color-grid-line: rgba(129, 199, 132, 0.3);
+            --color-mark: #43A047;
+            --color-active-bg: #E8F5E9;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'KaiTi', 'SimSun', serif;
-            background-color: #FFFFFF;
+            background: linear-gradient(180deg, #E8F5E9 0%, #F1F8E9 50%, #DCEDC8 100%);
             color: var(--color-text-main);
             min-height: 100vh;
             touch-action: manipulation;
@@ -87,6 +87,113 @@
             box-shadow: 0 0 0 2px #D62631;
         }
 
+        /* 飘落迎春花动画 - 满屏飘落 */
+        .flowers-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9998;
+            overflow: hidden;
+        }
+        
+        .flower {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            opacity: 0.85;
+        }
+        
+        .flower-petal {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            background: linear-gradient(180deg, #FFEB3B 0%, #FDD835 50%, #FBC02D 100%);
+            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+            transform-origin: center bottom;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            left: 50%;
+            top: 50%;
+            margin-left: -5px;
+            margin-top: -12px;
+        }
+        
+        .flower-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #FF6F00 0%, #E65100 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        /* 花蕊 - 细小的点 */
+        .flower-stamen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 2px;
+            background: #FFD54F;
+            border-radius: 50%;
+            z-index: 11;
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-30px) rotate(0deg);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.85;
+            }
+            95% {
+                opacity: 0.85;
+            }
+            100% {
+                transform: translateY(110vh) rotate(1080deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes sway {
+            0%, 100% { margin-left: 0; }
+            25% { margin-left: 35px; }
+            75% { margin-left: -35px; }
+        }
+        
+        .flower:nth-child(1) { left: 2%; animation: fall 13s linear infinite, sway 4s ease-in-out infinite; animation-delay: 0s; }
+        .flower:nth-child(2) { left: 7%; animation: fall 16s linear infinite, sway 5s ease-in-out infinite; animation-delay: 1s; }
+        .flower:nth-child(3) { left: 12%; animation: fall 11s linear infinite, sway 3s ease-in-out infinite; animation-delay: 3s; }
+        .flower:nth-child(4) { left: 17%; animation: fall 15s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 0.5s; }
+        .flower:nth-child(5) { left: 22%; animation: fall 12s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 2s; }
+        .flower:nth-child(6) { left: 27%; animation: fall 14s linear infinite, sway 5s ease-in-out infinite; animation-delay: 4s; }
+        .flower:nth-child(7) { left: 32%; animation: fall 10s linear infinite, sway 4s ease-in-out infinite; animation-delay: 1.5s; }
+        .flower:nth-child(8) { left: 37%; animation: fall 17s linear infinite, sway 3s ease-in-out infinite; animation-delay: 2.5s; }
+        .flower:nth-child(9) { left: 42%; animation: fall 13s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 0.8s; }
+        .flower:nth-child(10) { left: 47%; animation: fall 11s linear infinite, sway 5s ease-in-out infinite; animation-delay: 3.5s; }
+        .flower:nth-child(11) { left: 52%; animation: fall 15s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 1.2s; }
+        .flower:nth-child(12) { left: 57%; animation: fall 12s linear infinite, sway 4s ease-in-out infinite; animation-delay: 2.8s; }
+        .flower:nth-child(13) { left: 62%; animation: fall 16s linear infinite, sway 5s ease-in-out infinite; animation-delay: 0.3s; }
+        .flower:nth-child(14) { left: 67%; animation: fall 10s linear infinite, sway 3s ease-in-out infinite; animation-delay: 4.5s; }
+        .flower:nth-child(15) { left: 72%; animation: fall 14s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 1.8s; }
+        .flower:nth-child(16) { left: 77%; animation: fall 11s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 3.2s; }
+        .flower:nth-child(17) { left: 82%; animation: fall 15s linear infinite, sway 5s ease-in-out infinite; animation-delay: 0.6s; }
+        .flower:nth-child(18) { left: 87%; animation: fall 13s linear infinite, sway 4s ease-in-out infinite; animation-delay: 2.2s; }
+        .flower:nth-child(19) { left: 92%; animation: fall 12s linear infinite, sway 3s ease-in-out infinite; animation-delay: 3.8s; }
+        .flower:nth-child(20) { left: 97%; animation: fall 16s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 1s; }
+        .flower:nth-child(21) { left: 5%; animation: fall 14s linear infinite, sway 5s ease-in-out infinite; animation-delay: 5s; }
+        .flower:nth-child(22) { left: 15%; animation: fall 11s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 4.2s; }
+        .flower:nth-child(23) { left: 25%; animation: fall 15s linear infinite, sway 4s ease-in-out infinite; animation-delay: 2.3s; }
+        .flower:nth-child(24) { left: 35%; animation: fall 12s linear infinite, sway 5s ease-in-out infinite; animation-delay: 0.9s; }
+        .flower:nth-child(25) { left: 45%; animation: fall 10s linear infinite, sway 3s ease-in-out infinite; animation-delay: 3.7s; }
+
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -106,7 +213,7 @@
             background-color: var(--color-bg-container);
             border-radius: 12px;
             padding: 0;
-            box-shadow: 0 4px 15px rgba(214, 38, 49, 0.1);
+            box-shadow: 0 4px 15px rgba(129, 199, 132, 0.2);
             border: 2px solid var(--color-border-main);
             display: flex;
             flex-direction: column;
@@ -115,7 +222,7 @@
         .sidebar-content { padding: 15px; overflow-y: auto; flex: 1; }
         
         .sidebar h2 {
-            background-color: var(--color-accent);
+            background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
             color: white;
             margin: 0;
             padding: 15px 0;
@@ -139,7 +246,7 @@
             background-color: var(--color-bg-container);
             border-radius: 12px;
             border: 2px solid var(--color-border-main);
-            box-shadow: 0 4px 15px rgba(214, 38, 49, 0.1);
+            box-shadow: 0 4px 15px rgba(129, 199, 132, 0.2);
         }
 
         header {
@@ -166,7 +273,7 @@
             font-family: serif;
         }
 
-        /* 三月节祝福卡片：竖三色白绿红，文字深红色+白色描边 */
+        /* 三月节祝福卡片：竖三色白绿红，文字无阴影 */
         .blessing-row {
             display: flex;
             justify-content: center;
@@ -187,24 +294,24 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             border: 2px solid white;
             text-align: center;
-            color: #AA2F3C; /* 深红色文字 */
-            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 0 0 4px white; /* 白色描边保证可读 */
+            color: #AA2F3C;
+            text-shadow: none;
         }
         .blessing-card .bg-text {
             font-size: 0.9rem;
             font-weight: normal;
             display: block;
             margin-top: 4px;
-            color: #AA2F3C;
-            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 0 0 4px white;
+            color: #4B0082;
+            text-shadow: none;
         }
 
         .instructions-section {
             margin: 0 15px 10px;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border-radius: 8px;
-            border-left: 5px solid var(--color-accent);
+            border-left: 5px solid #81C784;
             flex-shrink: 0;
         }
 
@@ -220,13 +327,72 @@
         .board-header { text-align: center; margin-bottom: 10px; flex-shrink: 0; padding-top: 10px; }
         .board-title { color: var(--color-text-secondary); font-size: 1.3rem; font-weight: bold; }
 
+        /* 藤蔓装饰的大框 */
+        .board-wrapper {
+            position: relative;
+            padding: 25px;
+            background: #fff;
+            border-radius: 16px;
+        }
+        
+        .board-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            background: linear-gradient(135deg, #81C784 0%, #66BB6A 50%, #4CAF50 100%);
+            border-radius: 20px;
+            z-index: -2;
+        }
+        
+        /* 藤蔓SVG装饰 */
+        .vine-decoration {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .vine-top-left {
+            top: -15px;
+            left: -15px;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .vine-top-right {
+            top: -15px;
+            right: -15px;
+            width: 120px;
+            height: 120px;
+            transform: scaleX(-1);
+        }
+        
+        .vine-bottom-left {
+            bottom: -15px;
+            left: -15px;
+            width: 120px;
+            height: 120px;
+            transform: scaleY(-1);
+        }
+        
+        .vine-bottom-right {
+            bottom: -15px;
+            right: -15px;
+            width: 120px;
+            height: 120px;
+            transform: scale(-1, -1);
+        }
+
         .board {
             background-color: var(--color-bg-board);
-            border: 8px solid var(--color-border-board);
-            border-radius: 4px;
+            border: 3px solid #81C784;
+            border-radius: 8px;
             padding: 20px;
             flex: 1;
-            box-shadow: inset 0 0 20px rgba(214, 38, 49, 0.05);
+            box-shadow: inset 0 0 20px rgba(129, 199, 132, 0.1);
+            position: relative;
         }
 
         .desktop-grid-wrapper {
@@ -248,8 +414,8 @@
             border-radius: 2px;
         }
         .grid-container.grid-active {
-            box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px var(--color-accent);
-            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #66BB6A;
+            border-color: #43A047;
             z-index: 2;
         }
 
@@ -301,7 +467,7 @@
             bottom: 2px;
             right: 5px;
             font-size: 12px;
-            color: var(--color-accent);
+            color: #43A047;
             z-index: 5;
             pointer-events: none;
             font-weight: bold;
@@ -330,12 +496,12 @@
         }
         .color-dot.current { 
             transform: scale(1.3);
-            border-color: var(--color-accent-gold-dark); 
+            border-color: #7CB342; 
             z-index: 2; 
             opacity: 1; 
         }
         .color-dot.next { 
-            border: 1px dashed var(--color-accent);
+            border: 1px dashed #81C784;
             opacity: 0.8; 
             transform: scale(1);
         }
@@ -344,7 +510,7 @@
         .color-box-wrapper { display: flex; flex-direction: column; align-items: center; }
         .small-color-box { width: 30px; height: 30px; border-radius: 6px; border: 2px solid var(--color-border-main); }
 
-        /* 按钮（中文在前，保语小字在后） */
+        /* 按钮 */
         .button {
             padding: 8px;
             border: none;
@@ -367,12 +533,12 @@
         .button span { font-size: 0.75rem; opacity: 0.9; font-weight: normal; margin-top: 2px; }
         .button:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         
-        .button-primary { background-color: var(--color-accent); } 
-        .button-utility { background-color: #006B54; } 
-        .button-secondary { background-color: #AA2F3C; } 
-        .button-clear-all { background-color: #D2691E; } 
-        .button-success { background-color: #008558; } 
-        .button-warning { background-color: #FFD700; color: #8b4513; text-shadow: none; }
+        .button-primary { background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%); } 
+        .button-utility { background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%); } 
+        .button-secondary { background: linear-gradient(135deg, #EC407A 0%, #D81B60 100%); } 
+        .button-clear-all { background: linear-gradient(135deg, #FFA726 0%, #F57C00 100%); } 
+        .button-success { background: linear-gradient(135deg, #66BB6A 0%, #388E3C 100%); } 
+        .button-warning { background: linear-gradient(135deg, #FFCA28 0%, #FFB300 100%); color: #5D4037; text-shadow: none; }
         
         .add-grid-control { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; align-items: center; }
         .add-grid-control input { width: 50px; text-align: center; padding: 6px; border-radius: 4px; border: 1px solid var(--color-border-main); font-size: 1rem; color: var(--color-text-secondary); font-weight: bold; }
@@ -380,16 +546,16 @@
         /* 弹窗 */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(60, 30, 10, 0.4); backdrop-filter: blur(3px);
+            background-color: rgba(46, 125, 50, 0.3); backdrop-filter: blur(3px);
             display: none; z-index: 500; justify-content: center; align-items: center;
         }
         .modal-content {
             background-color: #fff; padding: 20px; border-radius: 15px;
             width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; 
-            border: 3px solid var(--color-accent); text-align: center;
+            border: 3px solid #81C784; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
         }
-        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-accent); }
+        .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #43A047; }
 
         /* 移动端 */
         .mobile-layout { display: none; }
@@ -397,6 +563,8 @@
             body { padding-top: 36px; }
             .martenitsa-bar { height: 40px; }
             .martenitsa-tassel { transform: scale(0.7); }
+            .flowers-container { height: 100vh; }
+            .flower { transform: scale(0.8); }
 
             .sidebar, .desktop-board-container { display: none !important; }
             .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
@@ -436,6 +604,7 @@
             .mobile-preview-item canvas { width: 100%; height: 100%; position: absolute; z-index: 2; top:0; left:0; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -448,23 +617,23 @@
     <div class="martenitsa-tassel"></div>
 </div>
 
+<!-- 飘落迎春花 - 满屏飘落（25朵） -->
+<div class="flowers-container" id="flowersContainer"></div>
+
 <div class="container">
     <div class="sidebar left-sidebar">
-        <!-- 侧边栏标题：中文在前 -->
         <h2>状态面板 | Статус</h2>
         <div class="sidebar-content">
             <div class="info-panel-item">
                 <div class="info-label">颜色顺序 | Цветове</div>
                 <div class="color-sequence" id="colorSeqDesktop"></div>
                 <div class="color-display-row" style="margin-top:15px;">
-                    <!-- 当前/下一笔：中文在前 -->
                     <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="curColorBox" class="small-color-box"></div></div>
                     <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="nextColorBox" class="small-color-box"></div></div>
                 </div>
             </div>
             <div class="info-panel-item">
                 <div class="info-label">当前位置 | Позиция</div>
-                <!-- 格子与笔画：中文在前，保语在后 -->
                 <div style="font-size:1.1rem; font-weight:bold; color:var(--color-accent); margin-bottom:5px;">格子 Клетка <span id="curGridNum">1</span></div>
                 <div style="font-size:0.9rem; color:var(--color-text-secondary);">笔画 Щрихи: <span id="curStrokeNum">0</span></div>
             </div>
@@ -473,11 +642,11 @@
 
     <div class="main-content">
         <header>
-            <h1>汉字书写练习板（三月节版）<br>
+            <h1>汉字书写练习板（三月节迎春版）<br>
             <span class="title-translation">Дъска за писане на китайски йероглифи (Версия за Баба Марта)</span></h1>
             <div class="blessing-row">
                 <div class="blessing-card">
-                    三月节快乐！祝您健康幸福
+                    三月节快乐！祝您健康幸福！
                     <span class="bg-text">Честита Баба Марта! Бъдете здрави и щастливи!</span>
                 </div>
             </div>
@@ -486,39 +655,91 @@
         <div class="desktop-board-container board-container" id="boardScrollContainer">
             <div class="instructions-section" id="instSection">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
-                    🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
-                    🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
-                    🐟 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                    🌸 春天五色渐变：桃红→迎春黄→嫩绿→天蓝→紫藤 (Розово → Жълто → Зелено → Синьо → Лилаво)<br>
+                    🌱 每个新格子从桃红色开始 (Всяка нова клетка започва от розово)<br>
+                    🌺 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
             </div>
 
-            <div class="board-header"><div class="board-title">Писмена дъска | 书写板</div></div>
-            <div class="board" id="desktopBoard"><div class="desktop-grid-wrapper" id="desktopGridWrapper"></div></div>
+            <div class="board-header"><div class="board-title">书写板 | Писмена дъска</div></div>
+            <div class="board-wrapper">
+                <!-- 藤蔓装饰 -->
+                <svg class="vine-decoration vine-top-left" viewBox="0 0 120 120">
+                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
+                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
+                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
+                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
+                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
+                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
+                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
+                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
+                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
+                </svg>
+                <svg class="vine-decoration vine-top-right" viewBox="0 0 120 120">
+                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
+                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
+                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
+                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
+                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
+                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
+                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
+                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
+                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
+                </svg>
+                <svg class="vine-decoration vine-bottom-left" viewBox="0 0 120 120">
+                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
+                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
+                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
+                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
+                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
+                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
+                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
+                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
+                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
+                </svg>
+                <svg class="vine-decoration vine-bottom-right" viewBox="0 0 120 120">
+                    <path d="M10,60 Q30,20 60,10 Q90,5 110,30" stroke="#66BB6A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M20,80 Q40,50 70,40 Q100,35 115,55" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="60" cy="10" r="5" fill="#FFEB3B"/>
+                    <circle cx="85" cy="15" r="4" fill="#FFEB3B"/>
+                    <circle cx="110" cy="30" r="5" fill="#FFEB3B"/>
+                    <circle cx="70" cy="40" r="4" fill="#FFEB3B"/>
+                    <circle cx="100" cy="35" r="3" fill="#FFEB3B"/>
+                    <ellipse cx="55" cy="25" rx="8" ry="4" fill="#4CAF50" transform="rotate(-30,55,25)"/>
+                    <ellipse cx="80" cy="30" rx="7" ry="3" fill="#66BB6A" transform="rotate(-20,80,30)"/>
+                    <ellipse cx="105" cy="45" rx="8" ry="4" fill="#4CAF50" transform="rotate(-40,105,45)"/>
+                    <ellipse cx="65" cy="55" rx="7" ry="3" fill="#66BB6A" transform="rotate(-25,65,55)"/>
+                </svg>
+                <div class="board" id="desktopBoard"><div class="desktop-grid-wrapper" id="desktopGridWrapper"></div></div>
+            </div>
         </div>
 
         <div class="mobile-layout">
-            <div class="board-header"><div class="board-title">书写板</div></div>
+            <div class="board-header"><div class="board-title">书写板 | Писмена дъска</div></div>
             
             <div class="instructions-section">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
-                    🧨 节日渐变：朱砂→赤金→翡翠→景泰蓝→紫檀 (Червено → Златисто → Зелено → Синьо → Лилаво)<br>
-                    🧧 每个新格子从红色开始 (Всяка нова клетка започва от червено)<br>
-                    🐟 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
+                    🌸 春天五色渐变：桃红→迎春黄→嫩绿→天蓝→紫藤 (Розово → Жълто → Зелено → Синьо → Лилаво)<br>
+                    🌱 每个新格子从桃红色开始 (Всяка нова клетка започва от розово)<br>
+                    🌺 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
              </div>
 
             <div class="mobile-add-grid-section">
                  <div class="add-grid-control">
-                     <!-- 添加格子标签：中文在前 -->
                      <span style="font-size:0.9rem; color:var(--color-text-secondary);">添加格子 | Добави:</span>
                      <input type="number" id="gridCountMobile" value="9" min="1" max="50">
                      <button class="button button-primary" id="btnGenGridMobile" style="width:auto; margin:0; padding:6px 12px;">+</button>
                  </div>
-                 <!-- 总数：中文在前 -->
                  <div class="total-info">总数 Общо: <span id="totalGridNumMobile">9</span></div>
             </div>
             <div class="mobile-function-buttons">
-                <!-- 按钮文字：中文在前，保语在后（小字） -->
                 <button id="btnUndoMobile" class="button button-utility">撤销上一笔<span>Отмени</span></button>
                 <button id="btnClearMobile" class="button button-secondary">清空所选<span>Изчисти</span></button>
                 <button id="btnClearAllMobile" class="button button-clear-all">清空所有<span>Изчисти всичко</span></button>
@@ -528,13 +749,11 @@
                 <div class="info-label" style="text-align:center; margin-bottom:5px;">颜色顺序 | Цветове</div>
                 <div class="color-sequence" id="colorSeqMobile" style="margin-bottom:10px;"></div>
                 <div class="color-display-row">
-                    <!-- 手机端颜色标签：中文在前 -->
                     <div class="color-box-wrapper"><div class="info-label">当前 | Текущ</div><div id="mobileCurColorBox" class="small-color-box"></div></div>
                     <div class="color-box-wrapper"><div class="info-label">下一笔 | Следващ</div><div id="mobileNextColorBox" class="small-color-box"></div></div>
                 </div>
             </div>
             <div class="mobile-board-area">
-                <!-- 格子信息：中文在前，保语在后 -->
                 <div style="margin-bottom:5px; font-weight:bold; color:var(--color-accent);">格子 Клетка <span id="mobileCurGridNum">1</span>（笔画 Щрихи: <span id="mobileCurStroke">0</span>）</div>
                 <div class="mobile-current-grid" id="mobileGridTarget">
                     <div class="grid-bg-layer">
@@ -546,19 +765,16 @@
                     <canvas class="grid-canvas" id="mobileCanvas"></canvas>
                 </div>
                  <div class="mobile-nav">
-                    <!-- 导航按钮：中文在前 -->
                     <button class="button button-primary" id="btnPrevMobile" style="width:48%;">上一格 | Предишна</button>
                     <button class="button button-primary" id="btnNextMobile" style="width:48%;">下一格 | Следваща</button>
                 </div>
             </div>
-            <!-- 预览标题：中文在前 -->
             <div style="margin:0 15px 5px; font-weight:bold; color:var(--color-text-secondary); font-size:0.9rem;">快速预览 | Бърз преглед</div>
             <div class="mobile-preview-bar" id="mobilePreviewBar"></div>
         </div>
     </div>
 
     <div class="sidebar right-sidebar">
-        <!-- 工具标题：中文在前 -->
         <h2>工具 | Инструменти</h2>
         <div class="sidebar-content">
             <div class="info-panel-item" style="margin-bottom: 20px;">
@@ -567,10 +783,8 @@
                     <input type="number" id="gridCount" value="9" min="1" max="50">
                     <button id="btnGenGrid" class="button button-primary" style="width:auto; margin:0;">+</button>
                 </div>
-                <!-- 总数：中文在前 -->
                 <div style="font-size:0.8rem; color:var(--color-text-secondary);">总数 Общо: <span id="totalGridNum">9</span></div>
             </div>
-            <!-- 按钮：中文在前 -->
             <button id="btnUndo" class="button button-utility">撤销上一笔<span>Отмени</span></button>
             <button id="btnClear" class="button button-secondary">清空所选格子<span>Изчисти</span></button>
             <button id="btnClearAll" class="button button-clear-all">清空所有<span>Изчисти всичко</span></button>
@@ -579,7 +793,7 @@
     </div>
 </div>
 
-<!-- 导出弹窗（双语顺序调整） -->
+<!-- 导出弹窗 -->
 <div class="modal" id="exportModal">
     <div class="modal-content">
         <button class="close-btn" onclick="document.getElementById('exportModal').style.display='none'">&times;</button>
@@ -597,13 +811,13 @@
 </div>
 
 <script>
-    // 中国新年版五色渐变
+    // 春天五色渐变
     const COLORS = [
-        { s: '#C41E3A', e: '#FFCCCC' }, // 朱砂
-        { s: '#D4AF37', e: '#FFF8D0' }, // 赤金
-        { s: '#008558', e: '#C0EBD7' }, // 翡翠
-        { s: '#174577', e: '#D0E3FF' }, // 景泰蓝
-        { s: '#4B0082', e: '#E6D0FF' }  // 紫檀
+        { s: '#E91E63', e: '#FCE4EC' }, // 桃红
+        { s: '#FFC107', e: '#FFF8E1' }, // 迎春黄
+        { s: '#8BC34A', e: '#F1F8E9' }, // 嫩绿
+        { s: '#03A9F4', e: '#E1F5FE' }, // 天蓝
+        { s: '#9C27B0', e: '#F3E5F5' }  // 紫藤
     ];
     let totalGrids = 9; 
     let currentGridIdx = 0; 
@@ -619,6 +833,7 @@
     const LINE_RATIO = BASE_LINE_WIDTH / BASE_SIZE; 
 
     window.onload = function() {
+        initFlowers();
         initColorUI('colorSeqDesktop');
         initColorUI('colorSeqMobile');
 
@@ -628,6 +843,45 @@
         updateUI();
         setupButtons();
     };
+
+    // 初始化迎春花
+    function initFlowers() {
+        const container = document.getElementById('flowersContainer');
+        const flowerCount = 25;
+        
+        for(let i = 0; i < flowerCount; i++) {
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.style.left = (2 + Math.random() * 96) + '%';
+            flower.style.animationDuration = (10 + Math.random() * 8) + 's, ' + (3 + Math.random() * 3) + 's';
+            flower.style.animationDelay = (Math.random() * 10) + 's, ' + (Math.random() * 3) + 's';
+            
+            // 5个花瓣
+            for(let j = 0; j < 5; j++) {
+                const petal = document.createElement('div');
+                petal.className = 'flower-petal';
+                petal.style.transform = `rotate(${j * 72}deg) translateY(-8px)`;
+                flower.appendChild(petal);
+            }
+            
+            // 花心
+            const center = document.createElement('div');
+            center.className = 'flower-center';
+            flower.appendChild(center);
+            
+            // 花蕊（小点）
+            for(let k = 0; k < 4; k++) {
+                const stamen = document.createElement('div');
+                stamen.className = 'flower-stamen';
+                const angle = (k * 90) * Math.PI / 180;
+                const dist = 2;
+                stamen.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px))`;
+                flower.appendChild(stamen);
+            }
+            
+            container.appendChild(flower);
+        }
+    }
 
     function initColorUI(cid) {
         const c = document.getElementById(cid);
@@ -992,7 +1246,7 @@
         document.getElementById('btnConfirmExport').onclick=doExport;
     }
 
-    // 导出图片功能（无装饰，头部标签改为“姓名”）
+    // 导出图片功能（春天绿色背景，更多迎春花分布）
     function doExport() {
         const name=document.getElementById('exportName').value;
         const gridsPerPage = 9;
@@ -1025,36 +1279,43 @@
             const ctx=cvs.getContext('2d');
             ctx.scale(dpr, dpr);
 
-            // 纯白背景
-            ctx.fillStyle='#FDFCF8';
+            // 春天绿色渐变背景
+            const bgGrad = ctx.createLinearGradient(0, 0, width, pageHeight);
+            bgGrad.addColorStop(0, '#E8F5E9');
+            bgGrad.addColorStop(0.5, '#F1F8E9');
+            bgGrad.addColorStop(1, '#DCEDC8');
+            ctx.fillStyle = bgGrad;
             ctx.fillRect(0,0,width,pageHeight);
 
-            // 边框
-            ctx.strokeStyle = '#D62631';
+            // 绿色边框
+            ctx.strokeStyle = '#66BB6A';
             ctx.lineWidth = 4;
             ctx.strokeRect(10, 10, width - 20, pageHeight - 20);
             ctx.strokeStyle = '#FFFFFF';
             ctx.lineWidth = 2;
             ctx.strokeRect(16, 16, width - 32, pageHeight - 32);
 
-            // 头部文字：姓名
-            ctx.fillStyle='#D62631';
+            // 在页面各处随机生成迎春花（避开格子区域）
+            drawRandomFlowers(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols);
+
+            // 头部文字
+            ctx.fillStyle='#E91E63';
             ctx.font='bold 20px KaiTi, serif';
             ctx.textAlign='left';
             ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, padding + 25);
 
             const date = new Date();
             const dateStr = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
-            ctx.fillStyle='#006B54';
+            ctx.fillStyle='#388E3C';
             ctx.font='16px serif';
             ctx.textAlign='right';
             ctx.fillText(dateStr, width - padding, padding + 25);
 
-            // 红色分隔线
+            // 绿色分隔线
             ctx.beginPath();
             ctx.moveTo(padding, padding + 40);
             ctx.lineTo(width - padding, padding + 40);
-            ctx.strokeStyle = '#D62631';
+            ctx.strokeStyle = '#81C784';
             ctx.lineWidth = 2;
             ctx.stroke();
 
@@ -1069,7 +1330,7 @@
                 const y = padding + headerH + r*(gridSize+gap);
                 
                 ctx.lineWidth=1;
-                ctx.strokeStyle='#8B4513';
+                ctx.strokeStyle='#81C784';
                 ctx.strokeRect(x,y,gridSize,gridSize);
                 
                 // 米字格
@@ -1078,20 +1339,16 @@
                 ctx.moveTo(x+gridSize/2,y); ctx.lineTo(x+gridSize/2,y+gridSize);
                 ctx.moveTo(x,y); ctx.lineTo(x+gridSize,y+gridSize); 
                 ctx.moveTo(x,y+gridSize); ctx.lineTo(x+gridSize,y);
-                ctx.strokeStyle='rgba(139,69,19,0.2)';
+                ctx.strokeStyle='rgba(129,199,132,0.3)';
                 ctx.stroke();
                 
                 // L型折角
                 const mSize = 8;
-                ctx.strokeStyle = '#D62631';
+                ctx.strokeStyle = '#43A047';
                 ctx.lineWidth = 1.5;
-                // 左上
                 ctx.beginPath(); ctx.moveTo(x+4, y+4+mSize); ctx.lineTo(x+4, y+4); ctx.lineTo(x+4+mSize, y+4); ctx.stroke();
-                // 右上
                 ctx.beginPath(); ctx.moveTo(x+gridSize-4-mSize, y+4); ctx.lineTo(x+gridSize-4, y+4); ctx.lineTo(x+gridSize-4, y+4+mSize); ctx.stroke();
-                // 右下
                 ctx.beginPath(); ctx.moveTo(x+gridSize-4, y+gridSize-4-mSize); ctx.lineTo(x+gridSize-4, y+gridSize-4); ctx.lineTo(x+gridSize-4-mSize, y+gridSize-4); ctx.stroke();
-                // 左下
                 ctx.beginPath(); ctx.moveTo(x+4+mSize, y+gridSize-4); ctx.lineTo(x+4, y+gridSize-4); ctx.lineTo(x+4, y+gridSize-4-mSize); ctx.stroke();
                 
                 // 绘制笔画
@@ -1103,7 +1360,7 @@
                 });
                 
                 if(inRange) {
-                    ctx.fillStyle='#D62631';
+                    ctx.fillStyle='#43A047';
                     ctx.font='10px serif';
                     ctx.textAlign='right'; 
                     ctx.fillText(gridIndex+1, x+gridSize-3, y+gridSize-3);
@@ -1117,11 +1374,11 @@
 
             const title = document.createElement('div');
             title.style.cssText = 'font-weight:bold;color:#666;margin:0 0 6px 0;';
-            title.innerText = `Страница ${p+1} от ${totalPages} | 第 ${p+1} 页`;
+            title.innerText = `第 ${p+1} 页 | Страница ${p+1} от ${totalPages}`;
 
             const img = document.createElement('img');
             img.src = dataUrl;
-            img.style.cssText = 'max-width:100%; border:2px solid #D62631; border-radius:4px; display:block;';
+            img.style.cssText = 'max-width:100%; border:2px solid #81C784; border-radius:4px; display:block;';
 
             block.appendChild(title);
             block.appendChild(img);
@@ -1129,6 +1386,82 @@
         }
 
         document.getElementById('exportPreviewArea').style.display='block';
+    }
+    
+    // 在导出图片上绘制随机迎春花（分布更广，避开格子区域）
+    function drawRandomFlowers(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols) {
+        const flowerCount = 20 + Math.floor(Math.random() * 10); // 20-30朵花
+        
+        // 格子区域范围
+        const gridStartY = padding + headerH;
+        const gridEndY = gridStartY + 3 * (gridSize + gap);
+        const gridStartX = padding;
+        const gridEndX = padding + 3 * (gridSize + gap);
+        
+        for(let i = 0; i < flowerCount; i++) {
+            let x, y;
+            let attempts = 0;
+            
+            // 确保花朵不在格子区域内
+            do {
+                x = padding + Math.random() * (width - padding * 2);
+                y = padding + 45 + Math.random() * (pageHeight - padding - 65);
+                attempts++;
+            } while (
+                attempts < 50 && 
+                x >= gridStartX - 10 && 
+                x <= gridEndX + 10 && 
+                y >= gridStartY - 10 && 
+                y <= gridEndY + 10
+            );
+            
+            const size = 6 + Math.random() * 5; // 6-11px
+            const rotation = Math.random() * Math.PI * 2;
+            
+            drawFlower(ctx, x, y, size, rotation);
+        }
+    }
+    
+    function drawFlower(ctx, x, y, size, rotation) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rotation);
+        
+        // 绘制5个花瓣
+        for(let i = 0; i < 5; i++) {
+            ctx.save();
+            ctx.rotate((i * 72) * Math.PI / 180);
+            ctx.beginPath();
+            ctx.ellipse(size * 0.5, 0, size * 0.4, size * 0.2, 0, 0, Math.PI * 2);
+            const petalGrad = ctx.createLinearGradient(0, -size*0.2, 0, size*0.2);
+            petalGrad.addColorStop(0, '#FFEB3B');
+            petalGrad.addColorStop(0.5, '#FDD835');
+            petalGrad.addColorStop(1, '#FBC02D');
+            ctx.fillStyle = petalGrad;
+            ctx.fill();
+            ctx.restore();
+        }
+        
+        // 花心（橙色渐变）
+        const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 0.2);
+        centerGrad.addColorStop(0, '#FF6F00');
+        centerGrad.addColorStop(1, '#E65100');
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = centerGrad;
+        ctx.fill();
+        
+        // 花蕊（小点）
+        ctx.fillStyle = '#FFD54F';
+        for(let k = 0; k < 4; k++) {
+            const angle = (k * 90) * Math.PI / 180;
+            const dist = size * 0.08;
+            ctx.beginPath();
+            ctx.arc(Math.cos(angle) * dist, Math.sin(angle) * dist, size * 0.05, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        ctx.restore();
     }
 
 </script>
