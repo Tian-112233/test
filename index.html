@@ -1216,9 +1216,8 @@
         // 花心（明亮黄色径向渐变）
         svg += `<circle cx="${cx}" cy="${cy}" r="2.0" fill="url(#${cgId})"/>`;
 
-        // 只画雌蕊：绿色细花柱，顶端柱头略膨大探出花心
-        svg += `<line x1="${cx}" y1="${cy+0.2}" x2="${cx}" y2="${cy-2.8}" stroke="#AEEA00" stroke-width="0.5" stroke-linecap="round"/>`;
-        svg += `<circle cx="${cx}" cy="${cy-3.1}" r="0.75" fill="#CCFF90" stroke="#76FF03" stroke-width="0.2"/>`;
+        // 花心小点：深橙黄，与花瓣黄色区分，不伸出
+        svg += `<circle cx="${cx}" cy="${cy}" r="1.1" fill="#E65100" opacity="0.85"/>`;
 
         svg += `</svg>`;
         return svg;
@@ -1893,14 +1892,13 @@
         ctx.fillStyle = cg;
         ctx.fill();
 
-        // 只画雌蕊：绿色细花柱，顶端柱头略膨大探出花心
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#AEEA00';
-        ctx.lineWidth = size * 0.032;
-        ctx.beginPath(); ctx.moveTo(0, size*0.02); ctx.lineTo(0, -size*0.25); ctx.stroke();
-        ctx.beginPath(); ctx.arc(0, -size*0.27, size*0.055, 0, Math.PI*2);
-        ctx.fillStyle = '#CCFF90'; ctx.fill();
-        ctx.strokeStyle = '#76FF03'; ctx.lineWidth = size*0.016; ctx.stroke();
+        // 花心小点：深橙黄，压在花心上，不伸出
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.09, 0, Math.PI * 2);
+        ctx.fillStyle = '#E65100';
+        ctx.globalAlpha = 0.85;
+        ctx.fill();
+        ctx.globalAlpha = 1;
 
         ctx.restore();
     }
