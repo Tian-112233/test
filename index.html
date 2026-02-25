@@ -44,15 +44,16 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 54px;
+            height: 62px;
             pointer-events: none;
             z-index: 9999;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             background: linear-gradient(180deg, rgba(214,38,49,0.08) 0%, transparent 100%);
+            overflow: visible;
         }
-        .martenitsa-bar svg { width: 100%; height: 54px; }
+        .martenitsa-bar svg { width: 100%; height: 62px; overflow: visible; }
 
         /* 马尔蒂尼察单元（红白双股绳+球）*/
         @keyframes mSwing {
@@ -535,7 +536,7 @@
 
 <!-- Martenitsa 装饰条：保加利亚传统马尔蒂尼察红白双股绳 + 两端迎春花枝 -->
 <div class="martenitsa-bar">
-<svg viewBox="0 0 1000 54" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 1000 62" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- 红绳渐变 -->
     <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
