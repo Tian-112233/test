@@ -1211,13 +1211,12 @@
             </g>`;
         }
 
-        // 花筒底座（黄绿色，稍小，自然过渡）
+        // 花筒底座（黄绿色）
         svg += `<circle cx="${cx}" cy="${cy}" r="2.8" fill="#9CCC65" opacity="0.9"/>`;
-        // 花心（明亮黄色径向渐变）
-        svg += `<circle cx="${cx}" cy="${cy}" r="2.0" fill="url(#${cgId})"/>`;
-
-        // 花心小点：深橙黄，与花瓣黄色区分，不伸出
-        svg += `<circle cx="${cx}" cy="${cy}" r="1.1" fill="#E65100" opacity="0.85"/>`;
+        // 花心（较深的黄色，与花瓣区分）
+        svg += `<circle cx="${cx}" cy="${cy}" r="2.0" fill="#F9A825"/>`;
+        // 花蕊：亮黄小点，压在深黄花心上
+        svg += `<circle cx="${cx}" cy="${cy}" r="0.9" fill="#FFF176"/>`;
 
         svg += `</svg>`;
         return svg;
@@ -1882,23 +1881,17 @@
         ctx.fill();
         ctx.globalAlpha = 1;
 
-        // 花心（明亮黄色）
-        const cg = ctx.createRadialGradient(-size*0.04, -size*0.04, 0, 0, 0, size * 0.135);
-        cg.addColorStop(0, '#FFFFFF');
-        cg.addColorStop(0.4, '#FFF176');
-        cg.addColorStop(1, '#FFEE58');
+        // 花心（较深黄色，与花瓣区分）
         ctx.beginPath();
         ctx.arc(0, 0, size * 0.135, 0, Math.PI * 2);
-        ctx.fillStyle = cg;
+        ctx.fillStyle = '#F9A825';
         ctx.fill();
 
-        // 花心小点：深橙黄，压在花心上，不伸出
+        // 花蕊：亮黄小点压在深黄花心上
         ctx.beginPath();
-        ctx.arc(0, 0, size * 0.09, 0, Math.PI * 2);
-        ctx.fillStyle = '#E65100';
-        ctx.globalAlpha = 0.85;
+        ctx.arc(0, 0, size * 0.072, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFF176';
         ctx.fill();
-        ctx.globalAlpha = 1;
 
         ctx.restore();
     }
