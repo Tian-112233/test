@@ -1216,14 +1216,7 @@
         // 花心（明亮黄色径向渐变）
         svg += `<circle cx="${cx}" cy="${cy}" r="2.0" fill="url(#${cgId})"/>`;
 
-        // 花蕊簇：2枚雄蕊（短，外张约±20°）+ 1枚雌蕊（居中稍高）
-        // 雄蕊：浅黄花丝，橙色花药（椭圆形更真实）
-        svg += `<line x1="${cx-0.6}" y1="${cy+0.3}" x2="${cx-1.2}" y2="${cy-2.2}" stroke="#FFE082" stroke-width="0.55" stroke-linecap="round"/>`;
-        svg += `<line x1="${cx+0.6}" y1="${cy+0.3}" x2="${cx+1.2}" y2="${cy-2.2}" stroke="#FFE082" stroke-width="0.55" stroke-linecap="round"/>`;
-        // 雄蕊花药（椭圆，橙红色）
-        svg += `<ellipse cx="${cx-1.3}" cy="${cy-2.5}" rx="0.9" ry="0.6" fill="#FFA000" transform="rotate(-20,${cx-1.3},${cy-2.5})"/>`;
-        svg += `<ellipse cx="${cx+1.3}" cy="${cy-2.5}" rx="0.9" ry="0.6" fill="#FFA000" transform="rotate(20,${cx+1.3},${cy-2.5})"/>`;
-        // 雌蕊：居中，绿色细花柱，顶端柱头略膨大（浅绿球）
+        // 只画雌蕊：绿色细花柱，顶端柱头略膨大探出花心
         svg += `<line x1="${cx}" y1="${cy+0.2}" x2="${cx}" y2="${cy-2.8}" stroke="#AEEA00" stroke-width="0.5" stroke-linecap="round"/>`;
         svg += `<circle cx="${cx}" cy="${cy-3.1}" r="0.75" fill="#CCFF90" stroke="#76FF03" stroke-width="0.2"/>`;
 
@@ -1900,27 +1893,14 @@
         ctx.fillStyle = cg;
         ctx.fill();
 
-        // 花蕊簇：2雄蕊 + 1雌蕊
+        // 只画雌蕊：绿色细花柱，顶端柱头略膨大探出花心
         ctx.lineCap = 'round';
-        // 雄蕊花丝（浅黄，短，外张）
-        ctx.strokeStyle = '#FFE082';
-        ctx.lineWidth = size * 0.038;
-        ctx.beginPath(); ctx.moveTo(-size*0.05, size*0.02); ctx.lineTo(-size*0.12, -size*0.20); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo( size*0.05, size*0.02); ctx.lineTo( size*0.12, -size*0.20); ctx.stroke();
-        // 雄蕊花药（椭圆形，橙红）
-        ctx.fillStyle = '#FFA000';
-        ctx.save(); ctx.translate(-size*0.13, -size*0.22); ctx.rotate(-0.35);
-        ctx.beginPath(); ctx.ellipse(0, 0, size*0.075, size*0.048, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
-        ctx.save(); ctx.translate( size*0.13, -size*0.22); ctx.rotate( 0.35);
-        ctx.beginPath(); ctx.ellipse(0, 0, size*0.075, size*0.048, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
-        // 雌蕊（居中，绿色花柱，顶端柱头膨大）
         ctx.strokeStyle = '#AEEA00';
         ctx.lineWidth = size * 0.032;
         ctx.beginPath(); ctx.moveTo(0, size*0.02); ctx.lineTo(0, -size*0.25); ctx.stroke();
-        // 柱头（浅绿球）
-        ctx.beginPath(); ctx.arc(0, -size*0.27, size*0.058, 0, Math.PI*2);
+        ctx.beginPath(); ctx.arc(0, -size*0.27, size*0.055, 0, Math.PI*2);
         ctx.fillStyle = '#CCFF90'; ctx.fill();
-        ctx.strokeStyle = '#76FF03'; ctx.lineWidth = size*0.018; ctx.stroke();
+        ctx.strokeStyle = '#76FF03'; ctx.lineWidth = size*0.016; ctx.stroke();
 
         ctx.restore();
     }
