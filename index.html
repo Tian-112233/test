@@ -28,7 +28,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'KaiTi', 'SimSun', serif;
+            font-family: 'KaiTi', '楷体', 'Times New Roman', 'SimSun', serif;
             background: linear-gradient(180deg, #D6EAD8 0%, #E6F0E3 50%, #CCDEC2 100%);
             color: var(--color-text-main);
             min-height: 100vh;
@@ -196,7 +196,7 @@
             font-weight: bold;
             text-shadow: 1px 1px 0 #fff;
             line-height: 1.2;
-            font-family: 'KaiTi', 'SimSun', serif;
+            font-family: 'KaiTi', '楷体', 'Times New Roman', 'SimSun', serif;
         }
         .title-translation { 
             font-size: 0.9rem;
@@ -204,7 +204,7 @@
             font-style: italic;
             display: block;
             margin-top: 5px;
-            font-family: serif;
+            font-family: KaiTi, '楷体', serif;
         }
 
         /* 三月节祝福卡片：竖三色白绿红，文字无阴影 */
@@ -245,7 +245,6 @@
             background: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border-radius: 8px;
-            border-left: 5px solid #81C784;
             flex-shrink: 0;
         }
 
@@ -443,6 +442,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            font-family: 'KaiTi', '楷体', 'Times New Roman', 'SimSun', serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -528,6 +528,10 @@
             }
             .mobile-preview-item.active { border-color: #43A047; box-shadow: 0 0 0 2px #66BB6A; }
             .mobile-preview-item canvas { width: 100%; height: 100%; position: absolute; z-index: 2; top:0; left:0; }
+        }
+        /* 强制所有元素使用楷体+新罗马，覆盖浏览器默认 */
+        *, input, select, textarea, button, h1, h2, h3, h4, h5, h6, label, span, div, p {
+            font-family: 'KaiTi', '楷体', 'Times New Roman', 'SimSun', serif;
         }
     </style>
 <base target="_blank">
@@ -757,7 +761,7 @@
         <div class="desktop-board-container board-container" id="boardScrollContainer">
             <div class="instructions-section" id="instSection">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
-                    🌸 春天五色渐变：桃红→迎春黄→嫩绿→天蓝→紫藤 (Розово → Жълто → Зелено → Синьо → Лилаво)<br>
+                    🌸 颜色顺序：桃红→迎春黄→嫩绿→天蓝→紫藤 (Розово → Жълто → Зелено → Синьо → Лилаво)<br>
                     🌱 每个新格子从桃红色开始 (Всяка нова клетка започва от розово)<br>
                     🌺 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
@@ -985,7 +989,7 @@
             
             <div class="instructions-section">
                 <div style="font-size: 0.85rem; color: var(--color-text-main); line-height:1.6;">
-                    🌸 春天五色渐变：桃红→迎春黄→嫩绿→天蓝→紫藤 (Розово → Жълто → Зелено → Синьо → Лилаво)<br>
+                    🌸 颜色顺序：桃红→迎春黄→嫩绿→天蓝→紫藤 (Розово → Жълто → Зелено → Синьо → Лилаво)<br>
                     🌱 每个新格子从桃红色开始 (Всяка нова клетка започва от розово)<br>
                     🌺 每笔都是完整的从深到浅渐变 (Всеки щрих е пълен градиент от тъмно към светло)
                 </div>
