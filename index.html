@@ -77,62 +77,16 @@
         /* 飘落玫瑰花瓣 */
         .flowers-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 9998;
-            overflow: hidden;
         }
-        
-        .flower {
+        #roseCanvas {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            opacity: 0;
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+            top: 0; left: 0;
+            pointer-events: none;
         }
-        .flower svg { width: 100%; height: 100%; }
-        
-        @keyframes fall {
-            0% { transform: translateY(-40px) rotate(0deg); opacity: 0; }
-            8% { opacity: 0.5; }
-            92% { opacity: 0.5; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-        
-        @keyframes sway {
-            0%, 100% { margin-left: 0; }
-            25% { margin-left: 35px; }
-            75% { margin-left: -35px; }
-        }
-        
-        .flower:nth-child(1) { left: 2%; animation: fall 13s linear infinite, sway 4s ease-in-out infinite; animation-delay: 0s; }
-        .flower:nth-child(2) { left: 7%; animation: fall 16s linear infinite, sway 5s ease-in-out infinite; animation-delay: 1s; }
-        .flower:nth-child(3) { left: 12%; animation: fall 11s linear infinite, sway 3s ease-in-out infinite; animation-delay: 3s; }
-        .flower:nth-child(4) { left: 17%; animation: fall 15s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 0.5s; }
-        .flower:nth-child(5) { left: 22%; animation: fall 12s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 2s; }
-        .flower:nth-child(6) { left: 27%; animation: fall 14s linear infinite, sway 5s ease-in-out infinite; animation-delay: 4s; }
-        .flower:nth-child(7) { left: 32%; animation: fall 10s linear infinite, sway 4s ease-in-out infinite; animation-delay: 1.5s; }
-        .flower:nth-child(8) { left: 37%; animation: fall 17s linear infinite, sway 3s ease-in-out infinite; animation-delay: 2.5s; }
-        .flower:nth-child(9) { left: 42%; animation: fall 13s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 0.8s; }
-        .flower:nth-child(10) { left: 47%; animation: fall 11s linear infinite, sway 5s ease-in-out infinite; animation-delay: 3.5s; }
-        .flower:nth-child(11) { left: 52%; animation: fall 15s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 1.2s; }
-        .flower:nth-child(12) { left: 57%; animation: fall 12s linear infinite, sway 4s ease-in-out infinite; animation-delay: 2.8s; }
-        .flower:nth-child(13) { left: 62%; animation: fall 16s linear infinite, sway 5s ease-in-out infinite; animation-delay: 0.3s; }
-        .flower:nth-child(14) { left: 67%; animation: fall 10s linear infinite, sway 3s ease-in-out infinite; animation-delay: 4.5s; }
-        .flower:nth-child(15) { left: 72%; animation: fall 14s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 1.8s; }
-        .flower:nth-child(16) { left: 77%; animation: fall 11s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 3.2s; }
-        .flower:nth-child(17) { left: 82%; animation: fall 15s linear infinite, sway 5s ease-in-out infinite; animation-delay: 0.6s; }
-        .flower:nth-child(18) { left: 87%; animation: fall 13s linear infinite, sway 4s ease-in-out infinite; animation-delay: 2.2s; }
-        .flower:nth-child(19) { left: 92%; animation: fall 12s linear infinite, sway 3s ease-in-out infinite; animation-delay: 3.8s; }
-        .flower:nth-child(20) { left: 97%; animation: fall 16s linear infinite, sway 4.5s ease-in-out infinite; animation-delay: 1s; }
-        .flower:nth-child(21) { left: 5%; animation: fall 14s linear infinite, sway 5s ease-in-out infinite; animation-delay: 5s; }
-        .flower:nth-child(22) { left: 15%; animation: fall 11s linear infinite, sway 3.5s ease-in-out infinite; animation-delay: 4.2s; }
-        .flower:nth-child(23) { left: 25%; animation: fall 15s linear infinite, sway 4s ease-in-out infinite; animation-delay: 2.3s; }
-        .flower:nth-child(24) { left: 35%; animation: fall 12s linear infinite, sway 5s ease-in-out infinite; animation-delay: 0.9s; }
-        .flower:nth-child(25) { left: 45%; animation: fall 10s linear infinite, sway 3s ease-in-out infinite; animation-delay: 3.7s; }
 
         .container {
             max-width: 1600px;
@@ -2387,7 +2341,7 @@
 </div>
 
 <!-- 飘落玫瑰花瓣 -->
-<div class="flowers-container" id="flowersContainer"></div>
+<div class="flowers-container" id="flowersContainer"><canvas id="roseCanvas"></canvas></div>
 
 <div class="container">
     <div class="sidebar left-sidebar">
@@ -3041,8 +2995,8 @@ ${outer}${mid}${inner}
     const BASE_LINE_WIDTH = 12;
     const LINE_RATIO = BASE_LINE_WIDTH / BASE_SIZE;
 
-    window.onload = function() {
-        initFlowers();
+    window.onload = async function() {
+        await initFlowers();
         initColorUI('colorSeqDesktop');
         initColorUI('colorSeqMobile');
         renderDesktopGrids();
@@ -3057,70 +3011,241 @@ ${outer}${mid}${inner}
     };
 
     // 飘落玫瑰花朵SVG（精细5层花瓣，6色随机）
-    function makeFallingRoseSVG() {
-        const palIdx = Math.floor(Math.random() * 9);
-        const pal = ROSE_PALETTES[palIdx];
-        const rotate = Math.floor(Math.random() * 360);
-        const id = 'r' + Math.random().toString(36).slice(2,9);
-        const sc = (0.82 + Math.random() * 0.32).toFixed(2);
-        // 花瓣路径
+    // ============================================================
+    // 飘落玫瑰 Canvas 渲染系统
+    // 预渲染9色玫瑰到 OffscreenCanvas，每帧用 drawImage 批量绘制
+    // 完全避开 DOM style 操作，60fps 流畅运行
+    // ============================================================
+
+    // 用 Canvas 2D 绘制一朵玫瑰到离屏画布（和飘落SVG相同层次）
+    // 用原始SVG路径（5+5+3层花瓣）生成SVG字符串，和之前飘落完全一致
+    function makeRoseSVGString(pal, renderSize) {
+        const id = 'sp' + Math.random().toString(36).slice(2,9);
         const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
         const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
         const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
         const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
-        // 生成5片底层、5片中层、3片内层的旋转组
-        const outerPetals = [0,72,144,216,288].map(a =>
+        const outer = [0,72,144,216,288].map(a =>
             `<g transform="rotate(${a})"><path d="${OP}" fill="url(#${id})" opacity="0.88"/></g>`).join('');
-        const midPetals = [36,108,180,252,324].map(a =>
+        const mid = [36,108,180,252,324].map(a =>
             `<g transform="rotate(${a})"><path d="${MP}" fill="url(#${id})" opacity="0.83"/></g>`).join('');
-        const innerPetals = [0,120,240].map(a =>
+        const inner = [0,120,240].map(a =>
             `<g transform="rotate(${a})"><path d="${IP}" fill="url(#${id}i)" opacity="0.92"/></g>`).join('');
-
-        return `<svg viewBox="-14 -16 28 28" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
-  <defs>
-    <radialGradient id="${id}" cx="38%" cy="30%" r="68%">
-      <stop offset="0%" stop-color="${pal.p1}"/>
-      <stop offset="50%" stop-color="${pal.p2}"/>
-      <stop offset="100%" stop-color="${pal.p3}"/>
-    </radialGradient>
-    <radialGradient id="${id}i" cx="35%" cy="25%" r="65%">
-      <stop offset="0%" stop-color="${pal.p1}"/>
-      <stop offset="100%" stop-color="${pal.p2}"/>
-    </radialGradient>
-  </defs>
-  <g transform="rotate(${rotate}) scale(${sc})">
-    <path d="M-3,11 C-8,7 -9,1 -5,-1 C-2,-3 0,-1 0,1" fill="#256015" opacity="0.9"/>
-    <path d="M3,11 C8,7 9,1 5,-1 C2,-3 0,-1 0,1" fill="#256015" opacity="0.9"/>
-    ${outerPetals}
-    ${midPetals}
-    ${innerPetals}
-    <path d="${CP}" fill="url(#${id}i)" opacity="0.97"/>
-    <circle cx="0" cy="-1" r="2.2" fill="${pal.c1}" opacity="0.95"/>
-    <circle cx="0" cy="-1" r="1" fill="${pal.c2}" opacity="0.9"/>
-    <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.8)"/>
-    <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.48)" stroke-width="1" fill="none" stroke-linecap="round"/>
-  </g>
+        // viewBox覆盖花瓣完整范围 -14~14, -16~12
+        return `<svg viewBox="-14 -16 28 28" width="${renderSize}" height="${renderSize}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="${id}" cx="38%" cy="30%" r="68%">
+  <stop offset="0%" stop-color="${pal.p1}"/>
+  <stop offset="50%" stop-color="${pal.p2}"/>
+  <stop offset="100%" stop-color="${pal.p3}"/>
+</radialGradient>
+<radialGradient id="${id}i" cx="35%" cy="25%" r="65%">
+  <stop offset="0%" stop-color="${pal.p1}"/>
+  <stop offset="100%" stop-color="${pal.p2}"/>
+</radialGradient>
+</defs>
+${outer}${mid}${inner}
+<path d="${CP}" fill="url(#${id}i)" opacity="0.97"/>
+<circle cx="0" cy="-1" r="2.2" fill="${pal.c1}" opacity="0.95"/>
+<circle cx="0" cy="-1" r="1" fill="${pal.c2}" opacity="0.9"/>
+<circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
+<path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.48)" stroke-width="1" fill="none" stroke-linecap="round"/>
 </svg>`;
     }
 
-    function initFlowers() {
+    // 把SVG字符串渲染成 ImageBitmap（异步，保留完整SVG层次）
+    function svgToImageBitmap(svgStr, size) {
+        return new Promise((resolve, reject) => {
+            const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+            const url  = URL.createObjectURL(blob);
+            const img  = new Image();
+            img.onload = () => {
+                createImageBitmap(img, { resizeWidth: size, resizeHeight: size })
+                    .then(bmp => { URL.revokeObjectURL(url); resolve(bmp); })
+                    .catch(reject);
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(); };
+            img.src = url;
+        });
+    }
+
+    // 预渲染9色×3尺寸 = 27张 ImageBitmap（异步，全部完成后启动动画）
+    const ROSE_SIZES = [32, 42, 52];
+    let roseSprites = null;
+
+    async function preRenderRoses() {
+        roseSprites = {};
+        const tasks = [];
+        ROSE_PALETTES.forEach((pal, pi) => {
+            ROSE_SIZES.forEach((sz, si) => {
+                tasks.push(
+                    svgToImageBitmap(makeRoseSVGString(pal, sz), sz)
+                        .then(bmp => { roseSprites[`${pi}_${si}`] = bmp; })
+                        .catch(() => { roseSprites[`${pi}_${si}`] = null; })
+                );
+            });
+        });
+        await Promise.all(tasks);
+    }
+
+    async function initFlowers() {
+        // 预渲染：把SVG变成ImageBitmap，保证完整层次
+        await preRenderRoses();
+
+        const canvas = document.getElementById('roseCanvas');
         const container = document.getElementById('flowersContainer');
-        const petalCount = 28;
-        for (let i = 0; i < petalCount; i++) {
-            const flower = document.createElement('div');
-            flower.className = 'flower';
-            flower.style.left = (2 + Math.random() * 96) + '%';
-            const fallDur = (10 + Math.random() * 9).toFixed(1);
-            const swayDur = (3 + Math.random() * 3).toFixed(1);
-            const fallDelay = (Math.random() * 12).toFixed(1);
-            const swayDelay = (Math.random() * 3).toFixed(1);
-            const size = 30 + Math.floor(Math.random() * 22);
-            flower.style.width = size + 'px';
-            flower.style.height = size + 'px';
-            flower.style.animation = `fall ${fallDur}s linear ${fallDelay}s infinite, sway ${swayDur}s ease-in-out ${swayDelay}s infinite`;
-            flower.innerHTML = makeFallingRoseSVG();
-            container.appendChild(flower);
+
+        // 设置canvas尺寸并跟随窗口变化
+        function resizeCanvas() {
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const ctx = canvas.getContext('2d');
+        const PETAL_COUNT = 28;
+        const flowers = [];
+
+        // 获取需要避开的矩形区域（格子 + 整个书写板）
+        // 电脑端避开整个 board-wrapper，手机端避开 mobile-current-grid
+        function getAvoidRects() {
+            const rects = [];
+            const buf = 18;
+            // 优先尝试避开整个书写板
+            const board = document.querySelector('.board-wrapper') || document.querySelector('#desktopBoard');
+            if (board) {
+                const r = board.getBoundingClientRect();
+                if (r.width > 0) rects.push({ x1:r.left-buf, y1:r.top-buf, x2:r.right+buf, y2:r.bottom+buf });
+            }
+            // 手机端
+            const mGrid = document.querySelector('.mobile-current-grid');
+            if (mGrid) {
+                const r = mGrid.getBoundingClientRect();
+                if (r.width > 0) rects.push({ x1:r.left-buf, y1:r.top-buf, x2:r.right+buf, y2:r.bottom+buf });
+            }
+            return rects;
+        }
+
+        // 初始化每朵花的参数
+        function makeFlower(vw, vh) {
+            const sizeIdx = Math.floor(Math.random() * 3);
+            const sz = ROSE_SIZES[sizeIdx];
+            return {
+                palIdx: Math.floor(Math.random() * 9),
+                sizeIdx,
+                sz,
+                x: Math.random() * vw,
+                y: -sz - Math.random() * vh,   // 随机错开起始位置
+                vy: 55 + Math.random() * 55,    // 下落速度 px/s
+                swayAmp:  20 + Math.random() * 30,
+                swayFreq: 0.25 + Math.random() * 0.35,
+                swayPhase: Math.random() * Math.PI * 2,
+                rot: Math.random() * Math.PI * 2,
+                rotSpeed: (Math.random() - 0.5) * 1.8, // rad/s
+                // 绕行状态
+                dodging: false,
+                dodgeVx: 0,  // 绕行时横向速度
+            };
+        }
+
+        const vw0 = window.innerWidth, vh0 = window.innerHeight;
+        for (let i = 0; i < PETAL_COUNT; i++) flowers.push(makeFlower(vw0, vh0));
+
+        let avoidRects = [];
+        let avoidTimer = 0;
+        let lastT = null;
+
+        function frame(now) {
+            if (!lastT) lastT = now;
+            const dt = Math.min((now - lastT) / 1000, 0.05);
+            lastT = now;
+
+            const vw = canvas.width, vh = canvas.height;
+            ctx.clearRect(0, 0, vw, vh);
+
+            // 每 0.8s 刷新一次避让矩形
+            avoidTimer += dt;
+            if (avoidTimer > 0.8) { avoidRects = getAvoidRects(); avoidTimer = 0; }
+
+            flowers.forEach(f => {
+                const t = now / 1000;
+                const halfW = f.sz / 2, halfH = f.sz / 2;
+
+                // 花中心坐标
+                const fcx = f.x + halfW;
+                const fcy = f.y + halfH;
+
+                // 检测花心是否在或即将进入避让区（向前看 50px）
+                const lookY = fcy + 50;
+                let blocking = null;
+                for (const r of avoidRects) {
+                    if (fcx >= r.x1 && fcx <= r.x2 && lookY >= r.y1 && fcy <= r.y2) {
+                        blocking = r; break;
+                    }
+                }
+
+                if (blocking && !f.dodging) {
+                    // 判断往左还是往右绕，选距离边界近的方向
+                    const distL = fcx - blocking.x1;
+                    const distR = blocking.x2 - fcx;
+                    f.dodging = true;
+                    f.dodgeVx = distL < distR ? -120 : 120; // px/s 横移速度
+                }
+
+                if (f.dodging) {
+                    f.x += f.dodgeVx * dt;
+                    // 离开避让区后停止绕行
+                    const newCx = f.x + halfW;
+                    const inAny = avoidRects.some(r =>
+                        newCx >= r.x1-10 && newCx <= r.x2+10 &&
+                        (f.y + halfH) >= r.y1 && (f.y + halfH) <= r.y2
+                    );
+                    if (!inAny) { f.dodging = false; f.dodgeVx = 0; }
+                } else {
+                    // 正常正弦摆动
+                    f.x += Math.sin(t * f.swayFreq * Math.PI * 2 + f.swayPhase) * f.swayAmp * dt;
+                    // 边界弹回
+                    if (f.x < -f.sz) f.x = vw;
+                    if (f.x > vw)    f.x = -f.sz;
+                }
+
+                // 下落 + 旋转
+                f.y   += f.vy  * dt;
+                f.rot += f.rotSpeed * dt;
+
+                // 超出底部重置
+                if (f.y > vh + f.sz) {
+                    Object.assign(f, makeFlower(vw, vh));
+                    f.y = -f.sz;
+                    f.dodging = false;
+                }
+
+                // 淡入淡出
+                const prog = (f.y + f.sz) / (vh + f.sz);
+                let alpha = 0.5;
+                if (prog < 0.07) alpha = (prog / 0.07) * 0.5;
+                else if (prog > 0.93) alpha = ((1 - prog) / 0.07) * 0.5;
+
+                // 绘制（drawImage + transform，无DOM操作）
+                const sprite = roseSprites[`${f.palIdx}_${f.sizeIdx}`];
+                if (!sprite) return;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.translate(f.x + halfW, f.y + halfH);
+                ctx.rotate(f.rot);
+                ctx.drawImage(sprite, -halfW, -halfH, f.sz, f.sz);
+                ctx.restore();
+            });
+
+            requestAnimationFrame(frame);
+        }
+
+        // 延迟200ms启动，等布局稳定
+        setTimeout(() => {
+            avoidRects = getAvoidRects();
+            requestAnimationFrame(frame);
+        }, 200);
     }
 
     function initColorUI(cid) {
