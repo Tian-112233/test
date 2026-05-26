@@ -11,8 +11,8 @@
             --color-bg-container: #F5E6F0;
             --color-bg-board: #fff;
             
-            --color-text-main: #7B2D6E;
-            --color-text-secondary: #9C3D8E;
+            --color-text-main: #C8365A;
+            --color-text-secondary: #C8365A;
             
             --color-accent: #C8365A;
             --color-accent-gold: #FFFFFF;
@@ -58,7 +58,7 @@
             pointer-events: none;
         }
 
-        /* 角落花束装饰 —— 放在主内容区工具栏/状态面板下方 */
+        /* 角落花束装饰 —— 放在左右侧栏底部居中 */
         .corner-fold {
             position: absolute;
             pointer-events: none;
@@ -66,9 +66,12 @@
             overflow: hidden;
             width: 160px;
             height: 160px;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
         }
-        .corner-tl { left: 0; bottom: 0; }
-        .corner-tr { right: 0; bottom: 0; }
+        .corner-tl { }
+        .corner-tr { }
 
         .corner-fold .fold-bg { display: none; }
 
@@ -711,7 +714,7 @@
         <div id="exportPreviewArea" style="margin-top:15px; display:none;">
             <p style="font-size:0.9rem; color:#C8365A; margin-bottom:10px; font-weight:bold;">
                 长按或右键图片即可保存<br>
-                <span style="font-size:0.8rem; font-style:italic; font-weight:normal; color:#CE93D8;">Натиснете продължително или десен бутон върху снимката за запазване</span>
+                <span style="font-size:0.8rem; font-style:italic; font-weight:normal; color:#C8365A;">Натиснете продължително или десен бутон върху снимката за запазване</span>
             </p>
             <div id="exportImgList"></div>
         </div>
@@ -722,7 +725,7 @@
     // 玫瑰节五色：玫红→金黄→叶绿→天蓝→紫罗兰
     const COLORS = [
         { s: '#C8365A', e: '#FFE4EE' }, // 玫红
-        { s: '#F9A825', e: '#FFF8E1' }, // 金黄
+        { s: '#F0B000', e: '#FFF8E1' }, // 金黄（与黄玫瑰palette一致）
         { s: '#3A8C3F', e: '#E8F5E9' }, // 叶绿
         { s: '#1E88E5', e: '#E3F2FD' }, // 天蓝
         { s: '#7B1FA2', e: '#F3E5F5' }  // 紫罗兰
@@ -1511,12 +1514,13 @@ ${outer}${mid}${inner}
             return rects;
         }
 
-        // 初始化每朵花的参数
+        // 初始化每朵花的参数（只用白/红/粉三色）
+        const FALL_PALETTES = [0, 1, 2]; // 红、粉、白
         function makeFlower(vw, vh) {
             const sizeIdx = Math.floor(Math.random() * 3);
             const sz = ROSE_SIZES[sizeIdx];
             return {
-                palIdx: Math.floor(Math.random() * 9),
+                palIdx: FALL_PALETTES[Math.floor(Math.random() * FALL_PALETTES.length)],
                 sizeIdx,
                 sz,
                 x: Math.random() * vw,
@@ -2087,9 +2091,9 @@ ${outer}${mid}${inner}
             ctx.strokeRect(16, 16, width - 32, pageHeight - 32);
 
             // 导出页高精度立体玫瑰系统绘制（匹配首页精细层级）
-            await drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols);
+            await drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols, footerH);
 
-            ctx.fillStyle = '#7B2D6E';
+            ctx.fillStyle = '#C8365A';
             ctx.font = 'bold 20px KaiTi, serif';
             ctx.textAlign = 'left';
             ctx.fillText(name ? `姓名: ${name}` : '姓名: ______', padding, padding + 25);
@@ -2166,74 +2170,86 @@ ${outer}${mid}${inner}
         document.getElementById('exportPreviewArea').style.display = 'block';
     }
 
-    // 导出玫瑰完美复刻首页精细多瓣及双层重合径向渐变算法
-    async function drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols) {
 
-        function drawExportRose(ctx, cx, cy, sc, paletteIdx, opacityMult) {
+    // 导出：线描风格玫瑰（只画轮廓线，不填色，清晰优雅）
+    async function drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols, footerH) {
+        footerH = footerH || 20;
+
+        // 线描玫瑰：只用 stroke，颜色对应各调色板，半透明，纯花无叶
+        function drawLineRose(ctx, cx, cy, sc, paletteIdx, alpha) {
             const pal = ROSE_PALETTES[paletteIdx % 9];
-            const om = (opacityMult !== undefined) ? opacityMult : 1;
+            const op = alpha !== undefined ? alpha : 0.28;
+
             ctx.save();
             ctx.translate(cx, cy);
             ctx.scale(sc, sc);
+            ctx.globalAlpha = op;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
-            // 立体径向三层渐变（匹配首页SVG）
-            const rgrad = ctx.createRadialGradient(0, -2, 1, 0, 0, 11);
-            rgrad.addColorStop(0, pal.p1);
-            rgrad.addColorStop(0.55, pal.p2);
-            rgrad.addColorStop(1, pal.p3);
-            
-            const rgradInner = ctx.createRadialGradient(-1, -3, 0.5, 0, 0, 7);
-            rgradInner.addColorStop(0, pal.p1);
-            rgradInner.addColorStop(1, pal.p2);
+            const lineColor = pal.p2;
+            ctx.strokeStyle = lineColor;
 
-            // 萼片绘制（三枚，更自然）
-            ctx.globalAlpha = 0.95 * om;
-            ctx.fillStyle = '#256015';
-            ctx.fill(new Path2D('M-3,11 C-8,7 -9,1 -5,-1 C-2,-3 0,-1 0,1'));
-            ctx.fill(new Path2D('M3,11 C8,7 9,1 5,-1 C2,-3 0,-1 0,1'));
-            ctx.globalAlpha = 0.6 * om;
-            ctx.fillStyle = '#2E7A1A';
-            ctx.fill(new Path2D('M0,11 C-1,6 0,3 0,1'));
-
-            const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
-            const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
-            const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
-            const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
-
-            // 底层5片大瓣（同首页）
-            [0,72,144,216,288].forEach(a => {
-                ctx.save(); ctx.rotate(a * Math.PI/180);
-                ctx.fillStyle = rgrad; ctx.globalAlpha = 0.88 * om;
-                ctx.fill(new Path2D(OP)); ctx.restore();
+            // 外层5片花瓣轮廓
+            ctx.lineWidth = 0.9;
+            [0, 72, 144, 216, 288].forEach(a => {
+                ctx.save();
+                ctx.rotate(a * Math.PI / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, 9);
+                ctx.bezierCurveTo(-6, 7, -10, 0, -8, -6);
+                ctx.bezierCurveTo(-6, -11, -2, -12, 0, -10);
+                ctx.bezierCurveTo(2, -12, 6, -11, 8, -6);
+                ctx.bezierCurveTo(10, 0, 6, 7, 0, 9);
+                ctx.stroke();
+                ctx.restore();
             });
-            // 中层5片（旋转36°，同首页）
-            [36,108,180,252,324].forEach(a => {
-                ctx.save(); ctx.rotate(a * Math.PI/180);
-                ctx.fillStyle = rgrad; ctx.globalAlpha = 0.83 * om;
-                ctx.fill(new Path2D(MP)); ctx.restore();
+
+            // 中层5片花瓣（稍小）
+            ctx.lineWidth = 0.75;
+            [36, 108, 180, 252, 324].forEach(a => {
+                ctx.save();
+                ctx.rotate(a * Math.PI / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, 7);
+                ctx.bezierCurveTo(-5, 5, -8, 0, -6, -5);
+                ctx.bezierCurveTo(-4, -9, -1, -10, 0, -8);
+                ctx.bezierCurveTo(1, -10, 4, -9, 6, -5);
+                ctx.bezierCurveTo(8, 0, 5, 5, 0, 7);
+                ctx.stroke();
+                ctx.restore();
             });
-            // 内层3瓣
-            [0,120,240].forEach(a => {
-                ctx.save(); ctx.rotate(a * Math.PI/180);
-                ctx.fillStyle = rgradInner; ctx.globalAlpha = 0.92 * om;
-                ctx.fill(new Path2D(IP)); ctx.restore();
+
+            // 内层3片小瓣
+            ctx.lineWidth = 0.6;
+            [0, 120, 240].forEach(a => {
+                ctx.save();
+                ctx.rotate(a * Math.PI / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, 5);
+                ctx.bezierCurveTo(-3, 3, -5, -1, -4, -4);
+                ctx.bezierCurveTo(-2, -7, 0, -6, 0, -5);
+                ctx.bezierCurveTo(0, -6, 2, -7, 4, -4);
+                ctx.bezierCurveTo(5, -1, 3, 3, 0, 5);
+                ctx.stroke();
+                ctx.restore();
             });
-            // 核心微卷螺旋瓣
-            ctx.fillStyle = rgradInner; ctx.globalAlpha = 0.97 * om;
-            ctx.fill(new Path2D(CP));
-            
-            // 细致花蕊（三层，同首页）
-            ctx.globalAlpha = 0.95 * om; ctx.fillStyle = pal.c1;
-            ctx.beginPath(); ctx.arc(0,-1,2.2,0,Math.PI*2); ctx.fill();
-            ctx.globalAlpha = 0.9 * om; ctx.fillStyle = pal.c2;
-            ctx.beginPath(); ctx.arc(0,-1,1,0,Math.PI*2); ctx.fill();
-            ctx.globalAlpha = 0.85 * om; ctx.fillStyle = 'rgba(255,255,200,0.85)';
-            ctx.beginPath(); ctx.arc(0,-1,0.4,0,Math.PI*2); ctx.fill();
-            
-            // 高光弧（同首页参数）
-            ctx.globalAlpha = 0.50 * om; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-            ctx.lineWidth = 1; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(-5,-5); ctx.bezierCurveTo(-2,-9,2,-9,5,-5); ctx.stroke();
+
+            // 花心螺旋线
+            ctx.lineWidth = 0.55;
+            ctx.beginPath();
+            ctx.moveTo(0, 3);
+            ctx.bezierCurveTo(-2, 2, -3, 0, -2, -2);
+            ctx.bezierCurveTo(-1, -3, 0, -3, 0, -2);
+            ctx.bezierCurveTo(0, -3, 1, -3, 2, -2);
+            ctx.bezierCurveTo(3, 0, 2, 2, 0, 3);
+            ctx.stroke();
+
+            // 花蕊小圆
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.arc(0, -1, 1.5, 0, Math.PI * 2);
+            ctx.stroke();
 
             ctx.restore();
         }
@@ -2508,58 +2524,75 @@ ${outer}${mid}${inner}
             ctx.restore();
         }
 
-        // ===== 导出：极浅单朵玫瑰随机散落（不碰格子，近乎透明）=====
-        // 格子区域：x=[padding, padding+cols*gridSize+(cols-1)*gap], y=[padding+headerH, pageHeight-padding-footerH]
-        // 玫瑰只散落在格子区域之外的空白处（页边距区域 + 格子间隙不够大就跳过）
-        // 只用红(0)、黄(3)、白(2)、绿(8) 四色，opacity极低
+        // ===== 导出：极浅单朵玫瑰，随机散落，不碰任何线条或边框 =====
+        // 颜色：白(2) 绿(8) 红(0) 黄(3)
+        const EXPORT_PALS = [0, 2, 3, 8];
+        const OPACITY = 0.32; // 线描透明度 — 清晰但不抢眼
 
-        const faintPalIdxs = [0, 3, 2, 8]; // 红、黄、白、绿
-        const faintOpacity = 0.10; // 近乎透明
+        // 页面所有"禁区"：凡是线条所在区域 + 安全边距(roseR = 玫瑰半径≈14px)
+        // 外框 strokeRect(10,10, w-20, h-20)，内框 strokeRect(16,16, w-32, h-32)
+        // 不能让玫瑰中心进入距任何线 < roseR 范围
+        const roseR = 15; // 玫瑰占用半径（scale 1时约14px）
+        const innerBorderX1 = 16 + roseR;
+        const innerBorderY1 = 16 + roseR;
+        const innerBorderX2 = width - 16 - roseR;
+        const innerBorderY2 = pageHeight - 16 - roseR;
 
-        // 计算格子占用区域（留出安全边距）
-        const gridAreaX1 = padding - 10;
-        const gridAreaX2 = padding + cols * gridSize + (cols - 1) * gap + 10;
-        const gridAreaY1 = padding + headerH - 10;
-        const gridAreaY2 = pageHeight - padding - footerH + 10;
+        // 格子区域：每格 (x, y, gridSize, gridSize)
+        const gridCells = [];
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < cols; col++) {
+                const gx = padding + col * (gridSize + gap);
+                const gy = padding + headerH + row * (gridSize + gap);
+                gridCells.push({ x1: gx - roseR, y1: gy - roseR, x2: gx + gridSize + roseR, y2: gy + gridSize + roseR });
+            }
+        }
+        // 标题横线 y = padding+40，上下各留 roseR
+        const headerLineY1 = padding + 40 - roseR;
+        const headerLineY2 = padding + 40 + roseR;
+        // 标题区文字行 y ≈ padding+25，上下留 roseR
+        const titleTextY1 = padding - roseR;
+        const titleTextY2 = padding + 42 + roseR;
 
-        // 散落位置：页边空白 + 角落 + 标题区域
-        const scatterPositions = [
-            // 顶部标题区（两侧）
-            { cx: padding * 0.4,           cy: padding * 0.4,              sc: 1.8, rot: -20, pi: 0 },
-            { cx: padding * 0.8,           cy: padding * 0.7,              sc: 1.3, rot: 15,  pi: 3 },
-            { cx: width - padding * 0.4,   cy: padding * 0.4,              sc: 1.8, rot: 18,  pi: 3 },
-            { cx: width - padding * 0.8,   cy: padding * 0.75,             sc: 1.4, rot: -10, pi: 2 },
-            // 标题行中间（格子上方）
-            { cx: padding + gridSize * 0.5,        cy: padding + headerH * 0.45, sc: 1.2, rot: 8,   pi: 8 },
-            { cx: padding + gridSize * 1.5 + gap,  cy: padding + headerH * 0.35, sc: 1.0, rot: -15, pi: 0 },
-            { cx: padding + gridSize * 2.5 + gap*2,cy: padding + headerH * 0.50, sc: 1.1, rot: 12,  pi: 3 },
-            // 左侧边距
-            { cx: padding * 0.35, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.25, sc: 1.6, rot: -8,  pi: 2 },
-            { cx: padding * 0.45, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.55, sc: 1.4, rot: 20,  pi: 0 },
-            { cx: padding * 0.3,  cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.80, sc: 1.3, rot: -25, pi: 3 },
-            // 右侧边距
-            { cx: width - padding * 0.35, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.20, sc: 1.5, rot: 10,  pi: 8 },
-            { cx: width - padding * 0.40, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.50, sc: 1.4, rot: -12, pi: 0 },
-            { cx: width - padding * 0.30, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.78, sc: 1.3, rot: 22,  pi: 3 },
-            // 底部区域
-            { cx: padding * 0.4,           cy: pageHeight - padding * 0.4,  sc: 1.7, rot: 15,  pi: 0 },
-            { cx: padding * 0.8,           cy: pageHeight - padding * 0.65, sc: 1.2, rot: -8,  pi: 8 },
-            { cx: width - padding * 0.4,   cy: pageHeight - padding * 0.4,  sc: 1.7, rot: -18, pi: 2 },
-            { cx: width - padding * 0.8,   cy: pageHeight - padding * 0.65, sc: 1.2, rot: 10,  pi: 3 },
-            // 底部中间
-            { cx: padding + gridSize * 0.5,         cy: pageHeight - padding * 0.45, sc: 1.1, rot: -5,  pi: 3 },
-            { cx: padding + gridSize * 1.5 + gap,   cy: pageHeight - padding * 0.38, sc: 1.0, rot: 18,  pi: 0 },
-            { cx: padding + gridSize * 2.5 + gap*2, cy: pageHeight - padding * 0.48, sc: 1.2, rot: -12, pi: 2 },
-        ];
+        function isSafe(cx, cy) {
+            // 必须在内框安全区内
+            if (cx < innerBorderX1 || cx > innerBorderX2 || cy < innerBorderY1 || cy > innerBorderY2) return false;
+            // 不能进入格子安全区
+            for (const g of gridCells) {
+                if (cx >= g.x1 && cx <= g.x2 && cy >= g.y1 && cy <= g.y2) return false;
+            }
+            // 不能进入标题横线区
+            if (cy >= headerLineY1 && cy <= headerLineY2) return false;
+            // 不能进入标题文字/姓名行区
+            if (cy >= titleTextY1 && cy <= titleTextY2) return false;
+            return true;
+        }
 
-        ctx.save();
-        scatterPositions.forEach(r => {
-            const palIdx = faintPalIdxs[r.pi % faintPalIdxs.length];
-            ctx.save();
-            drawExportRose(ctx, r.cx, r.cy, r.sc, palIdx, faintOpacity);
-            ctx.restore();
+        // 在安全区随机撒点，最多尝试 200 次，收集 22 朵
+        const placed = [];
+        const minDist = 36; // 玫瑰间最小中心距，避免堆叠
+        let attempts = 0;
+        while (placed.length < 22 && attempts < 600) {
+            attempts++;
+            const cx = innerBorderX1 + Math.random() * (innerBorderX2 - innerBorderX1);
+            const cy = innerBorderY1 + Math.random() * (innerBorderY2 - innerBorderY1);
+            if (!isSafe(cx, cy)) continue;
+            // 检查与已放置的距离
+            let tooClose = false;
+            for (const p of placed) {
+                const dx = cx - p.cx, dy = cy - p.cy;
+                if (Math.sqrt(dx*dx + dy*dy) < minDist) { tooClose = true; break; }
+            }
+            if (tooClose) continue;
+            const palIdx = EXPORT_PALS[Math.floor(Math.random() * EXPORT_PALS.length)];
+            const sc = 0.8 + Math.random() * 0.5; // scale 0.8~1.3
+            placed.push({ cx, cy, palIdx, sc });
+        }
+
+        // 绘制
+        placed.forEach(r => {
+            drawLineRose(ctx, r.cx, r.cy, r.sc, r.palIdx, OPACITY);
         });
-        ctx.restore();
 
         return Promise.resolve();
     }
