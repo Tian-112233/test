@@ -41,38 +41,8 @@
             min-height: 100vh;
             touch-action: manipulation;
             overflow-x: hidden;
-            padding-top: 52px;
             position: relative;
         }
-
-        /* 玫瑰节顶部装饰条 */
-        .martenitsa-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 62px;
-            pointer-events: none;
-            z-index: 9999;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            background: linear-gradient(180deg, rgba(200,54,90,0.08) 0%, transparent 100%);
-            overflow: visible;
-        }
-        .martenitsa-bar svg { width: 100%; height: 62px; overflow: visible; }
-
-        @keyframes mSwing {
-            0%, 100% { transform: rotate(-4deg); }
-            50%       { transform: rotate(4deg); }
-        }
-        .m-unit {
-            transform-origin: top center;
-            animation: mSwing 3s ease-in-out infinite;
-        }
-        .m-unit:nth-child(2n)   { animation-delay: -1s; }
-        .m-unit:nth-child(3n)   { animation-delay: -2s; }
-        .m-unit:nth-child(5n)   { animation-delay: -0.5s; }
 
         /* 飘落玫瑰花瓣 */
         .flowers-container {
@@ -88,6 +58,20 @@
             pointer-events: none;
         }
 
+        /* 角落花束装饰 —— 放在主内容区工具栏/状态面板下方 */
+        .corner-fold {
+            position: absolute;
+            pointer-events: none;
+            z-index: 20;
+            overflow: hidden;
+            width: 160px;
+            height: 160px;
+        }
+        .corner-tl { left: 0; bottom: 0; }
+        .corner-tr { right: 0; bottom: 0; }
+
+        .corner-fold .fold-bg { display: none; }
+
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -95,6 +79,7 @@
             gap: 15px;
             height: 100vh;
             padding: 15px;
+            padding-top: 15px;
             overflow: hidden;
             position: relative;
             z-index: 2;
@@ -111,6 +96,8 @@
             display: flex;
             flex-direction: column;
             overflow: visible;
+            position: relative;
+            z-index: 10;
         }
         .sidebar-content { padding: 15px; overflow-y: auto; flex: 1; }
         
@@ -126,8 +113,8 @@
             border-radius: 10px 10px 0 0;
         }
 
-        .left-sidebar { order: 1; }
-        .right-sidebar { order: 3; }
+        .left-sidebar { order: 1; margin-left: 15px; }
+        .right-sidebar { order: 3; margin-right: 15px; }
 
         .main-content {
             flex: 1;
@@ -140,6 +127,8 @@
             border-radius: 12px;
             border: 2px solid var(--color-border-main);
             box-shadow: 0 4px 15px rgba(200, 54, 90, 0.15);
+            position: relative;
+            z-index: 5;
         }
 
         header {
@@ -421,13 +410,9 @@
 
         .mobile-layout { display: none; }
         @media (max-width: 1100px) {
-            body { padding-top: 36px; }
-            .martenitsa-bar { height: 40px; }
-            .flowers-container { height: 100vh; }
-            .flower { transform: scale(0.8); }
-
+            body { padding-top: 8px; } /* 移动端还原顶部安全区 */
             .sidebar, .desktop-board-container { display: none !important; }
-            .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; }
+            .container { flex-direction: column; height: auto; min-height: 100vh; padding: 10px; overflow-y: auto; margin-left:0; margin-right:0; }
             .main-content { overflow: visible; padding-bottom: 20px; }
             .mobile-layout { display: flex; flex-direction: column; width: 100%; }
 
@@ -468,1883 +453,11 @@
 </head>
 <body>
 
-<!-- 玫瑰节顶部装饰条：玫瑰花横幅 -->
-<div class="martenitsa-bar">
-<svg viewBox="0 0 1000 62" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <!-- 红玫瑰 -->
-    <radialGradient id="rose1" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#FF6070"/><stop offset="50%" stop-color="#CC1030"/><stop offset="100%" stop-color="#780010"/>
-    </radialGradient>
-    <!-- 粉玫瑰 -->
-    <radialGradient id="rose2" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#FFD0E4"/><stop offset="50%" stop-color="#F070A0"/><stop offset="100%" stop-color="#A02860"/>
-    </radialGradient>
-    <!-- 白玫瑰 -->
-    <radialGradient id="rose3" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#FFFFFF"/><stop offset="50%" stop-color="#EEE8F4"/><stop offset="100%" stop-color="#C0B0C8"/>
-    </radialGradient>
-    <!-- 黄玫瑰 -->
-    <radialGradient id="rose4" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#FFF068"/><stop offset="50%" stop-color="#F0B000"/><stop offset="100%" stop-color="#906000"/>
-    </radialGradient>
-    <!-- 橙玫瑰 -->
-    <radialGradient id="rose5" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#FFD080"/><stop offset="50%" stop-color="#E86010"/><stop offset="100%" stop-color="#882800"/>
-    </radialGradient>
-    <!-- 紫玫瑰 -->
-    <radialGradient id="rose6" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#EEB0FF"/><stop offset="50%" stop-color="#8020C0"/><stop offset="100%" stop-color="#440870"/>
-    </radialGradient>
-    <!-- 蓝玫瑰 -->
-    <radialGradient id="rose7" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#A0C8FF"/><stop offset="50%" stop-color="#2050C8"/><stop offset="100%" stop-color="#081870"/>
-    </radialGradient>
-    <!-- 黑玫瑰 -->
-    <radialGradient id="rose8" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#887080"/><stop offset="50%" stop-color="#2A1828"/><stop offset="100%" stop-color="#080408"/>
-    </radialGradient>
-    <!-- 绿玫瑰 -->
-    <radialGradient id="rose9" cx="38%" cy="32%" r="68%">
-      <stop offset="0%" stop-color="#B0F0B0"/><stop offset="50%" stop-color="#28A028"/><stop offset="100%" stop-color="#0A4A0A"/>
-    </radialGradient>
-    <!-- 叶片渐变 -->
-    <radialGradient id="leafG" cx="30%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#5DB85D"/><stop offset="100%" stop-color="#1A5C1A"/>
-    </radialGradient>
-    <filter id="rShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="rgba(0,0,0,0.4)"/>
-    </filter>
-  </defs>
-
-  <!-- 自然生长玫瑰藤蔓 -->
-
-  <!-- 主藤蔓（波浪弯曲） -->
-  <path d="M0,40.0 C30,41.3 70,42.9 100,43.9 C130,44.6 170,45.0 200,44.9 C230,44.5 270,43.5 300,42.4 C330,41.2 370,39.4 400,38.2 C430,37.0 470,35.8 500,35.2 C530,35.0 570,35.2 600,35.8 C630,36.6 670,38.1 700,39.4 C730,40.7 770,42.4 800,43.4 C830,44.3 870,44.9 900,45.0 C930,44.7 970,43.9 1000,42.9"
-        stroke="#3A5018" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"/>
-  <path d="M0,40.0 C30,41.3 70,42.9 100,43.9 C130,44.6 170,45.0 200,44.9 C230,44.5 270,43.5 300,42.4 C330,41.2 370,39.4 400,38.2 C430,37.0 470,35.8 500,35.2 C530,35.0 570,35.2 600,35.8 C630,36.6 670,38.1 700,39.4 C730,40.7 770,42.4 800,43.4 C830,44.3 870,44.9 900,45.0 C930,44.7 970,43.9 1000,42.9"
-        stroke="#5A7830" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.4"/>
-
-  <!-- 藤蔓上的散叶（填充间隙） -->
-  <g transform="translate(100,43.852566213878944) rotate(-50) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.8"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(100,43.852566213878944) rotate(35) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.7"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(210,44.81013835793043) rotate(-45) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.75"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(210,44.81013835793043) rotate(40) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.7"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(320,41.60471804903605) rotate(-55) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(320,41.60471804903605) rotate(30) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(440,36.66994066282874) rotate(-42) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(440,36.66994066282874) rotate(48) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.68"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(555,35.07177702425501) rotate(-50) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.8"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(555,35.07177702425501) rotate(38) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.73"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(665,37.89957135794097) rotate(-46) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.77"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(665,37.89957135794097) rotate(42) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.7"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(775,42.54520707875185) rotate(-52) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.83"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(775,42.54520707875185) rotate(34) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.71"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(885,44.98806253180612) rotate(-44) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.79"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g><g transform="translate(885,44.98806253180612) rotate(46) scale(0.72)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.74"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-
-  <!-- 两端叶簇（更丰富） -->
-  <g transform="translate(-5,38.0) rotate(-65) scale(1.0)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(5,42.0) rotate(-35) scale(0.9)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.8"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(-2,32.0) rotate(-50) scale(0.8)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(10,36.0) rotate(-20) scale(0.75)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.68"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(1005,40.93892626146237) rotate(65) scale(1.0)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(995,44.93892626146237) rotate(35) scale(0.9)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.8"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(1002,34.93892626146237) rotate(50) scale(0.8)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-  <g transform="translate(990,38.93892626146237) rotate(20) scale(0.75)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.68"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-
-  <!-- 9朵玫瑰，自然朝上生长，配丰富叶子 -->
-  
-  <!-- 红玫瑰 x=55 -->
-  <g style="animation: vineBreeze 3s ease-in-out 0.00s infinite; transform-origin:55px 42px">
-    <!-- 茎 -->
-    <path d="M55,42.3 C53.8,33.5 52.0,28.3 52.0,20.3"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(49,34.6257553903873) rotate(-55) scale(0.85)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(55,34.6257553903873) rotate(55) scale(0.765)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(50,28.025755390387292) rotate(-40) scale(0.6375)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(54,28.025755390387292) rotate(40) scale(0.595)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    <g transform="translate(42,23.025755390387292) rotate(-20) scale(0.55)">
-      <path d="M0,5 C-4,3 -5,-1 -3,-5 C-2,-7 0,-6 0,-5 C0,-6 2,-7 3,-5 C5,-1 4,3 0,5Z" fill="url(#rose2)" opacity="0.88"/>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose2)" opacity="0.95"/>
-      <path d="M-2,6 C-4,4 -4,1 -2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-      <path d="M2,6 C4,4 4,1 2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-    </g>
-    <!-- 花朵 -->
-    <g transform="translate(52.0,20.3)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose1)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose1)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose1)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose1)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose1)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose1)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose1)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose1)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose1)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose1)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose1)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose1)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose1)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose1)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#FF9898" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#FFD8D8" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.5)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 粉玫瑰 x=165 -->
-  <g style="animation: vineBreeze 4s ease-in-out 0.35s infinite; transform-origin:165px 44px">
-    <!-- 茎 -->
-    <path d="M165,45.0 C165.8,34.6 167.0,27.0 167.0,19.0"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(164,35.86441302284907) rotate(-57) scale(0.9299999999999999)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(170,35.86441302284907) rotate(57) scale(0.837)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(165,28.06441302284907) rotate(-37) scale(0.6975)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(169,28.06441302284907) rotate(37) scale(0.6509999999999999)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    <g transform="translate(176,25.06441302284907) rotate(15) scale(0.5)">
-      <path d="M0,5 C-4,3 -5,-1 -3,-5 C-2,-7 0,-6 0,-5 C0,-6 2,-7 3,-5 C5,-1 4,3 0,5Z" fill="url(#rose4)" opacity="0.88"/>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose4)" opacity="0.95"/>
-      <path d="M-2,6 C-4,4 -4,1 -2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-      <path d="M2,6 C4,4 4,1 2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-    </g>
-    <!-- 花朵 -->
-    <g transform="translate(167.0,19.0)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose2)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose2)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose2)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose2)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose2)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose2)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose2)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose2)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose2)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose2)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose2)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose2)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose2)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose2)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#FFD0E8" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#FFF0F8" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.55)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 白玫瑰 x=275 -->
-  <g style="animation: vineBreeze 5s ease-in-out 0.70s infinite; transform-origin:275px 43px">
-    <!-- 茎 -->
-    <path d="M275,43.3 C274.6,31.3 274.0,21.3 274.0,13.3"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(271,32.806559326618256) rotate(-59) scale(1.01)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(277,32.806559326618256) rotate(59) scale(0.909)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(272,23.806559326618256) rotate(-34) scale(0.7575000000000001)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(276,23.806559326618256) rotate(34) scale(0.707)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    
-    <!-- 花朵 -->
-    <g transform="translate(274.0,13.3)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose3)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose3)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose3)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose3)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose3)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose3)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose3)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose3)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose3)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose3)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose3)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose3)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose3)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose3)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#FFFCFF" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#FFF8FF" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(220,200,220,0.5)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 黄玫瑰 x=385 -->
-  <g style="animation: vineBreeze 3s ease-in-out 1.05s infinite; transform-origin:385px 38px">
-    <!-- 茎 -->
-    <path d="M385,38.8 C386.2,30.0 388.0,24.8 388.0,16.8"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(385,31.087003846022963) rotate(-61) scale(0.85)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(391,31.087003846022963) rotate(61) scale(0.765)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(386,24.48700384602296) rotate(-31) scale(0.6375)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(390,24.48700384602296) rotate(31) scale(0.595)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    <g transform="translate(378,19.48700384602296) rotate(-20) scale(0.55)">
-      <path d="M0,5 C-4,3 -5,-1 -3,-5 C-2,-7 0,-6 0,-5 C0,-6 2,-7 3,-5 C5,-1 4,3 0,5Z" fill="url(#rose1)" opacity="0.88"/>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose1)" opacity="0.95"/>
-      <path d="M-2,6 C-4,4 -4,1 -2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-      <path d="M2,6 C4,4 4,1 2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-    </g>
-    <!-- 花朵 -->
-    <g transform="translate(388.0,16.8)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose4)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose4)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose4)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose4)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose4)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose4)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose4)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose4)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose4)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose4)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose4)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose4)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose4)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose4)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#FFF080" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#FFFAC8" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.55)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 橙玫瑰 x=500 -->
-  <g style="animation: vineBreeze 4s ease-in-out 1.40s infinite; transform-origin:500px 35px">
-    <!-- 茎 -->
-    <path d="M500,35.2 C500.0,24.8 500.0,17.2 500.0,9.2"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(497,26.14471741852423) rotate(-63) scale(0.9299999999999999)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(503,26.14471741852423) rotate(63) scale(0.837)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(498,18.34471741852423) rotate(-28) scale(0.6975)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(502,18.34471741852423) rotate(28) scale(0.6509999999999999)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    <g transform="translate(509,15.34471741852423) rotate(15) scale(0.5)">
-      <path d="M0,5 C-4,3 -5,-1 -3,-5 C-2,-7 0,-6 0,-5 C0,-6 2,-7 3,-5 C5,-1 4,3 0,5Z" fill="url(#rose3)" opacity="0.88"/>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose3)" opacity="0.95"/>
-      <path d="M-2,6 C-4,4 -4,1 -2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-      <path d="M2,6 C4,4 4,1 2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-    </g>
-    <!-- 花朵 -->
-    <g transform="translate(500.0,9.2)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose5)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose5)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose5)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose5)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose5)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose5)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose5)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose5)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose5)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose5)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose5)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose5)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose5)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose5)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#FFD090" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#FFECC8" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.5)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 紫玫瑰 x=610 -->
-  <g style="animation: vineBreeze 5s ease-in-out 1.75s infinite; transform-origin:610px 36px">
-    <!-- 茎 -->
-    <path d="M610,36.0 C609.2,24.0 608.0,14.0 608.0,6.0"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(605,25.530048006760822) rotate(-65) scale(1.01)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(611,25.530048006760822) rotate(65) scale(0.909)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(606,16.530048006760822) rotate(-25) scale(0.7575000000000001)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(610,16.530048006760822) rotate(25) scale(0.707)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    
-    <!-- 花朵 -->
-    <g transform="translate(608.0,6.0)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose6)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose6)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose6)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose6)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose6)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose6)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose6)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose6)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose6)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose6)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose6)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose6)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose6)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose6)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#E8A8FF" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#F4D8FF" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.5)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 蓝玫瑰 x=720 -->
-  <g style="animation: vineBreeze 3s ease-in-out 2.10s infinite; transform-origin:720px 40px">
-    <!-- 茎 -->
-    <path d="M720,40.3 C721.2,31.5 723.0,26.3 723.0,18.3"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(720,32.55122159089885) rotate(-67) scale(0.85)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(726,32.55122159089885) rotate(67) scale(0.765)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(721,25.951221590898843) rotate(-22) scale(0.6375)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(725,25.951221590898843) rotate(22) scale(0.595)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    <g transform="translate(713,20.951221590898843) rotate(-20) scale(0.55)">
-      <path d="M0,5 C-4,3 -5,-1 -3,-5 C-2,-7 0,-6 0,-5 C0,-6 2,-7 3,-5 C5,-1 4,3 0,5Z" fill="url(#rose7)" opacity="0.88"/>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose7)" opacity="0.95"/>
-      <path d="M-2,6 C-4,4 -4,1 -2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-      <path d="M2,6 C4,4 4,1 2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-    </g>
-    <!-- 花朵 -->
-    <g transform="translate(723.0,18.3)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose7)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose7)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose7)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose7)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose7)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose7)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose7)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose7)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose7)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose7)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose7)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose7)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose7)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose7)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#A8C8FF" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#D8E8FF" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.55)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 黑玫瑰 x=830 -->
-  <g style="animation: vineBreeze 4s ease-in-out 2.45s infinite; transform-origin:830px 44px">
-    <!-- 茎 -->
-    <path d="M830,44.3 C829.6,33.9 829.0,26.3 829.0,18.3"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(826,35.15497240897346) rotate(-69) scale(0.9299999999999999)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(832,35.15497240897346) rotate(69) scale(0.837)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(827,27.354972408973456) rotate(-19) scale(0.6975)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(831,27.354972408973456) rotate(19) scale(0.6509999999999999)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    <g transform="translate(838,24.354972408973456) rotate(15) scale(0.5)">
-      <path d="M0,5 C-4,3 -5,-1 -3,-5 C-2,-7 0,-6 0,-5 C0,-6 2,-7 3,-5 C5,-1 4,3 0,5Z" fill="url(#rose9)" opacity="0.88"/>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose9)" opacity="0.95"/>
-      <path d="M-2,6 C-4,4 -4,1 -2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-      <path d="M2,6 C4,4 4,1 2,-1" stroke="#256015" stroke-width="1.2" fill="none"/>
-    </g>
-    <!-- 花朵 -->
-    <g transform="translate(829.0,18.3)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose8)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose8)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose8)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose8)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose8)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose8)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose8)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose8)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose8)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose8)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose8)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose8)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose8)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose8)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#504040" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#786870" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-  <!-- 绿玫瑰 x=945 -->
-  <g style="animation: vineBreeze 5s ease-in-out 2.80s infinite; transform-origin:945px 44px">
-    <!-- 茎 -->
-    <path d="M945,44.5 C945.8,32.5 947.0,22.5 947.0,14.5"
-          stroke="#3A6820" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 下部叶（茎基部，左右各一，较大） -->
-    <g transform="translate(944,33.98320518392619) rotate(-71) scale(1.01)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.88"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(950,33.98320518392619) rotate(71) scale(0.909)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.82"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 上部叶（靠近花，左右各一，稍小） -->
-    <g transform="translate(945,24.983205183926188) rotate(-16) scale(0.7575000000000001)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.78"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <g transform="translate(949,24.983205183926188) rotate(16) scale(0.707)">
-      <!-- 叶片主体 -->
-      <path d="M0,0
-        C-3,-2 -6,-6 -7,-10 C-7,-13 -6,-16 -4,-18
-        C-2,-20 0,-21 0,-20
-        C0,-21 2,-20 4,-18
-        C6,-16 7,-13 7,-10
-        C6,-6 3,-2 0,0 Z"
-        fill="#2E7D32" opacity="0.72"/>
-      <!-- 叶片高光层（浅绿，给立体感） -->
-      <path d="M0,0
-        C-1,-2 -3,-6 -3,-10 C-3,-13 -2,-16 0,-18
-        C2,-16 3,-13 3,-10
-        C3,-6 1,-2 0,0 Z"
-        fill="#4CAF50" opacity="0.35"/>
-      <!-- 中脉 -->
-      <path d="M0,0 C0,-7 0,-14 0,-20"
-        stroke="#1B5E20" stroke-width="0.7" fill="none" opacity="0.7"/>
-      <!-- 侧脉左 -->
-      <path d="M0,-6 C-2,-7 -4,-8 -5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C-2,-11 -4,-12 -5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C-2,-15 -3,-16 -4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-      <!-- 侧脉右 -->
-      <path d="M0,-6 C2,-7 4,-8 5,-9" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-10 C2,-11 4,-12 5,-13" stroke="#1B5E20" stroke-width="0.4" fill="none" opacity="0.5"/>
-      <path d="M0,-14 C2,-15 3,-16 4,-17" stroke="#1B5E20" stroke-width="0.3" fill="none" opacity="0.4"/>
-    </g>
-    <!-- 小花苞（部分） -->
-    
-    <!-- 花朵 -->
-    <g transform="translate(947.0,14.5)">
-      <g transform="rotate(0)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose9)" opacity="0.9"/></g><g transform="rotate(72)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose9)" opacity="0.9"/></g><g transform="rotate(144)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose9)" opacity="0.9"/></g><g transform="rotate(216)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose9)" opacity="0.9"/></g><g transform="rotate(288)"><path d="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z" fill="url(#rose9)" opacity="0.9"/></g><g transform="rotate(36)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose9)" opacity="0.84"/></g><g transform="rotate(108)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose9)" opacity="0.84"/></g><g transform="rotate(180)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose9)" opacity="0.84"/></g><g transform="rotate(252)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose9)" opacity="0.84"/></g><g transform="rotate(324)"><path d="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z" fill="url(#rose9)" opacity="0.84"/></g><g transform="rotate(0)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose9)" opacity="0.92"/></g><g transform="rotate(120)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose9)" opacity="0.92"/></g><g transform="rotate(240)"><path d="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z" fill="url(#rose9)" opacity="0.92"/></g>
-      <path d="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z" fill="url(#rose9)" opacity="0.97"/>
-      <circle cx="0" cy="-1" r="2.2" fill="#A8F8A8" opacity="0.95"/>
-      <circle cx="0" cy="-1" r="1" fill="#D8FFD8" opacity="0.9"/>
-      <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-      <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.55)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    </g>
-  </g>
-</svg>
-</div>
-
-<!-- 飘落玫瑰花瓣 -->
 <div class="flowers-container" id="flowersContainer"><canvas id="roseCanvas"></canvas></div>
 
 <div class="container">
-    <div class="sidebar left-sidebar">
+    <div class="sidebar left-sidebar" style="position:relative;">
+        <div class="corner-fold corner-tl" id="cornerTL"></div>
         <h2>状态面板 | Статус</h2>
         <div class="sidebar-content">
             <div class="info-panel-item">
@@ -2357,8 +470,8 @@
             </div>
             <div class="info-panel-item">
                 <div class="info-label" data-colorlabel="3">当前位置 | Позиция</div>
-                <div style="font-size:0.85rem; font-weight:bold; margin-bottom:5px;" data-colorlabel="4">格子 Клетка <span id="curGridNum">1</span></div>
-                <div style="font-size:0.85rem; font-weight:bold;" data-colorlabel="0">笔画 Щрихи: <span id="curStrokeNum">0</span></div>
+                <div style="font-size:0.85rem; font-weight:bold; margin-bottom:5px;" data-colorlabel="4">格子 格子 Клетка <span id="curGridNum">1</span></div>
+                <div style="font-size:0.85rem; font-weight:bold;" data-colorlabel="0">笔画 笔画 Щрихи: <span id="curStrokeNum">0</span></div>
             </div>
         </div>
     </div>
@@ -2422,12 +535,10 @@
 
             <div class="board-header">
               <div class="board-title" style="display:inline-flex; align-items:center; gap:8px;">
-                <!-- 玫瑰枝图标 左 -->
                 <svg width="60" height="32" viewBox="0 0 60 32" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
                   <path d="M3,30 C10,24 18,18 28,12 C38,6 46,9 56,6" stroke="#8B4513" stroke-width="1.8" fill="none" stroke-linecap="round"/>
                   <path d="M12,23 C10,18 8,16 6,17" stroke="#6D4C41" stroke-width="1" fill="none" stroke-linecap="round"/>
                   <path d="M30,13 C29,8 27,7 25,8" stroke="#6D4C41" stroke-width="1" fill="none" stroke-linecap="round"/>
-                  <!-- 玫瑰花 -->
                   <g transform="translate(20,17)">
                     <ellipse cx="0" cy="3" rx="6" ry="4.5" fill="#C8365A" opacity="0.95"/>
                     <ellipse cx="-3" cy="1.5" rx="4" ry="3" fill="#E05070" opacity="0.9"/>
@@ -2437,7 +548,6 @@
                     <ellipse cx="-5" cy="6" rx="3" ry="1.5" fill="#2E7D32" opacity="0.8" transform="rotate(15,-5,6)"/>
                     <ellipse cx="5" cy="6" rx="3" ry="1.5" fill="#388E3C" opacity="0.8" transform="rotate(-15,5,6)"/>
                   </g>
-                  <!-- 小玫瑰花苞 -->
                   <g transform="translate(42,8)">
                     <ellipse cx="0" cy="2" rx="4" ry="3" fill="#A0273D" opacity="0.9"/>
                     <ellipse cx="-2" cy="0.5" rx="2.5" ry="2" fill="#C8365A" opacity="0.85"/>
@@ -2450,7 +560,6 @@
                   <ellipse cx="33" cy="12" rx="4.5" ry="1.8" fill="#2E7D32" transform="rotate(-35,33,12)" opacity="0.78"/>
                 </svg>
                 书写板 | Писмена дъска
-                <!-- 玫瑰枝图标 右（镜像） -->
                 <svg width="60" height="32" viewBox="0 0 60 32" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0; transform:scaleX(-1);">
                   <path d="M3,30 C10,24 18,18 28,12 C38,6 46,9 56,6" stroke="#8B4513" stroke-width="1.8" fill="none" stroke-linecap="round"/>
                   <path d="M12,23 C10,18 8,16 6,17" stroke="#6D4C41" stroke-width="1" fill="none" stroke-linecap="round"/>
@@ -2573,7 +682,8 @@
         </div>
     </div>
 
-    <div class="sidebar right-sidebar">
+    <div class="sidebar right-sidebar" style="position:relative;">
+        <div class="corner-fold corner-tr" id="cornerTR"></div>
         <h2>工具 | Инструменти</h2>
         <div class="sidebar-content">
             <div class="info-panel-item" style="margin-bottom: 20px;">
@@ -2592,7 +702,6 @@
     </div>
 </div>
 
-<!-- 导出弹窗 -->
 <div class="modal" id="exportModal">
     <div class="modal-content">
         <button class="close-btn" onclick="document.getElementById('exportModal').style.display='none'">&times;</button>
@@ -2729,7 +838,7 @@
         const OP  = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z"; // 外瓣
         const MP  = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";   // 中瓣
         const IP  = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";   // 内瓣
-        const CP  = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";     // 花芯瓣
+        const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";     // 花芯瓣
 
         // 萼片
         g.appendChild(svgEl('path', { d:'M-3,11 C-8,7 -9,1 -5,-1 C-2,-3 0,-1 0,1', fill:'#256015', opacity:'0.95' }));
@@ -2804,16 +913,10 @@
         return g;
     }
 
-    // 生成和飘落完全一致的SVG玫瑰字符串（用于装饰框foreignObject嵌入）
-    // 改用 SVG <image> href data:URI，或直接用 foreignObject+div
-    // 最简单：把装饰框玫瑰也改成 innerHTML 插入 SVG 的 <g> 里
-    // SVG 不支持 foreignObject Canvas，但支持 <svg> 嵌套
-    // 做法：用 svgEl 构建和 makeFallingRoseSVG 完全相同结构的 SVG 元素树
-
     // 生成装饰框用的单朵玫瑰SVG元素（与飘落完全相同层次）
     function makeFrameRoseSVGEl(paletteIdx, sc) {
         const pal = ROSE_PALETTES[paletteIdx % 9];
-        const id  = 'fr' + Math.random().toString(36).slice(2,8);
+        const id  = 'fr' + Math.random().toString(36).slice(2,6);
         const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
         const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
         const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
@@ -2982,7 +1085,287 @@ ${outer}${mid}${inner}
         });
     }
 
-        let totalGrids = 9;
+    // ===== 折角玫瑰装饰（使用飘落同款5层花瓣SVG） =====
+    function makeStaticRoseSVG(paletteIdx, size, x, y, rot) {
+        const pal = ROSE_PALETTES[paletteIdx % 9];
+        const uid = 'cr' + Math.random().toString(36).slice(2,8);
+        const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
+        const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
+        const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
+        const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
+        const outer = [0,72,144,216,288].map(a => 
+            `<g transform="rotate(${a})"><path d="${OP}" fill="url(#${uid})" opacity="0.88"/></g>`).join('');
+        const mid = [36,108,180,252,324].map(a => 
+            `<g transform="rotate(${a})"><path d="${MP}" fill="url(#${uid})" opacity="0.83"/></g>`).join('');
+        const inner = [0,120,240].map(a => 
+            `<g transform="rotate(${a})"><path d="${IP}" fill="url(#${uid}i)" opacity="0.92"/></g>`).join('');
+        
+        return `<svg style="position:absolute;left:${x}px;top:${y}px;width:${size}px;height:${size}px;transform:rotate(${rot}deg);overflow:visible;pointer-events:none;" viewBox="-14 -16 28 28" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="${uid}" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="${pal.p1}"/><stop offset="50%" stop-color="${pal.p2}"/><stop offset="100%" stop-color="${pal.p3}"/></radialGradient>
+<radialGradient id="${uid}i" cx="35%" cy="25%" r="65%"><stop offset="0%" stop-color="${pal.p1}"/><stop offset="100%" stop-color="${pal.p2}"/></radialGradient>
+</defs>
+${outer}${mid}${inner}
+<path d="${CP}" fill="url(#${uid}i)" opacity="0.97"/>
+<circle cx="0" cy="-1" r="2.2" fill="${pal.c1}" opacity="0.95"/>
+<circle cx="0" cy="-1" r="1" fill="${pal.c2}" opacity="0.9"/>
+<circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
+<path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.48)" stroke-width="1" fill="none" stroke-linecap="round"/>
+</svg>`;
+    }
+
+    function makeStaticBudSVG(paletteIdx, size, x, y, rot) {
+        const pal = ROSE_PALETTES[paletteIdx % 9];
+        const uid = 'bd' + Math.random().toString(36).slice(2,6);
+        return `<svg style="position:absolute;left:${x}px;top:${y}px;width:${size}px;height:${size}px;transform:rotate(${rot}deg);overflow:visible;pointer-events:none;" viewBox="-9 -14 18 26" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="${uid}" cx="40%" cy="25%" r="70%">
+    <stop offset="0%" stop-color="${pal.p1}"/>
+    <stop offset="45%" stop-color="${pal.p2}"/>
+    <stop offset="100%" stop-color="${pal.p3}"/>
+  </radialGradient>
+</defs>
+<!-- 萼片（三枚，带细节） -->
+<path d="M-1,9 C-6,6 -7,1 -4,-2 C-2,-4 0,-2 0,0" fill="#1B6B10" opacity="0.95"/>
+<path d="M1,9 C6,6 7,1 4,-2 C2,-4 0,-2 0,0" fill="#1B6B10" opacity="0.95"/>
+<path d="M0,9 C-0.5,5 0,2 0,0" fill="#2E8020" opacity="0.7"/>
+<!-- 萼片叶尖高光 -->
+<path d="M-4,-1 C-3,-2 -2,-3 0,-2" stroke="rgba(255,255,255,0.3)" stroke-width="0.5" fill="none"/>
+<!-- 外层苞瓣（宽，深色） -->
+<path d="M0,8 C-7,5 -9,0 -7,-6 C-5,-10 0,-12 0,-9 C0,-12 5,-10 7,-6 C9,0 7,5 0,8Z" fill="url(#${uid})" opacity="0.95"/>
+<!-- 中层苞瓣（稍窄） -->
+<path d="M0,6 C-5,3 -6,-1 -4,-6 C-2,-8 0,-7 0,-6 C0,-7 2,-8 4,-6 C6,-1 5,3 0,6Z" fill="${pal.p2}" opacity="0.92"/>
+<!-- 内层苞瓣（最窄，最亮） -->
+<path d="M0,3.5 C-2.5,2 -3.5,-1 -2,-4 C-1,-5 0,-4.5 0,-3.5 C0,-4.5 1,-5 2,-4 C3.5,-1 2.5,2 0,3.5Z" fill="${pal.p1}" opacity="0.92"/>
+<!-- 花芯微卷 -->
+<path d="M0,1.5 C-1,0.5 -1.5,-0.5 -0.5,-2 C0,-2.5 0.5,-2 0.5,-1 C0.5,0 0,1.5 0,1.5Z" fill="${pal.p1}" opacity="0.98"/>
+<!-- 顶部高光弧（两道） -->
+<path d="M-4,-5 C-2,-7.5 2,-7.5 4,-5" stroke="rgba(255,255,255,0.55)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+<path d="M-2,-3 C-1,-4.5 1,-4.5 2,-3" stroke="rgba(255,255,255,0.4)" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+</svg>`;
+    }
+
+    function makeStaticLeafSVG(color, size, x, y, rot, color2, sc2) {
+        const c2 = color2 || '#1B5E20';
+        const uid = 'sl' + Math.random().toString(36).slice(2,6);
+        return `<svg style="position:absolute;left:${x}px;top:${y}px;width:${size}px;height:${size}px;transform:rotate(${rot}deg);overflow:visible;pointer-events:none;" viewBox="-7 -14 14 28" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="${uid}" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="${c2}" stop-opacity="0.95"/>
+    <stop offset="45%" stop-color="${color}" stop-opacity="0.92"/>
+    <stop offset="100%" stop-color="${c2}" stop-opacity="0.95"/>
+  </linearGradient>
+</defs>
+<path d="M0,2 C-5,-1 -7,-7 -6,-13 C-5,-18 -3,-22 0,-24 C3,-22 5,-18 6,-13 C7,-7 5,-1 0,2Z" fill="url(#${uid})" opacity="0.88"/>
+<path d="M0,2 C-2,-1 -3,-7 -2,-13 C-1,-18 0,-22 0,-24 C-3,-22 -5,-18 -6,-13 C-7,-7 -5,-1 0,2Z" fill="rgba(255,255,255,0.09)" opacity="0.8"/>
+<path d="M0,1 L0,-23" stroke="rgba(255,255,255,0.38)" stroke-width="0.85" fill="none" stroke-linecap="round"/>
+<path d="M0,-6 C-2,-8.5 -3.5,-11 -4.5,-14" stroke="rgba(255,255,255,0.24)" stroke-width="0.55" fill="none" stroke-linecap="round"/>
+<path d="M0,-11 C-2,-13 -3,-15.5 -3.5,-18" stroke="rgba(255,255,255,0.2)" stroke-width="0.48" fill="none" stroke-linecap="round"/>
+<path d="M0,-16 C-1.5,-17.5 -2,-19.5 -2,-21" stroke="rgba(255,255,255,0.15)" stroke-width="0.4" fill="none" stroke-linecap="round"/>
+<path d="M0,-6 C2,-8.5 3.5,-11 4.5,-14" stroke="rgba(255,255,255,0.24)" stroke-width="0.55" fill="none" stroke-linecap="round"/>
+<path d="M0,-11 C2,-13 3,-15.5 3.5,-18" stroke="rgba(255,255,255,0.2)" stroke-width="0.48" fill="none" stroke-linecap="round"/>
+<path d="M0,-16 C1.5,-17.5 2,-19.5 2,-21" stroke="rgba(255,255,255,0.15)" stroke-width="0.4" fill="none" stroke-linecap="round"/>
+<circle cx="0" cy="-23.5" r="0.65" fill="rgba(255,255,255,0.38)"/>
+</svg>`;
+    }
+
+    // 生成藤蔓茎条SVG（弯曲的枝条）
+    function makeStaticVineSVG(x1, y1, x2, y2, cx1, cy1, cx2, cy2, strokeColor, strokeW) {
+        strokeColor = strokeColor || '#6D4C2A';
+        strokeW = strokeW || 1.5;
+        return `<svg style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+<path d="M${x1},${y1} C${cx1},${cy1} ${cx2},${cy2} ${x2},${y2}" stroke="${strokeColor}" stroke-width="${strokeW}" fill="none" stroke-linecap="round" opacity="0.85"/>
+</svg>`;
+    }
+
+    // 生成完整藤蔓SVG（包含多段枝条）—— 缩小到140x140容器
+    // 逼真叶片SVG片段（带主脉、侧脉、叶尖、双色渐变）
+    function makeRealisticLeafFragment(l) {
+        const flip = l.flip ? 'scale(-1,1)' : '';
+        const sc = l.sc || 1;
+        const c1 = l.color || '#2E7D32';
+        const c2 = l.color2 || '#1B5E20';
+        const uid = 'lf' + Math.random().toString(36).slice(2,6);
+        // 叶形：尖头椭圆，带锯齿感的边缘曲线，更自然
+        return `<g transform="translate(${l.x},${l.y}) rotate(${l.rot}) ${flip} scale(${sc})">
+<defs>
+  <linearGradient id="${uid}" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="${c2}" stop-opacity="0.95"/>
+    <stop offset="50%" stop-color="${c1}" stop-opacity="0.9"/>
+    <stop offset="100%" stop-color="${c2}" stop-opacity="0.95"/>
+  </linearGradient>
+</defs>
+<!-- 叶片主体（尖头、宽腰） -->
+<path d="M0,1 C-5,-2 -7,-8 -6,-14 C-5,-19 -3,-23 0,-26 C3,-23 5,-19 6,-14 C7,-8 5,-2 0,1Z" fill="url(#${uid})" opacity="${l.op||0.88}"/>
+<!-- 高光叠加 -->
+<path d="M0,1 C-2,-2 -3,-8 -2,-14 C-1,-19 0,-23 0,-26 C-3,-23 -5,-19 -6,-14 C-7,-8 -5,-2 0,1Z" fill="rgba(255,255,255,0.10)" opacity="0.7"/>
+<!-- 主脉 -->
+<path d="M0,0 L0,-25" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+<!-- 左侧脉（3条） -->
+<path d="M0,-7 C-2,-9 -3.5,-11 -4.5,-14" stroke="rgba(255,255,255,0.22)" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+<path d="M0,-12 C-2,-14 -3,-16 -3.5,-18" stroke="rgba(255,255,255,0.20)" stroke-width="0.45" fill="none" stroke-linecap="round"/>
+<path d="M0,-17 C-1.5,-18.5 -2,-20 -2.5,-22" stroke="rgba(255,255,255,0.16)" stroke-width="0.4" fill="none" stroke-linecap="round"/>
+<!-- 右侧脉（3条） -->
+<path d="M0,-7 C2,-9 3.5,-11 4.5,-14" stroke="rgba(255,255,255,0.22)" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+<path d="M0,-12 C2,-14 3,-16 3.5,-18" stroke="rgba(255,255,255,0.20)" stroke-width="0.45" fill="none" stroke-linecap="round"/>
+<path d="M0,-17 C1.5,-18.5 2,-20 2.5,-22" stroke="rgba(255,255,255,0.16)" stroke-width="0.4" fill="none" stroke-linecap="round"/>
+<!-- 叶尖高光点 -->
+<circle cx="0" cy="-25.5" r="0.7" fill="rgba(255,255,255,0.35)"/>
+</g>`;
+    }
+
+    function makeVineNetworkSVG(paths, leaves, isLeft) {
+        const leafPaths = leaves.map(l => makeRealisticLeafFragment(l)).join('');
+        const pathEls = paths.map(p =>
+            `<path d="M${p[0]},${p[1]} C${p[2]},${p[3]} ${p[4]},${p[5]} ${p[6]},${p[7]}" stroke="${p[8]||'#6D4C2A'}" stroke-width="${p[9]||1.5}" fill="none" stroke-linecap="round" opacity="${p[10]||0.85}"/>`
+        ).join('');
+        return `<svg style="position:absolute;left:0;top:0;width:140px;height:140px;overflow:visible;pointer-events:none;" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+${pathEls}
+${leafPaths}
+</svg>`;
+    }
+
+    // ============================================================
+    // 花束SVG生成器（无包装纸/茎束，只有花朵+叶片，从底部向上生长，更大）
+    // anchor: 'tl'=左侧底部，'tr'=右侧底部
+    // ============================================================
+    function makeBouquetSVG(palettes, anchor) {
+        const isLeft = anchor === 'tl';
+        // 更大的画布，花朵从底部铺满
+        const W = 160, H = 160;
+
+        // 花束中心：靠近底部中央，花朵向上展开
+        const bx = W / 2;
+        const by = H - 20; // 底部起点，花朵向上延伸
+
+        // ---- 单朵玫瑰SVG片段（完整5层花瓣） ----
+        function roseFragment(pal, tx, ty, rot, sc, uid) {
+            const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
+            const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
+            const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
+            const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
+            const outer = [0,72,144,216,288].map(a=>`<g transform="rotate(${a})"><path d="${OP}" fill="url(#${uid})" opacity="0.90"/></g>`).join('');
+            const mid   = [36,108,180,252,324].map(a=>`<g transform="rotate(${a})"><path d="${MP}" fill="url(#${uid})" opacity="0.85"/></g>`).join('');
+            const inner = [0,120,240].map(a=>`<g transform="rotate(${a})"><path d="${IP}" fill="url(#${uid}i)" opacity="0.93"/></g>`).join('');
+            return `<g transform="translate(${tx},${ty}) rotate(${rot}) scale(${sc})">
+  <defs>
+    <radialGradient id="${uid}" cx="38%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="${pal.p1}"/><stop offset="50%" stop-color="${pal.p2}"/><stop offset="100%" stop-color="${pal.p3}"/>
+    </radialGradient>
+    <radialGradient id="${uid}i" cx="35%" cy="25%" r="65%">
+      <stop offset="0%" stop-color="${pal.p1}"/><stop offset="100%" stop-color="${pal.p2}"/>
+    </radialGradient>
+  </defs>
+  <path d="M-3,11 C-8,7 -9,1 -5,-1 C-2,-3 0,-1 0,1" fill="#256015" opacity="0.85"/>
+  <path d="M3,11 C8,7 9,1 5,-1 C2,-3 0,-1 0,1" fill="#256015" opacity="0.85"/>
+  ${outer}${mid}${inner}
+  <path d="${CP}" fill="url(#${uid}i)" opacity="0.97"/>
+  <circle cx="0" cy="-1" r="2.2" fill="${pal.c1}" opacity="0.95"/>
+  <circle cx="0" cy="-1" r="1" fill="${pal.c2}" opacity="0.9"/>
+  <circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
+  <path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.50)" stroke-width="1" fill="none" stroke-linecap="round"/>
+</g>`;
+        }
+
+        // ---- 叶片片段 ----
+        function leafFragment(tx, ty, rot, sc, c1, c2, uid) {
+            return `<g transform="translate(${tx},${ty}) rotate(${rot}) scale(${sc})">
+  <defs><linearGradient id="${uid}" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="${c2}" stop-opacity="0.92"/>
+    <stop offset="50%" stop-color="${c1}" stop-opacity="0.88"/>
+    <stop offset="100%" stop-color="${c2}" stop-opacity="0.92"/>
+  </linearGradient></defs>
+  <path d="M0,2 C-5,-1 -7,-8 -6,-15 C-5,-20 -3,-24 0,-27 C3,-24 5,-20 6,-15 C7,-8 5,-1 0,2Z" fill="url(#${uid})" opacity="0.88"/>
+  <path d="M0,1 L0,-26" stroke="rgba(255,255,255,0.30)" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+  <path d="M0,-8 C-2,-11 -3.5,-14 -4,-18" stroke="rgba(255,255,255,0.20)" stroke-width="0.5" fill="none"/>
+  <path d="M0,-8 C2,-11 3.5,-14 4,-18" stroke="rgba(255,255,255,0.20)" stroke-width="0.5" fill="none"/>
+</g>`;
+        }
+
+        const P = palettes;
+        const rnd = (n) => 'bq'+n+(Math.random()*1e6|0).toString(36);
+
+        // 花朵从底部向上散开，大小错落，更大尺寸
+        // 底部一排 + 上方延伸，形成自然堆叠效果
+        const roseDefs = [
+            // 底部一排（最低，部分被裁切）
+            { pi:0, tx:bx-50, ty:by+2,  rot:-18, sc:1.05 },
+            { pi:1, tx:bx-20, ty:by-5,  rot:8,   sc:1.10 },
+            { pi:2, tx:bx+10, ty:by+0,  rot:-5,  sc:1.00 },
+            { pi:3, tx:bx+40, ty:by+4,  rot:15,  sc:0.95 },
+            // 中间层
+            { pi:3, tx:bx-38, ty:by-28, rot:-10, sc:0.95 },
+            { pi:0, tx:bx-10, ty:by-32, rot:6,   sc:1.00 },
+            { pi:1, tx:bx+18, ty:by-26, rot:-12, sc:0.92 },
+            { pi:2, tx:bx+45, ty:by-22, rot:20,  sc:0.88 },
+            // 上层
+            { pi:2, tx:bx-55, ty:by-48, rot:14,  sc:0.82 },
+            { pi:0, tx:bx-25, ty:by-55, rot:-8,  sc:0.88 },
+            { pi:3, tx:bx+5,  ty:by-50, rot:10,  sc:0.85 },
+            { pi:1, tx:bx+32, ty:by-46, rot:-16, sc:0.80 },
+            // 顶部点缀
+            { pi:1, tx:bx-42, ty:by-70, rot:-5,  sc:0.72 },
+            { pi:3, tx:bx-8,  ty:by-72, rot:12,  sc:0.75 },
+            { pi:0, tx:bx+25, ty:by-65, rot:-20, sc:0.70 },
+        ];
+
+        // 叶片：穿插在花朵之间，向两侧展开
+        const leaves = [
+            { tx:bx-62, ty:by-10, rot:isLeft?-75:-105, sc:0.80, c1:'#2E7D32', c2:'#1B5E20' },
+            { tx:bx+58, ty:by-8,  rot:isLeft?72:108,   sc:0.75, c1:'#388E3C', c2:'#2E7D32' },
+            { tx:bx-48, ty:by-35, rot:isLeft?-60:-120, sc:0.70, c1:'#43A047', c2:'#2E7D32' },
+            { tx:bx+46, ty:by-32, rot:isLeft?58:122,   sc:0.68, c1:'#2E7D32', c2:'#145214' },
+            { tx:bx-30, ty:by-62, rot:-12, sc:0.62, c1:'#388E3C', c2:'#1B5E20' },
+            { tx:bx+28, ty:by-60, rot:14,  sc:0.60, c1:'#2E7D32', c2:'#1B5E20' },
+            { tx:bx-10, ty:by-80, rot:-5,  sc:0.55, c1:'#43A047', c2:'#2E7D32' },
+        ];
+
+        // overflow:visible 让花朵超出容器也能显示，由父容器裁切
+        let s = `<svg style="position:absolute;left:0;bottom:0;width:${W}px;height:${H}px;overflow:visible;pointer-events:none;" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+        // ---- 1. 叶片（底层） ----
+        leaves.forEach((l, i) => {
+            s += leafFragment(l.tx, l.ty, l.rot, l.sc, l.c1, l.c2, 'lf'+i+(Math.random()*9999|0));
+        });
+
+        // ---- 2. 花朵（顶层，密集叠放）----
+        roseDefs.forEach((r, i) => {
+            const pal = P[r.pi % P.length];
+            s += roseFragment(pal, r.tx, r.ty, r.rot, r.sc, rnd(i));
+        });
+
+        s += `</svg>`;
+        return s;
+    }
+
+    function initCornerFolds() {
+        const tl = document.getElementById('cornerTL');
+        const tr = document.getElementById('cornerTR');
+
+        if (tl) {
+            // 左侧：红+黄+白+绿 均衡四色
+            const tlPals = [
+                ROSE_PALETTES[0],  // 红
+                ROSE_PALETTES[3],  // 黄
+                ROSE_PALETTES[2],  // 白
+                ROSE_PALETTES[8],  // 绿
+            ];
+            tl.innerHTML = makeBouquetSVG(tlPals, 'tl');
+        }
+
+        if (tr) {
+            // 右侧：黄+红+绿+白 （黄打头，与左侧错开）
+            const trPals = [
+                ROSE_PALETTES[3],  // 黄
+                ROSE_PALETTES[0],  // 红
+                ROSE_PALETTES[8],  // 绿
+                ROSE_PALETTES[2],  // 白
+            ];
+            tr.innerHTML = makeBouquetSVG(trPals, 'tr');
+        }
+    }
+
+    let totalGrids = 9;
     let currentGridIdx = 0;
     let strokesData = {};
     let gridColorState = {};
@@ -2997,6 +1380,7 @@ ${outer}${mid}${inner}
 
     window.onload = async function() {
         await initFlowers();
+        initCornerFolds();
         initColorUI('colorSeqDesktop');
         initColorUI('colorSeqMobile');
         renderDesktopGrids();
@@ -3273,11 +1657,52 @@ ${outer}${mid}${inner}
     }
 
     function getGridBgHTML() {
+        // 4种颜色：红、黄、白、绿，极浅透明度，不碰格子边缘
+        const gridRoseDefs = [
+            // 中心区域散布的浅色玫瑰，保持距边缘至少15%空间
+            { pal: 0, x: 28, y: 28, sc: 0.55, rot: -15 },  // 红，左上区
+            { pal: 3, x: 72, y: 22, sc: 0.48, rot: 20 },   // 黄，上中
+            { pal: 2, x: 76, y: 74, sc: 0.52, rot: -8 },   // 白，右下区
+            { pal: 8, x: 26, y: 72, sc: 0.50, rot: 12 },   // 绿，左下区
+            { pal: 0, x: 50, y: 50, sc: 0.42, rot: 5 },    // 红，中心（最小）
+        ];
+        const roseOpacity = 0.11; // 整体极浅
+        function miniRoseSVG(palIdx, x, y, sc, rot) {
+            const palettes = [
+                { p1:'#FF6070', p2:'#CC1030', p3:'#780010' }, // 0:红
+                null, null,
+                { p1:'#FFF068', p2:'#F0B000', p3:'#906000' }, // 3:黄
+                null, null, null, null,
+                { p1:'#B0F0B0', p2:'#28A028', p3:'#0A4A0A' }, // 8:绿
+            ];
+            const whitePal = { p1:'#FFFFFF', p2:'#EEE8F4', p3:'#C0B0C8' };
+            const pal = palIdx === 2 ? whitePal : (palettes[palIdx] || palettes[0]);
+            const uid = 'bg' + palIdx + '_' + Math.random().toString(36).slice(2,6);
+            const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
+            const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
+            const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
+            const outer = [0,72,144,216,288].map(a=>`<g transform="rotate(${a})"><path d="${OP}" fill="url(#${uid})" opacity="0.88"/></g>`).join('');
+            const mid = [36,108,180,252,324].map(a=>`<g transform="rotate(${a})"><path d="${MP}" fill="url(#${uid})" opacity="0.83"/></g>`).join('');
+            const inner = [0,120,240].map(a=>`<g transform="rotate(${a})"><path d="${IP}" fill="${pal.p1}" opacity="0.72"/></g>`).join('');
+            // 坐标用百分比定位，离边缘留出安全距离（格子100%宽高）
+            return `<svg style="position:absolute;left:${x}%;top:${y}%;width:0;height:0;overflow:visible;pointer-events:none;opacity:${roseOpacity};" viewBox="0 0 0 0" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="${uid}" cx="38%" cy="30%" r="68%">
+  <stop offset="0%" stop-color="${pal.p1}"/>
+  <stop offset="50%" stop-color="${pal.p2}"/>
+  <stop offset="100%" stop-color="${pal.p3}"/>
+</radialGradient>
+</defs>
+<g transform="rotate(${rot}) scale(${sc})">${outer}${mid}${inner}</g>
+</svg>`;
+        }
+        const rosesSVG = gridRoseDefs.map(r => miniRoseSVG(r.pal, r.x, r.y, r.sc, r.rot)).join('');
         return `<div class="grid-bg-layer">
+                    ${rosesSVG}
                     <div class="g-line gl-d1"></div><div class="g-line gl-d2"></div>
                     <div class="g-line gl-h"></div><div class="g-line gl-v"></div>
                     <div class="corner-mark cm-tl"></div><div class="corner-mark cm-tr"></div>
-                    <div class="corner-mark cm-bl"></div><div class="corner-mark cm-br"></div>
+                    <div class="grid-mark cm-bl"></div><div class="corner-mark cm-br"></div>
                 </div>`;
     }
 
@@ -3661,7 +2086,7 @@ ${outer}${mid}${inner}
             ctx.lineWidth = 1.5;
             ctx.strokeRect(16, 16, width - 32, pageHeight - 32);
 
-            // 导出页：格子外随机玫瑰（异步，等图片全部绘制完）
+            // 导出页高精度立体玫瑰系统绘制（匹配首页精细层级）
             await drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols);
 
             ctx.fillStyle = '#7B2D6E';
@@ -3741,139 +2166,402 @@ ${outer}${mid}${inner}
         document.getElementById('exportPreviewArea').style.display = 'block';
     }
 
-    // 导出玫瑰：把飘落SVG字符串转成Image再drawImage到canvas
-    // 每朵都和飘落完全相同的SVG结构
-    function makeExportRoseSVGString(palIdx, rotDeg) {
-        const pal = ROSE_PALETTES[palIdx % 9];
-        const id  = 'ex' + palIdx + '_' + Math.floor(Math.random()*99999);
-        const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
-        const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
-        const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
-        const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
-        const outer = [0,72,144,216,288].map(a =>
-            `<g transform="rotate(${a})"><path d="${OP}" fill="url(#${id})" opacity="0.88"/></g>`).join('');
-        const mid = [36,108,180,252,324].map(a =>
-            `<g transform="rotate(${a})"><path d="${MP}" fill="url(#${id})" opacity="0.83"/></g>`).join('');
-        const inner = [0,120,240].map(a =>
-            `<g transform="rotate(${a})"><path d="${IP}" fill="url(#${id}i)" opacity="0.92"/></g>`).join('');
-        // 无萼片无叶子，只有花
-        return `<svg viewBox="-14 -14 28 24" width="56" height="48" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<radialGradient id="${id}" cx="38%" cy="30%" r="68%">
-  <stop offset="0%" stop-color="${pal.p1}"/>
-  <stop offset="50%" stop-color="${pal.p2}"/>
-  <stop offset="100%" stop-color="${pal.p3}"/>
-</radialGradient>
-<radialGradient id="${id}i" cx="35%" cy="25%" r="65%">
-  <stop offset="0%" stop-color="${pal.p1}"/>
-  <stop offset="100%" stop-color="${pal.p2}"/>
-</radialGradient>
-</defs>
-<g transform="rotate(${rotDeg})">
-${outer}${mid}${inner}
-<path d="${CP}" fill="url(#${id}i)" opacity="0.97"/>
-<circle cx="0" cy="-1" r="2.2" fill="${pal.c1}" opacity="0.95"/>
-<circle cx="0" cy="-1" r="1"   fill="${pal.c2}" opacity="0.9"/>
-<circle cx="0" cy="-1" r="0.4" fill="rgba(255,255,200,0.85)"/>
-<path d="M-5,-5 C-2,-9 2,-9 5,-5" stroke="rgba(255,255,255,0.48)" stroke-width="1" fill="none" stroke-linecap="round"/>
-</g>
-</svg>`;
-    }
+    // 导出玫瑰完美复刻首页精细多瓣及双层重合径向渐变算法
+    async function drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols) {
 
-    // 导出页：分区定向投放，确保各区域都有花，无叶子纯花
-    function drawRandomRosesExport(ctx, width, pageHeight, padding, headerH, gridSize, gap, cols) {
-        const rows = 3;
-        const border = 20;
-        const textBottom = padding + 47; // 文字区下边界（姓名+日期+分隔线）
+        function drawExportRose(ctx, cx, cy, sc, paletteIdx, opacityMult) {
+            const pal = ROSE_PALETTES[paletteIdx % 9];
+            const om = (opacityMult !== undefined) ? opacityMult : 1;
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(sc, sc);
 
-        // 精确计算各区域坐标
-        const gx1 = padding;                              // 格子群左边
-        const gx2 = padding + cols*gridSize + (cols-1)*gap; // 格子群右边
-        const gy1 = padding + headerH;                   // 格子群上边
-        const gy2 = gy1 + rows*(gridSize+gap);           // 格子群下边（含最后一行gap）
+            // 立体径向三层渐变（匹配首页SVG）
+            const rgrad = ctx.createRadialGradient(0, -2, 1, 0, 0, 11);
+            rgrad.addColorStop(0, pal.p1);
+            rgrad.addColorStop(0.55, pal.p2);
+            rgrad.addColorStop(1, pal.p3);
+            
+            const rgradInner = ctx.createRadialGradient(-1, -3, 0.5, 0, 0, 7);
+            rgradInner.addColorStop(0, pal.p1);
+            rgradInner.addColorStop(1, pal.p2);
 
-        // 定义所有可放花的子区域（每个区域指定花的尺寸上限）
-        // [x1, y1, x2, y2, maxSize, count]
-        // 安全距离：花瓣不碰格子线（格子线本身占1px，加6px缓冲）
-        const safe = 7;
-        const zones = [
-            // 上条（文字区下~格子群上）：花心不能超出区域，区域本身已离格子线safe距离
-            [border,      textBottom,    gx1 - safe,   gy1 - safe,    6, 3],  // 上左角
-            [gx1 + safe,  textBottom,    gx2 - safe,   gy1 - safe,    5, 5],  // 上中横条
-            [gx2 + safe,  textBottom,    width-border,  gy1 - safe,    6, 3],  // 上右角
-            // 左条：x右边界离格子左边界safe px
-            [border,      gy1 + safe,    gx1 - safe,   gy2 - safe,    8, 5],
-            // 右条：x左边界离格子右边界safe px
-            [gx2 + safe,  gy1 + safe,    width-border,  gy2 - safe,    8, 5],
-            // 下条：y上边界离格子下边界safe px
-            [border,      gy2 + safe,    width-border,  pageHeight-border, 9, 6],
-            // 格子行间隙左侧（行间15px，花要极小）
-            [border,      gy1+gridSize+safe, gx1-safe, gy1+gridSize+gap-safe, 4, 1],
-            [border,      gy1+(gridSize+gap)+safe, gx1-safe, gy1+(gridSize+gap)*2-safe, 4, 1],
-            // 格子行间隙右侧
-            [gx2+safe,    gy1+gridSize+safe, width-border, gy1+gridSize+gap-safe, 4, 1],
-            [gx2+safe,    gy1+(gridSize+gap)+safe, width-border, gy1+(gridSize+gap)*2-safe, 4, 1],
+            // 萼片绘制（三枚，更自然）
+            ctx.globalAlpha = 0.95 * om;
+            ctx.fillStyle = '#256015';
+            ctx.fill(new Path2D('M-3,11 C-8,7 -9,1 -5,-1 C-2,-3 0,-1 0,1'));
+            ctx.fill(new Path2D('M3,11 C8,7 9,1 5,-1 C2,-3 0,-1 0,1'));
+            ctx.globalAlpha = 0.6 * om;
+            ctx.fillStyle = '#2E7A1A';
+            ctx.fill(new Path2D('M0,11 C-1,6 0,3 0,1'));
+
+            const OP = "M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
+            const MP = "M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
+            const IP = "M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
+            const CP = "M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
+
+            // 底层5片大瓣（同首页）
+            [0,72,144,216,288].forEach(a => {
+                ctx.save(); ctx.rotate(a * Math.PI/180);
+                ctx.fillStyle = rgrad; ctx.globalAlpha = 0.88 * om;
+                ctx.fill(new Path2D(OP)); ctx.restore();
+            });
+            // 中层5片（旋转36°，同首页）
+            [36,108,180,252,324].forEach(a => {
+                ctx.save(); ctx.rotate(a * Math.PI/180);
+                ctx.fillStyle = rgrad; ctx.globalAlpha = 0.83 * om;
+                ctx.fill(new Path2D(MP)); ctx.restore();
+            });
+            // 内层3瓣
+            [0,120,240].forEach(a => {
+                ctx.save(); ctx.rotate(a * Math.PI/180);
+                ctx.fillStyle = rgradInner; ctx.globalAlpha = 0.92 * om;
+                ctx.fill(new Path2D(IP)); ctx.restore();
+            });
+            // 核心微卷螺旋瓣
+            ctx.fillStyle = rgradInner; ctx.globalAlpha = 0.97 * om;
+            ctx.fill(new Path2D(CP));
+            
+            // 细致花蕊（三层，同首页）
+            ctx.globalAlpha = 0.95 * om; ctx.fillStyle = pal.c1;
+            ctx.beginPath(); ctx.arc(0,-1,2.2,0,Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 0.9 * om; ctx.fillStyle = pal.c2;
+            ctx.beginPath(); ctx.arc(0,-1,1,0,Math.PI*2); ctx.fill();
+            ctx.globalAlpha = 0.85 * om; ctx.fillStyle = 'rgba(255,255,200,0.85)';
+            ctx.beginPath(); ctx.arc(0,-1,0.4,0,Math.PI*2); ctx.fill();
+            
+            // 高光弧（同首页参数）
+            ctx.globalAlpha = 0.50 * om; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+            ctx.lineWidth = 1; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(-5,-5); ctx.bezierCurveTo(-2,-9,2,-9,5,-5); ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawExportBud(ctx, cx, cy, sc, paletteIdx) {
+            const pal = ROSE_PALETTES[paletteIdx % 9];
+            ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc);
+            // 萼片（三枚，更自然，同首页）
+            ctx.globalAlpha = 0.95; ctx.fillStyle = '#1B6B10';
+            ctx.fill(new Path2D('M-1,9 C-6,6 -7,1 -4,-2 C-2,-4 0,-2 0,0'));
+            ctx.fill(new Path2D('M1,9 C6,6 7,1 4,-2 C2,-4 0,-2 0,0'));
+            ctx.globalAlpha = 0.70; ctx.fillStyle = '#2E8020';
+            ctx.fill(new Path2D('M0,9 C-0.5,5 0,2 0,0'));
+            // 萼片叶尖高光（同首页）
+            ctx.globalAlpha = 0.30; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+            ctx.lineWidth = 0.5; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(-4,-1); ctx.bezierCurveTo(-3,-2,-2,-3,0,-2); ctx.stroke();
+            // 外层苞瓣（带渐变效果的叠层）
+            const bgrad = ctx.createRadialGradient(-1, -4, 0.5, 0, 0, 10);
+            bgrad.addColorStop(0, pal.p1);
+            bgrad.addColorStop(0.45, pal.p2);
+            bgrad.addColorStop(1, pal.p3);
+            ctx.globalAlpha = 0.95; ctx.fillStyle = bgrad;
+            ctx.fill(new Path2D('M0,8 C-7,5 -9,0 -7,-6 C-5,-10 0,-12 0,-9 C0,-12 5,-10 7,-6 C9,0 7,5 0,8Z'));
+            // 中层苞瓣
+            const bgrad2 = ctx.createRadialGradient(-0.5, -3, 0.3, 0, 0, 8);
+            bgrad2.addColorStop(0, pal.p1);
+            bgrad2.addColorStop(1, pal.p2);
+            ctx.globalAlpha = 0.92; ctx.fillStyle = bgrad2;
+            ctx.fill(new Path2D('M0,6 C-5,3 -6,-1 -4,-6 C-2,-8 0,-7 0,-6 C0,-7 2,-8 4,-6 C6,-1 5,3 0,6Z'));
+            // 内层苞瓣（最亮）
+            ctx.globalAlpha = 0.92; ctx.fillStyle = pal.p1;
+            ctx.fill(new Path2D('M0,3.5 C-2.5,2 -3.5,-1 -2,-4 C-1,-5 0,-4.5 0,-3.5 C0,-4.5 1,-5 2,-4 C3.5,-1 2.5,2 0,3.5Z'));
+            // 花芯微卷（真实质感）
+            ctx.globalAlpha = 0.98; ctx.fillStyle = pal.p1;
+            ctx.fill(new Path2D('M0,1.5 C-1,0.5 -1.5,-0.5 -0.5,-2 C0,-2.5 0.5,-2 0.5,-1 C0.5,0 0,1.5 0,1.5Z'));
+            // 高光弧（两道，同首页）
+            ctx.globalAlpha = 0.55; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+            ctx.lineWidth = 0.9; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(-4,-5); ctx.bezierCurveTo(-2,-7.5,2,-7.5,4,-5); ctx.stroke();
+            ctx.globalAlpha = 0.40; ctx.lineWidth = 0.6;
+            ctx.beginPath(); ctx.moveTo(-2,-3); ctx.bezierCurveTo(-1,-4.5,1,-4.5,2,-3); ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawExportLeaf(ctx, cx, cy, sc, rot, color, color2) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(rot * Math.PI/180);
+            ctx.scale(sc, sc);
+            const c1 = color || '#2E7D32';
+            const c2 = color2 || '#1B5E20';
+            // 叶片主体渐变
+            const lg = ctx.createLinearGradient(-6, 0, 6, 0);
+            lg.addColorStop(0, c2);
+            lg.addColorStop(0.45, c1);
+            lg.addColorStop(1, c2);
+            ctx.globalAlpha = 0.88;
+            ctx.fillStyle = lg;
+            ctx.beginPath();
+            ctx.moveTo(0, 1);
+            ctx.bezierCurveTo(-5, -2, -7, -8, -6, -14);
+            ctx.bezierCurveTo(-5, -19, -3, -23, 0, -26);
+            ctx.bezierCurveTo(3, -23, 5, -19, 6, -14);
+            ctx.bezierCurveTo(7, -8, 5, -2, 0, 1);
+            ctx.closePath();
+            ctx.fill();
+            // 高光半侧
+            ctx.globalAlpha = 0.10;
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.beginPath();
+            ctx.moveTo(0, 1);
+            ctx.bezierCurveTo(-2, -2, -3, -8, -2, -14);
+            ctx.bezierCurveTo(-1, -19, 0, -23, 0, -26);
+            ctx.bezierCurveTo(-3, -23, -5, -19, -6, -14);
+            ctx.bezierCurveTo(-7, -8, -5, -2, 0, 1);
+            ctx.closePath();
+            ctx.fill();
+            // 主脉
+            ctx.globalAlpha = 0.38; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+            ctx.lineWidth = 0.85; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -25); ctx.stroke();
+            // 左侧脉（3条）
+            ctx.lineWidth = 0.5;
+            [[0,-7,-2,-9,-4,-14],[0,-12,-2,-14,-3.5,-18],[0,-17,-1.5,-18.5,-2.5,-22]].forEach(([sx,sy,cx1,cy1,ex,ey])=>{
+                ctx.globalAlpha = 0.22;
+                ctx.beginPath(); ctx.moveTo(sx,sy); ctx.quadraticCurveTo(cx1,cy1,ex,ey); ctx.stroke();
+            });
+            // 右侧脉（3条）
+            [[0,-7,2,-9,4,-14],[0,-12,2,-14,3.5,-18],[0,-17,1.5,-18.5,2.5,-22]].forEach(([sx,sy,cx1,cy1,ex,ey])=>{
+                ctx.globalAlpha = 0.22;
+                ctx.beginPath(); ctx.moveTo(sx,sy); ctx.quadraticCurveTo(cx1,cy1,ex,ey); ctx.stroke();
+            });
+            // 叶尖高光
+            ctx.globalAlpha = 0.38; ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.beginPath(); ctx.arc(0, -25.5, 0.7, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+        }
+
+        function drawExportVine(ctx, x1, y1, cx1, cy1, cx2, cy2, x2, y2, color, w) {
+            ctx.save();
+            ctx.strokeStyle = color || '#7A5C35'; ctx.lineWidth = w || 1.5;
+            ctx.lineCap = 'round'; ctx.globalAlpha = 0.82;
+            ctx.beginPath(); ctx.moveTo(x1,y1); ctx.bezierCurveTo(cx1,cy1,cx2,cy2,x2,y2); ctx.stroke();
+            ctx.restore();
+        }
+
+        // ===== 导出：真实花束绘制函数（Canvas版） =====
+        // anchor='tl': 左上角花束，cx/cy为花束花头中心
+        // anchor='br': 右下角花束
+        function drawExportBouquetCanvas(ctx, cx, cy, anchor, palettes) {
+            const isTL = anchor === 'tl';
+            // 花束花头聚集中心
+            const bx = cx, by = cy;
+
+            // 花朵位置（相对于花束中心，紧凑圆形排布，12朵）
+            const roseDefs = [
+                { pi:0, dx:-20, dy:-32, rot:-12, sc:0.85 },
+                { pi:1, dx:0,   dy:-40, rot:4,   sc:0.90 },
+                { pi:2, dx:20,  dy:-32, rot:14,  sc:0.82 },
+                { pi:3, dx:-28, dy:-12, rot:-18, sc:0.80 },
+                { pi:0, dx:-10, dy:-18, rot:5,   sc:0.85 },
+                { pi:1, dx:10,  dy:-14, rot:-6,  sc:0.82 },
+                { pi:2, dx:28,  dy:-10, rot:20,  sc:0.78 },
+                { pi:3, dx:-18, dy:4,   rot:-8,  sc:0.75 },
+                { pi:0, dx:3,   dy:2,   rot:10,  sc:0.76 },
+                { pi:1, dx:22,  dy:6,   rot:-14, sc:0.72 },
+                { pi:2, dx:-34, dy:8,   rot:22,  sc:0.68 },
+                { pi:3, dx:36,  dy:6,   rot:-20, sc:0.65 },
+            ];
+
+            const P = palettes;
+            const stemTopY = by + 32;
+            const stemBotY = by + 110;
+            const stemBotX = isTL ? cx - 20 : cx + 20;
+
+            // 茎束（7根，扇形）
+            const stemOffsets = [-16,-10,-5,0,5,10,16];
+            ctx.save();
+            stemOffsets.forEach(off => {
+                const tx = bx + off;
+                const bx2 = stemBotX + off * 0.5;
+                ctx.save();
+                ctx.strokeStyle = '#4A7C38'; ctx.lineWidth = 1.8;
+                ctx.globalAlpha = 0.78; ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(tx, stemTopY);
+                ctx.bezierCurveTo(tx + off*0.2, stemTopY+25, bx2, stemBotY-25, bx2, stemBotY);
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 包装纸（梯形）
+            const wpTopL = bx-40, wpTopR = bx+40, wpTopY = by+24;
+            const wpBotL = isTL ? bx-70 : bx-30;
+            const wpBotR = isTL ? bx+30 : bx+70;
+            const wpBotY = by + 108;
+
+            // 外层纸（阴影）
+            ctx.save();
+            ctx.globalAlpha = 0.40;
+            ctx.fillStyle = '#C0B0A8';
+            ctx.beginPath();
+            ctx.moveTo(wpTopL-4, wpTopY); ctx.lineTo(wpTopR+4, wpTopY);
+            ctx.lineTo(wpBotR+8, wpBotY); ctx.lineTo(wpBotL-8, wpBotY);
+            ctx.closePath(); ctx.fill(); ctx.restore();
+
+            // 主包装纸
+            ctx.save();
+            ctx.globalAlpha = 0.75;
+            ctx.fillStyle = '#F0EAE4';
+            ctx.beginPath();
+            ctx.moveTo(wpTopL, wpTopY); ctx.lineTo(wpTopR, wpTopY);
+            ctx.lineTo(wpBotR, wpBotY); ctx.lineTo(wpBotL, wpBotY);
+            ctx.closePath(); ctx.fill(); ctx.restore();
+
+            // 包装纸高光侧
+            ctx.save();
+            ctx.globalAlpha = 0.35;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(wpTopL, wpTopY); ctx.lineTo(wpTopL+15, wpTopY);
+            ctx.lineTo(wpBotL+18, wpBotY); ctx.lineTo(wpBotL, wpBotY);
+            ctx.closePath(); ctx.fill(); ctx.restore();
+
+            // 包装纸上边弧线
+            ctx.save();
+            ctx.globalAlpha = 0.55; ctx.strokeStyle = '#B8A89E'; ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(wpTopL, wpTopY);
+            ctx.quadraticCurveTo(bx, wpTopY-8, wpTopR, wpTopY);
+            ctx.stroke(); ctx.restore();
+
+            // 红色丝带
+            const ribbonY = wpTopY + (wpBotY - wpTopY) * 0.35;
+            const ribbonLx = wpTopL + (wpBotL - wpTopL) * 0.35;
+            const ribbonRx = wpTopR + (wpBotR - wpTopR) * 0.35;
+            ctx.save();
+            ctx.globalAlpha = 0.88; ctx.strokeStyle = '#C8365A'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(ribbonLx, ribbonY);
+            ctx.quadraticCurveTo(bx, ribbonY-6, ribbonRx, ribbonY);
+            ctx.stroke(); ctx.restore();
+            // 蝴蝶结
+            ctx.save();
+            ctx.globalAlpha = 0.72; ctx.strokeStyle = '#C8365A'; ctx.lineWidth = 2.0; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(bx-10, ribbonY); ctx.bezierCurveTo(bx-18, ribbonY-12, bx-6, ribbonY-16, bx, ribbonY-7); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(bx+10, ribbonY); ctx.bezierCurveTo(bx+18, ribbonY-12, bx+6, ribbonY-16, bx, ribbonY-7); ctx.stroke();
+            ctx.restore();
+
+            // 叶片（6片，穿插在花朵之间）
+            const leafDefs = [
+                { dx:-32, dy:-4,  rot:-65, sc:0.68, c1:'#2E7D32', c2:'#1B5E20' },
+                { dx:32,  dy:-6,  rot:65,  sc:0.64, c1:'#388E3C', c2:'#2E7D32' },
+                { dx:-24, dy:-24, rot:-50, sc:0.58, c1:'#43A047', c2:'#2E7D32' },
+                { dx:26,  dy:-20, rot:52,  sc:0.56, c1:'#2E7D32', c2:'#145214' },
+                { dx:-11, dy:-40, rot:-10, sc:0.52, c1:'#388E3C', c2:'#1B5E20' },
+                { dx:13,  dy:-36, rot:12,  sc:0.50, c1:'#2E7D32', c2:'#1B5E20' },
+            ];
+            leafDefs.forEach(l => {
+                ctx.save();
+                ctx.translate(bx + l.dx, by + l.dy);
+                ctx.rotate(l.rot * Math.PI/180);
+                ctx.scale(l.sc, l.sc);
+                const lg = ctx.createLinearGradient(-6, 0, 6, 0);
+                lg.addColorStop(0, l.c2); lg.addColorStop(0.5, l.c1); lg.addColorStop(1, l.c2);
+                ctx.globalAlpha = 0.84; ctx.fillStyle = lg;
+                ctx.beginPath();
+                ctx.moveTo(0,2); ctx.bezierCurveTo(-5,-1,-7,-8,-6,-15);
+                ctx.bezierCurveTo(-5,-20,-3,-24,0,-27);
+                ctx.bezierCurveTo(3,-24,5,-20,6,-15);
+                ctx.bezierCurveTo(7,-8,5,-1,0,2);
+                ctx.closePath(); ctx.fill();
+                ctx.globalAlpha = 0.28; ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 0.7;
+                ctx.beginPath(); ctx.moveTo(0,1); ctx.lineTo(0,-26); ctx.stroke();
+                ctx.restore();
+            });
+
+            // 花朵（12朵，密集叠放）
+            roseDefs.forEach(r => {
+                const pal = P[r.pi % P.length];
+                ctx.save();
+                ctx.translate(bx + r.dx, by + r.dy);
+                ctx.rotate(r.rot * Math.PI/180);
+                ctx.scale(r.sc, r.sc);
+
+                const rgrad = ctx.createRadialGradient(0,-2,1,0,0,11);
+                rgrad.addColorStop(0, pal.p1); rgrad.addColorStop(0.55, pal.p2); rgrad.addColorStop(1, pal.p3);
+                const rgi = ctx.createRadialGradient(-1,-3,0.5,0,0,7);
+                rgi.addColorStop(0, pal.p1); rgi.addColorStop(1, pal.p2);
+
+                ctx.globalAlpha = 0.90; ctx.fillStyle = '#256015';
+                ctx.fill(new Path2D('M-3,11 C-8,7 -9,1 -5,-1 C-2,-3 0,-1 0,1'));
+                ctx.fill(new Path2D('M3,11 C8,7 9,1 5,-1 C2,-3 0,-1 0,1'));
+
+                const OP="M0,9 C-6,7 -10,0 -8,-6 C-6,-11 -2,-12 0,-10 C2,-12 6,-11 8,-6 C10,0 6,7 0,9Z";
+                const MP="M0,7 C-5,5 -8,0 -6,-5 C-4,-9 -1,-10 0,-8 C1,-10 4,-9 6,-5 C8,0 5,5 0,7Z";
+                const IP="M0,5 C-3,3 -5,-1 -4,-4 C-2,-7 0,-6 0,-5 C0,-6 2,-7 4,-4 C5,-1 3,3 0,5Z";
+                const CP="M0,3 C-2,2 -3,0 -2,-2 C-1,-3 0,-3 0,-2 C0,-3 1,-3 2,-2 C3,0 2,2 0,3Z";
+
+                [0,72,144,216,288].forEach(a=>{ ctx.save(); ctx.rotate(a*Math.PI/180); ctx.fillStyle=rgrad; ctx.globalAlpha=0.88; ctx.fill(new Path2D(OP)); ctx.restore(); });
+                [36,108,180,252,324].forEach(a=>{ ctx.save(); ctx.rotate(a*Math.PI/180); ctx.fillStyle=rgrad; ctx.globalAlpha=0.83; ctx.fill(new Path2D(MP)); ctx.restore(); });
+                [0,120,240].forEach(a=>{ ctx.save(); ctx.rotate(a*Math.PI/180); ctx.fillStyle=rgi; ctx.globalAlpha=0.92; ctx.fill(new Path2D(IP)); ctx.restore(); });
+                ctx.fillStyle=rgi; ctx.globalAlpha=0.97; ctx.fill(new Path2D(CP));
+                ctx.globalAlpha=0.95; ctx.fillStyle=pal.c1; ctx.beginPath(); ctx.arc(0,-1,2.2,0,Math.PI*2); ctx.fill();
+                ctx.globalAlpha=0.90; ctx.fillStyle=pal.c2; ctx.beginPath(); ctx.arc(0,-1,1,0,Math.PI*2); ctx.fill();
+                ctx.globalAlpha=0.50; ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=1; ctx.lineCap='round';
+                ctx.beginPath(); ctx.moveTo(-5,-5); ctx.bezierCurveTo(-2,-9,2,-9,5,-5); ctx.stroke();
+                ctx.restore();
+            });
+
+            ctx.restore();
+        }
+
+        // ===== 导出：极浅单朵玫瑰随机散落（不碰格子，近乎透明）=====
+        // 格子区域：x=[padding, padding+cols*gridSize+(cols-1)*gap], y=[padding+headerH, pageHeight-padding-footerH]
+        // 玫瑰只散落在格子区域之外的空白处（页边距区域 + 格子间隙不够大就跳过）
+        // 只用红(0)、黄(3)、白(2)、绿(8) 四色，opacity极低
+
+        const faintPalIdxs = [0, 3, 2, 8]; // 红、黄、白、绿
+        const faintOpacity = 0.10; // 近乎透明
+
+        // 计算格子占用区域（留出安全边距）
+        const gridAreaX1 = padding - 10;
+        const gridAreaX2 = padding + cols * gridSize + (cols - 1) * gap + 10;
+        const gridAreaY1 = padding + headerH - 10;
+        const gridAreaY2 = pageHeight - padding - footerH + 10;
+
+        // 散落位置：页边空白 + 角落 + 标题区域
+        const scatterPositions = [
+            // 顶部标题区（两侧）
+            { cx: padding * 0.4,           cy: padding * 0.4,              sc: 1.8, rot: -20, pi: 0 },
+            { cx: padding * 0.8,           cy: padding * 0.7,              sc: 1.3, rot: 15,  pi: 3 },
+            { cx: width - padding * 0.4,   cy: padding * 0.4,              sc: 1.8, rot: 18,  pi: 3 },
+            { cx: width - padding * 0.8,   cy: padding * 0.75,             sc: 1.4, rot: -10, pi: 2 },
+            // 标题行中间（格子上方）
+            { cx: padding + gridSize * 0.5,        cy: padding + headerH * 0.45, sc: 1.2, rot: 8,   pi: 8 },
+            { cx: padding + gridSize * 1.5 + gap,  cy: padding + headerH * 0.35, sc: 1.0, rot: -15, pi: 0 },
+            { cx: padding + gridSize * 2.5 + gap*2,cy: padding + headerH * 0.50, sc: 1.1, rot: 12,  pi: 3 },
+            // 左侧边距
+            { cx: padding * 0.35, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.25, sc: 1.6, rot: -8,  pi: 2 },
+            { cx: padding * 0.45, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.55, sc: 1.4, rot: 20,  pi: 0 },
+            { cx: padding * 0.3,  cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.80, sc: 1.3, rot: -25, pi: 3 },
+            // 右侧边距
+            { cx: width - padding * 0.35, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.20, sc: 1.5, rot: 10,  pi: 8 },
+            { cx: width - padding * 0.40, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.50, sc: 1.4, rot: -12, pi: 0 },
+            { cx: width - padding * 0.30, cy: gridAreaY1 + (gridAreaY2 - gridAreaY1) * 0.78, sc: 1.3, rot: 22,  pi: 3 },
+            // 底部区域
+            { cx: padding * 0.4,           cy: pageHeight - padding * 0.4,  sc: 1.7, rot: 15,  pi: 0 },
+            { cx: padding * 0.8,           cy: pageHeight - padding * 0.65, sc: 1.2, rot: -8,  pi: 8 },
+            { cx: width - padding * 0.4,   cy: pageHeight - padding * 0.4,  sc: 1.7, rot: -18, pi: 2 },
+            { cx: width - padding * 0.8,   cy: pageHeight - padding * 0.65, sc: 1.2, rot: 10,  pi: 3 },
+            // 底部中间
+            { cx: padding + gridSize * 0.5,         cy: pageHeight - padding * 0.45, sc: 1.1, rot: -5,  pi: 3 },
+            { cx: padding + gridSize * 1.5 + gap,   cy: pageHeight - padding * 0.38, sc: 1.0, rot: 18,  pi: 0 },
+            { cx: padding + gridSize * 2.5 + gap*2, cy: pageHeight - padding * 0.48, sc: 1.2, rot: -12, pi: 2 },
         ];
 
-        const placed = [];
-        let palCounter = 0;
-
-        zones.forEach(([zx1, zy1, zx2, zy2, maxSz, count]) => {
-            const zw = zx2 - zx1;
-            const zh = zy2 - zy1;
-            if (zw < 6 || zh < 6) return; // 区域太小跳过
-
-            let placed_in_zone = 0, tries = 0;
-            while (placed_in_zone < count && tries < 200) {
-                tries++;
-                const size = Math.min(maxSz, 3 + Math.random() * (maxSz - 3));
-                if (size*2 > zw || size*2 > zh) continue;
-                const cx = zx1 + size + Math.random() * Math.max(0, zw - size*2);
-                const cy = zy1 + size + Math.random() * Math.max(0, zh - size*2);
-                // 花必须完全在区域内（花瓣半径≈size，不超出区域边界即不碰格子线）
-                if (cx - size < zx1 || cx + size > zx2) continue;
-                if (cy - size < zy1 || cy + size > zy2) continue;
-                // 不超出页面边框
-                if (cx-size < border || cx+size > width-border) continue;
-                if (cy-size < border || cy+size > pageHeight-border) continue;
-                // 不进入文字区
-                if (cy - size < textBottom) continue;
-                // 不和已放置重叠
-                if (placed.some(p => (cx-p.x)**2+(cy-p.y)**2 < (size+p.s+2)**2)) continue;
-                placed.push({ x:cx, y:cy, s:size, p:(palCounter++)%9, rot:Math.floor(Math.random()*360) });
-                placed_in_zone++;
-            }
+        ctx.save();
+        scatterPositions.forEach(r => {
+            const palIdx = faintPalIdxs[r.pi % faintPalIdxs.length];
+            ctx.save();
+            drawExportRose(ctx, r.cx, r.cy, r.sc, palIdx, faintOpacity);
+            ctx.restore();
         });
+        ctx.restore();
 
-        // 用SVG→Image方式绘制（返回Promise，等所有图片加载完再resolve）
-        const loadOne = (rose) => new Promise(resolve => {
-            const svgStr = makeExportRoseSVGString(rose.p, rose.rot);
-            const blob = new Blob([svgStr], { type: 'image/svg+xml' });
-            const url  = URL.createObjectURL(blob);
-            const img  = new Image();
-            // viewBox="-14 -14 28 24"，花心在viewBox内坐标(0,-1)
-            // 映射到img坐标：x=14, y=13（偏移-14,-14后+1）
-            // 我们绘制时让花心对准(rose.x, rose.y)
-            const iw = 56, ih = 48; // img declared size
-            const drawW = rose.s * 2 * (iw / 28);
-            const drawH = rose.s * 2 * (ih / 28);
-            img.onload = () => {
-                ctx.save();
-                ctx.globalAlpha = 0.85;
-                // 花心在img中的位置比例：x=14/56=0.25, y=13/48≈0.27
-                ctx.drawImage(img,
-                    rose.x - drawW * 0.5,
-                    rose.y - drawH * 0.46,
-                    drawW, drawH);
-                ctx.globalAlpha = 1;
-                ctx.restore();
-                URL.revokeObjectURL(url);
-                resolve();
-            };
-            img.onerror = () => { URL.revokeObjectURL(url); resolve(); };
-            img.src = url;
-        });
-        return Promise.all(placed.map(loadOne));
+        return Promise.resolve();
     }
 </script>
 </body>
